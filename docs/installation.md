@@ -27,7 +27,7 @@ Compiling the code may be done using
 
 ```
 git clone https://github.com/NGSolve/dcm.git
-cd dcm/src
+cd dcm
 mkdir build
 cd build
 cmake ..
