@@ -1,4 +1,4 @@
-DEPENDS=intro.md _config.yml _toc.yml test.md
+DEPENDS=intro.md introduction.md _config.yml _toc.yml
 .PHONY: clean
 
 _build: $(DEPENDS)
