@@ -1,7 +1,7 @@
 [project]
-name = "ngsolve_addon_template"
+name = "dualcellspaces"
 version = "0.0.1"
-description="A minimal example for an NGSolve addon"
+description="NGSolve add on for the dual cell method"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
