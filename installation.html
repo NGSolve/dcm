@@ -376,7 +376,8 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-ngsolve">1.1. Get NGSolve</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-the-dual-cell-method-add-on">1.2. Install the Dual Cell Method add-on</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pip">Using pip</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compiling-the-code">Compiling the code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-the-code">Working with the code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#test-the-dualcellspaces-installation">Test the <code class="docutils literal notranslate"><span class="pre">dualcellspaces</span></code> installation</a></li>
 </ul>
 </li>
 </ul>
@@ -392,33 +393,76 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="installation">
 <span id="id1"></span><h1><span class="section-number">1. </span>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">dualcellspaces</span></code> package is an add-on to the high-order finite element library <a class="reference external" href="https://ngsolve.org">NGSolve</a>. Thus the main premise is that a sufficiently recent version of <a class="reference external" href="https://ngsolve.org">NGSolve</a> is installed beforehand.</p>
 <section id="get-ngsolve">
 <h2><span class="section-number">1.1. </span>Get NGSolve<a class="headerlink" href="#get-ngsolve" title="Link to this heading">#</a></h2>
-<p>The main premise is that a sufficiently recent version of <a class="reference external" href="https://ngsolve.org">NGSolve</a> is already installed. If this is not the case the most simple way to install the packe is done using <code class="docutils literal notranslate"><span class="pre">pip</span></code> (the <a class="reference external" href="https://pypi.org/project/pip/">python package installer</a>):</p>
+<p>The most simple way to install the <code class="docutils literal notranslate"><span class="pre">NGSolve</span></code> is to use <code class="docutils literal notranslate"><span class="pre">pip</span></code> (the <a class="reference external" href="https://pypi.org/project/pip/">python package installer</a>):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">numpy</span> <span class="n">scipy</span> <span class="n">matplotlib</span> <span class="n">jupyter</span> <span class="n">ipyparallel</span> <span class="n">scikit</span><span class="o">-</span><span class="n">build</span>
 <span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="o">--</span><span class="n">pre</span> <span class="n">ngsolve</span> <span class="n">webgui_jupyter_widgets</span>
 </pre></div>
 </div>
+<p>For troubleshooting we refer to the various <code class="docutils literal notranslate"><span class="pre">NGSolve</span></code> installation tutorials <a class="reference external" href="https://docu.ngsolve.org/ngs24/intro.html">NGS24</a> or the <a class="reference external" href="https://docu.ngsolve.org/latest/">NGSolve Documentation</a>.</p>
+<p>If you do not want to update or modify your <code class="docutils literal notranslate"><span class="pre">NGSolve</span></code> installation you might want to consider installing <code class="docutils literal notranslate"><span class="pre">NGSolve</span></code> and the <code class="docutils literal notranslate"><span class="pre">dualcellspaces</span></code> add on in a <a class="reference external" href="https://docu.ngsolve.org/ngs24/intro.html#installing-parallel-ngsolve">virtual environment</a>.</p>
 </section>
 <section id="install-the-dual-cell-method-add-on">
 <h2><span class="section-number">1.2. </span>Install the Dual Cell Method add-on<a class="headerlink" href="#install-the-dual-cell-method-add-on" title="Link to this heading">#</a></h2>
-<p>As the Dual Cell Method is not available in the core code of <code class="docutils literal notranslate"><span class="pre">NGSolve</span></code> the <code class="docutils literal notranslate"><span class="pre">dcm</span></code> add-on has to be installed.</p>
+<p>As the Dual Cell Method is not available in the core code of <code class="docutils literal notranslate"><span class="pre">NGSolve</span></code> the <code class="docutils literal notranslate"><span class="pre">dualcellspaces</span></code> add-on has to be installed.</p>
 <section id="using-pip">
 <h3>Using pip<a class="headerlink" href="#using-pip" title="Link to this heading">#</a></h3>
 <p>The most simple way to install the add on is again to use <code class="docutils literal notranslate"><span class="pre">pip</span></code> via</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">NGSolve</span><span class="o">/</span><span class="n">dcm</span><span class="o">.</span><span class="n">git</span>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-0">
+NGSolve pip installation</label><div class="sd-tab-content docutils">
+<p>if you have installed NGSolve via pip or binaries</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/NGSolve/dcm.git
 </pre></div>
 </div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-1">
+NGSolve  built from sources</label><div class="sd-tab-content docutils">
+<p>if your NGSolve was built from sources</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>python -m pip install scikit-build-core pybind11_stubgen 
+python -m pip install --no-build-isolation git+https://github.com/NGSolve/dcm.git
+</pre></div>
+</div>
+</div>
+</div>
 </section>
-<section id="compiling-the-code">
-<h3>Compiling the code<a class="headerlink" href="#compiling-the-code" title="Link to this heading">#</a></h3>
-<p>Compiling the code may be done using</p>
+<section id="working-with-the-code">
+<h3>Working with the code<a class="headerlink" href="#working-with-the-code" title="Link to this heading">#</a></h3>
+<p>If you also want to have the sources of the <code class="docutils literal notranslate"><span class="pre">dualcellspaces</span></code> module available you may clone them using</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">NGSolve</span><span class="o">/</span><span class="n">dcm</span><span class="o">.</span><span class="n">git</span>
-<span class="n">cd</span> <span class="n">dcm</span>
-<span class="n">mkdir</span> <span class="n">build</span>
-<span class="n">cd</span> <span class="n">build</span>
-<span class="n">cmake</span> <span class="o">..</span>
-<span class="n">make</span> <span class="o">-</span><span class="n">j4</span> <span class="n">install</span>
+</pre></div>
+</div>
+<p>Installation can be done either again using pip or building using <code class="docutils literal notranslate"><span class="pre">CMake</span></code></p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-2">
+pip</label><div class="sd-tab-content docutils">
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd dcm
+python -m pip install --no-build-isolation .
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-3">
+CMake</label><div class="sd-tab-content docutils">
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd dcm
+mkdir build
+cd build
+cmake ..
+make -j4 install
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="test-the-dualcellspaces-installation">
+<h3>Test the <code class="docutils literal notranslate"><span class="pre">dualcellspaces</span></code> installation<a class="headerlink" href="#test-the-dualcellspaces-installation" title="Link to this heading">#</a></h3>
+<p>Test whether the installation worked using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">dualcellspaces</span><span class="o">.</span><span class="n">demos</span><span class="o">.</span><span class="n">dc_intrules</span>
 </pre></div>
 </div>
 </section>
@@ -483,7 +527,8 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-ngsolve">1.1. Get NGSolve</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-the-dual-cell-method-add-on">1.2. Install the Dual Cell Method add-on</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pip">Using pip</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compiling-the-code">Compiling the code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#working-with-the-code">Working with the code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#test-the-dualcellspaces-installation">Test the <code class="docutils literal notranslate"><span class="pre">dualcellspaces</span></code> installation</a></li>
 </ul>
 </li>
 </ul>

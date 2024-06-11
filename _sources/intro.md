@@ -1,9 +1,13 @@
 # The Dual Cell Method in NGSolve
 
-*M. Wess*, *J. Schöberl*
+by *M. Wess*, *J. Schöberl*
 
 TU Wien, Institute of Analysis and Scientific Computing, 
 
+*based on joint work with B. Kapidani and L. Codecasa*
+
+
+---
 
 
 This book is designed to provide an introduction and examples to the implementation of the Dual Cell Method in the high-order finite element library [NGSolve](https://ngsolve.org).
@@ -13,9 +17,15 @@ The *Dual Cell Method* (DCM) is a Galerkin Method for the simulation of time-dom
 
 For a full mathematical introduction to the method we refer to {cite}`WKCS2023,KCS2021`.
 
+---
+
 ## Table of Contents
 ```{tableofcontents}
 ```
+
+
+---
+
 ## References
 ```{bibliography}
 ```
