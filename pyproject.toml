@@ -1,0 +1,14 @@
+[project]
+name = "ngsolve_addon_template"
+version = "0.0.1"
+description="A minimal example for an NGSolve addon"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+  "License :: OSI Approved :: MIT License",
+]
+
+[build-system]
+requires = ["scikit-build-core>=0.3.3", "pybind11", "pybind11_stubgen", "cmake", "netgen-mesher", "ngsolve"]
+build-backend = "scikit_build_core.build"
+
