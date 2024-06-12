@@ -61,6 +61,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'installation';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="2. A quick start into the dual cell method" href="first_steps.html" />
     <link rel="prev" title="The Dual Cell Method in NGSolve" href="intro.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -178,6 +179,18 @@
         </ul>
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">1. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="first_steps.html">2. A quick start into the dual cell method</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="maxwell.html">3. The dual cell method for the time-domain Maxwell system</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="maxwell/problem_setting.html">3.1. Problem setting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maxwell/hcurl.html">3.2. Construction of discrete spaces on dual cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maxwell/mass_lumping.html">3.3. Mass lumping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maxwell/time_stepping.html">3.4. Time stepping</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">4. Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/ring_resonator.html">4.1. Ring resonator</a></li>
+</ul>
+</li>
 </ul>
 
     </div>
@@ -441,7 +454,8 @@ python -m pip install --no-build-isolation git+https://github.com/NGSolve/dcm.gi
 <input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-2">
 pip</label><div class="sd-tab-content docutils">
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd dcm
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>python -m pip install scikit-build-core pybind11_stubgen 
+cd dcm
 python -m pip install --no-build-isolation .
 </pre></div>
 </div>
@@ -449,7 +463,8 @@ python -m pip install --no-build-isolation .
 <input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-3">
 CMake</label><div class="sd-tab-content docutils">
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd dcm
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>python -m pip install pybind11_stubgen 
+cd dcm
 mkdir build
 cd build
 cmake ..
@@ -507,6 +522,15 @@ make -j4 install
         <p class="prev-next-subtitle">previous</p>
         <p class="prev-next-title">The Dual Cell Method in NGSolve</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="first_steps.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">2. </span>A quick start into the dual cell method</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
