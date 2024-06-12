@@ -4,7 +4,7 @@
 title: The Dual Cell Method in NGSolve
 author: M. Wess
 logo: logo.png
-copyright: 2024
+copyright: '2024'
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
 only_build_toc_files: true

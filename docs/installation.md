@@ -51,10 +51,12 @@ Installation can be done either again using pip or building using `CMake`
 
 ```` {tab-set}
 ``` {tab-item} pip
+    python -m pip install scikit-build-core pybind11_stubgen 
     cd dcm
     python -m pip install --no-build-isolation .
 ```
 ``` {tab-item} CMake
+    python -m pip install pybind11_stubgen 
     cd dcm
     mkdir build
     cd build

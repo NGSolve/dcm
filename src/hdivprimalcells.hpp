@@ -78,7 +78,7 @@ namespace ngcomp
 
     IntegrationRule TransversalIR;
     IntegrationRule NormalIR;
-    bool uniform_order;
+    //bool uniform_order;
     
   public:
 
@@ -92,11 +92,11 @@ namespace ngcomp
       auto docu = FESpace::GetDocu();
       docu.short_docu = "HDiv conforming space on primal cells which is non-smooth but normal continuous on dual edges.";
       docu.long_docu =
-        R"raw_string(My own FESpace provides first and second order triangular elements.
+        R"raw_string(HDiv conforming space on primal cells which is non-smooth but normal continuous on dual edges.
 )raw_string";      
       
-      docu.Arg("uniform_order") = "bool = False\n"
-        "  Same order of basis functions in every direction";
+      /*docu.Arg("uniform_order") = "bool = False\n"
+        "  Same order of basis functions in every direction";*/
       return docu;
     }
 

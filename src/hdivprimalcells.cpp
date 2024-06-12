@@ -1643,7 +1643,7 @@ namespace ngcomp
       : FESpace (ama, flags)
     {
 
-      DefineDefineFlag("uniform_order");
+      //DefineDefineFlag("uniform_order");
       if (ma->GetDimension()==2)
       {
         evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdHDiv<2>>>();
@@ -1663,16 +1663,16 @@ namespace ngcomp
 
       NormalIR = IntegrationRule();
       Array<double> xi, wi;
-      ComputeGaussRadauRule (order+2, xi, wi);
+      ComputeGaussRadauRule (order+1, xi, wi);
       //xi[0] += 1e-12;
       for (auto i : Range(xi))
         NormalIR.Append (IntegrationPoint (1-xi[i]-1e-10, 0, 0, wi[i]));
-      uniform_order = true;
-      if (!flags.GetDefineFlag("uniform_order"))
+      //uniform_order = true;
+      /*if (!flags.GetDefineFlag("uniform_order"))
       {
           ComputeGaussRule (order+1, xi, wi);
           uniform_order = false;
-      }
+      }*/
       for (auto i : Range(xi))
         TransversalIR.Append (IntegrationPoint (1-xi[i]-1e-10, 0, 0, wi[i]));
     }
@@ -1738,8 +1738,8 @@ namespace ngcomp
 
       if (ma->GetDimension()==3)
       {
-      if (!uniform_order)
-        throw Exception("3d not implemented");
+      //if (!uniform_order)
+      //  throw Exception("3d not implemented");
       
    static Timer t("GetMassOperator"); RegionTimer reg(t);
     static Timer tint("integrate");
@@ -1856,10 +1856,11 @@ namespace ngcomp
     if (ma->GetDimension()==2)
     {
 
-      if (!uniform_order)
+      /*if (!uniform_order)
         return make_shared<ApplyMassHDivPrimalCells>
           (dynamic_pointer_cast<FESpace>(const_cast<HDivPrimalCells*>(this)->shared_from_this()),
            rho,false, defon, lh);
+           */
 
       static Timer t("GetMassOperator"); RegionTimer reg(t);
       static Timer tint("integrate");
