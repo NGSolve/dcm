@@ -27,6 +27,7 @@ install(FILES src/__init__.py DESTINATION ${install_dir})
 
 # install additional python files/demos/examples
 install(FILES demos/dc_intrules.py DESTINATION ${install_dir}/demos)
+install(FILES demos/test_spaces.py DESTINATION ${install_dir}/demos)
 
 # generate stub files for autocomplete in IDEs
 # this must be done at the very end (such that the stubgen generation happens after the python modules are installed)
