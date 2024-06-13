@@ -17,4 +17,5 @@ chapters:
     #      - file: maxwell/time_stepping
   - file: examples
     sections:
+      - file: examples/qualitative_dispersion
       - file: examples/ring_resonator

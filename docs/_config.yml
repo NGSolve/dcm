@@ -13,7 +13,9 @@ execute:
     #  execute_notebooks: 'off' 
   execute_notebooks: auto
     #  execute_notebooks: force
-  timeout: 500
+  timeout: 100
+  exclude_patterns:
+    #- '*resonator*'
 
 # Define the name of the latex output file for PDF builds
 latex:
