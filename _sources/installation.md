@@ -71,5 +71,6 @@ Installation can be done either again using pip or building using `CMake`
 Test whether the installation worked using
 ```
 python -m dualcellspaces.demos.dc_intrules
+python -m dualcellspaces.demos.test_spaces
 ```
 
