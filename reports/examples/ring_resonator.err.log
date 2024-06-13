@@ -28,12 +28,12 @@ Traceback (most recent call last):
     error_on_timeout_execute_reply = await self._async_handle_timeout(timeout, cell)
   File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/client.py", line 850, in _async_handle_timeout
     raise CellTimeoutError.error_from_timeout_and_cell(
-nbclient.exceptions.CellTimeoutError: A cell timed out while it was being executed, after 30 seconds.
+nbclient.exceptions.CellTimeoutError: A cell timed out while it was being executed, after 10 seconds.
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-['from time import time', '', 'now = time()', '', 'drawevery = 100']
+['from time import time', '', 'startnow = time()', 'now = time()', '']
 ...
-['        if i%drawevery == 0:', '            #scene.Redraw()', '            #print("t = {}, \\t {:e} DoFs/s".format(t,fes.ndof*drawevery/(time()-now)),end = "\\r")', '            #now = time()', '            gfp_history.AddMultiDimComponent(gfu.components[0].vec)']
+['            #print("t = {}, \\t {:e} DoFs/s".format(t,fes.ndof*drawevery/(time()-now)),end = "\\r")', '            #now = time()', '            gfp_history.AddMultiDimComponent(gfu.components[0].vec)', '', 'mdofss = fes.ndof*i/(time()-startnow)']
 -------------------
 

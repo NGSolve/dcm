@@ -1,2 +1,10 @@
 (examples)=
-## Examples
+# Examples
+
+```{contents}
+:local:
+```
+
+
+```{tableofcontents}
+```
