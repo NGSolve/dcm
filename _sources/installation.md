@@ -9,7 +9,7 @@ The `dualcellspaces` package is an add-on to the high-order finite element libra
 The most simple way to install the `NGSolve` is to use `pip` (the [python package installer](https://pypi.org/project/pip/)):
 ```
 python -m pip install numpy scipy matplotlib jupyter ipyparallel scikit-build
-python -m pip install --upgrade --pre ngsolve webgui_jupyter_widgets
+python -m pip install --upgrade ngsolve webgui_jupyter_widgets
 ```
 For troubleshooting we refer to the various `NGSolve` installation tutorials [NGS24](https://docu.ngsolve.org/ngs24/intro.html) or the [NGSolve Documentation](https://docu.ngsolve.org/latest/).
 
@@ -30,9 +30,9 @@ The most simple way to install the add on is again to use `pip` via
 
     pip install git+https://github.com/NGSolve/dcm.git
 ```
-```{tab-item} NGSolve  built from sources
+```{tab-item} NGSolve  built from sources or dev version
 
-  if your NGSolve was built from sources
+  if your NGSolve was built from sources or you have a dev version (e.g., installed via `pip install --pre ngsolve`)
 
     python -m pip install scikit-build-core pybind11_stubgen 
     python -m pip install --no-build-isolation git+https://github.com/NGSolve/dcm.git
