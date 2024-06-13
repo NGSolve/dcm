@@ -9,12 +9,12 @@ options:
 chapters: 
   - file: installation
     #  - file: first_steps
-    #  - file: maxwell
-    #    sections:
-    #      - file: maxwell/problem_setting
-    #      - file: maxwell/hcurl
-    #      - file: maxwell/mass_lumping
-    #      - file: maxwell/time_stepping
+  - file: maxwell
+    sections:
+      - file: maxwell/basic_ideas
+      - file: maxwell/hcurl
+      - file: maxwell/mass_lumping
+      - file: maxwell/time_stepping
   - file: examples
     sections:
       - file: examples/qualitative_dispersion
