@@ -1,2 +1,3 @@
 (spaces)=
-## Construction of discrete spaces on dual cells
+# Discrete spaces on dual cells
+
