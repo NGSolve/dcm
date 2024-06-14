@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>3. The dual cell method for the time-domain Maxwell system &#8212; The Dual Cell Method in NGSolve</title>
+    <title>2. The dual cell method for the time-domain Maxwell system &#8212; The Dual Cell Method in NGSolve</title>
   
   
   
@@ -58,11 +58,13 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'maxwell';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="3.1. Problem setting" href="maxwell/problem_setting.html" />
-    <link rel="prev" title="2. A quick start into the dual cell method" href="first_steps.html" />
+    <link rel="next" title="2.2. Introduction" href="maxwell/introduction.html" />
+    <link rel="prev" title="1. Installation" href="installation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -179,16 +181,13 @@
         </ul>
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">1. Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="first_steps.html">2. A quick start into the dual cell method</a></li>
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">3. The dual cell method for the time-domain Maxwell system</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="maxwell/problem_setting.html">3.1. Problem setting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="maxwell/hcurl.html">3.2. Construction of discrete spaces on dual cells</a></li>
-<li class="toctree-l2"><a class="reference internal" href="maxwell/mass_lumping.html">3.3. Mass lumping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="maxwell/time_stepping.html">3.4. Time stepping</a></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">2. The dual cell method for the time-domain Maxwell system</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="maxwell/introduction.html">2.2. Introduction</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">4. Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/ring_resonator.html">4.1. Ring resonator</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">3. Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/qualitative_dispersion.html">3.1. A plane wave on a square</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/ring_resonator.html">3.2. Ring resonator</a></li>
 </ul>
 </li>
 </ul>
@@ -363,7 +362,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -379,6 +380,14 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-setting">2.1. Problem setting</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -388,9 +397,47 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="the-dual-cell-method-for-the-time-domain-maxwell-system">
-<span id="maxwell"></span><h1><span class="section-number">3. </span>The dual cell method for the time-domain Maxwell system<a class="headerlink" href="#the-dual-cell-method-for-the-time-domain-maxwell-system" title="Link to this heading">#</a></h1>
-<p>In this section we describe in detail how the dual cell method is applied to the time-domain Maxwell equations</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="the-dual-cell-method-for-the-time-domain-maxwell-system">
+<span id="maxwell"></span><h1><span class="section-number">2. </span>The dual cell method for the time-domain Maxwell system<a class="headerlink" href="#the-dual-cell-method-for-the-time-domain-maxwell-system" title="Link to this heading">#</a></h1>
+<p>In this section we describe in detail how the dual cell method is applied to the time-domain Maxwell equations.</p>
+<section id="problem-setting">
+<h2><span class="section-number">2.1. </span>Problem setting<a class="headerlink" href="#problem-setting" title="Link to this heading">#</a></h2>
+<p>The time-domain Maxwell system (we neglect possible sources here) is the problem to find fields <span class="math notranslate nohighlight">\(\mathbf D,\mathbf B,\mathbf H,\mathbf E\)</span> such that</p>
+<div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="amsmath math notranslate nohighlight">
+\[\begin{align*}
+\partial_t \mathbf{D}(t,\mathbf{x})-\mathrm{curl}\mathbf{H}(t,\mathbf{x})&amp;=0,\\
+\partial_t \mathbf{B}(t,\mathbf{x})+\mathrm{curl}\mathbf{E}(t,\mathbf{x})&amp;=0.\\
+&amp;+\text{b.c., i.c.,}
+\end{align*}\]</div>
+</div>
+</div>
+<p>for <span class="math notranslate nohighlight">\(t\in(0,T),\mathbf x\in\Omega\)</span> and some <span class="math notranslate nohighlight">\(T&gt;0\)</span> and a suitable domain <span class="math notranslate nohighlight">\(\Omega\subset\mathbb R^3\)</span>.
+To close the system one also needs the constitutive relations</p>
+<div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="amsmath math notranslate nohighlight">
+\[\begin{align*}
+  \mathbf{D} &amp;= {\color{emph1}\varepsilon}\mathbf{E},&amp;
+  \mathbf{B} &amp;= {\color{emph2}\mu}\mathbf{H},
+\end{align*}\]</div>
+</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\varepsilon,\mu\)</span> are the <strong>permittivity</strong> and <strong>permeability</strong> of the medium in question.</p>
+<p>In weak (EH-)formulation, assuming homogeneous boundary conditions <span class="math notranslate nohighlight">\(\mathbf E \times \mathbf n = 0\)</span>, the above problem may be rewritten as the problem to find <span class="math notranslate nohighlight">\(\mathbf E,\mathbf H:[0,T]\to H(\mathrm{curl})(\Omega)\)</span>  such that</p>
+<div class="sd-card sd-sphinx-override sd-mb-3 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="amsmath math notranslate nohighlight">
+\[\begin{align*}
+  \int_\Omega\varepsilon \partial_t \mathbf{E}(t,\mathbf{x})\mathbf E'(\mathbf x)d\mathbf x-\int_\Omega\mathrm{curl}\mathbf{H}(t,\mathbf{x})\mathbf E'(\mathbf x)d\mathbf x&amp;=0,\\
+\int_\Omega\mu\partial_t \mathbf{H}(t,\mathbf{x})\mathbf H'(\mathbf x)d\mathbf x+\int_\Omega\mathbf{E}(t,\mathbf{x})\mathrm{curl}\mathbf H'(\mathbf x)d\mathbf x&amp;=0.\\
+&amp;+\text{i.c.,}
+\end{align*}\]</div>
+</div>
+</div>
+<p>for all <span class="math notranslate nohighlight">\(\mathbf E',\mathbf H'\in H(\mathrm{curl})(\Omega)\)</span>.</p>
+</section>
 <div class="toctree-wrapper compound">
 </div>
 </section>
@@ -426,20 +473,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="first_steps.html"
+       href="installation.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">2. </span>A quick start into the dual cell method</p>
+        <p class="prev-next-title"><span class="section-number">1. </span>Installation</p>
       </div>
     </a>
     <a class="right-next"
-       href="maxwell/problem_setting.html"
+       href="maxwell/introduction.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">3.1. </span>Problem setting</p>
+        <p class="prev-next-title"><span class="section-number">2.2. </span>Introduction</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -450,7 +497,20 @@ document.write(`
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"></div>
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-setting">2.1. Problem setting</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

@@ -180,9 +180,13 @@
         </ul>
         <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">1. Installation</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">2. Examples</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/qualitative_dispersion.html">2.1. A plane wave on a square</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/ring_resonator.html">2.2. Ring resonator</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="maxwell.html">2. The dual cell method for the time-domain Maxwell system</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="maxwell/introduction.html">2.2. Introduction</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">3. Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/qualitative_dispersion.html">3.1. A plane wave on a square</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/ring_resonator.html">3.2. Ring resonator</a></li>
 </ul>
 </li>
 </ul>
@@ -408,9 +412,10 @@ document.write(`
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">1. Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">2. Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/qualitative_dispersion.html">2.1. A plane wave on a square</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/ring_resonator.html">2.2. Ring resonator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="maxwell.html">2. The dual cell method for the time-domain Maxwell system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">3. Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/qualitative_dispersion.html">3.1. A plane wave on a square</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/ring_resonator.html">3.2. Ring resonator</a></li>
 </ul>
 </li>
 </ul>
@@ -421,9 +426,25 @@ document.write(`
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
 <div class="docutils container" id="id2">
 <div role="list" class="citation-list">
+<div class="citation" id="id6" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>AppeloGR20<span class="fn-bracket">]</span></span>
+<p>Daniel Appelö, Fortino Garcia, and Olof Runborg. Waveholtz: iterative solution of the helmholtz equation via the wave equation. <em>SIAM Journal on Scientific Computing</em>, 42(4):A1950–A1983, 2020. <a class="reference external" href="https://doi.org/10.1137/19M1299062">doi:10.1137/19M1299062</a>.</p>
+</div>
 <div class="citation" id="id4" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">KCSchoberl21</a><span class="fn-bracket">]</span></span>
 <p>Bernard Kapidani, Lorenzo Codecasa, and Joachim Schöberl. An arbitrary-order cell method with block-diagonal mass-matrices for the time-dependent 2D Maxwell equations. <em>J. Comput. Phys.</em>, 433:Paper No. 110184, 20, 2021. <a class="reference external" href="https://doi.org/10.1016/j.jcp.2021.110184">doi:10.1016/j.jcp.2021.110184</a>.</p>
+</div>
+<div class="citation" id="id8" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Kny01<span class="fn-bracket">]</span></span>
+<p>Andrew V. Knyazev. Toward the optimal preconditioned eigensolver: locally optimal block preconditioned conjugate gradient method. <em>SIAM Journal on Scientific Computing</em>, 23(2):517–541, 2001. <a class="reference external" href="https://doi.org/10.1137/S1064827500366124">doi:10.1137/S1064827500366124</a>.</p>
+</div>
+<div class="citation" id="id7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>NW24<span class="fn-bracket">]</span></span>
+<p>Lothar Nannen and Markus Wess. A krylov eigenvalue solver based on filtered time domain solutions. 2024. <a class="reference external" href="https://arxiv.org/abs/2402.08515">arXiv:2402.08515</a>.</p>
+</div>
+<div class="citation" id="id5" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Sto21<span class="fn-bracket">]</span></span>
+<p>Christiaan C. Stolk. A time-domain preconditioner for the helmholtz equation. <em>SIAM Journal on Scientific Computing</em>, 43(5):A3469–A3502, 2021. <a class="reference external" href="https://doi.org/10.1137/20M1359997">doi:10.1137/20M1359997</a>.</p>
 </div>
 <div class="citation" id="id3" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">WKCS23</a><span class="fn-bracket">]</span></span>
