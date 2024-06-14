@@ -12,9 +12,10 @@ chapters:
   - file: maxwell
     sections:
       - file: maxwell/introduction
-        #- file: maxwell/hcurl
-        #- file: maxwell/mass_lumping
-        #- file: maxwell/time_stepping
+      - file: maxwell/hcurl
+      - file: maxwell/mass_lumping
+      - file: maxwell/time_stepping
+      - file: maxwell/bibliography
   - file: examples
     sections:
       - file: examples/qualitative_dispersion

@@ -28,4 +28,5 @@ For a full mathematical introduction to the method we refer to {cite}`WKCS2023,K
 
 ## References
 ```{bibliography}
+:filter: docname in docnames
 ```

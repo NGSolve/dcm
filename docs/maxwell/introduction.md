@@ -56,7 +56,7 @@ This leads to discrete quantities on interlaced hexahedral grids.
 ```{figure} ../images/stokes_disc.png
 ---
 height: 400px
-name: stokes
+name: stokes_disc
 ---
 Discrete, pointwise approximations mimmicking Stokes' theorem.
 ```
@@ -87,7 +87,7 @@ For motivation of the construction of the basis functions and spaces we start by
 ```{figure} ../images/fdtd_2d.png
 ---
 height: 400px
-name: stokes
+name: fdtd_2d
 ---
 Going to two dimensions.
 ```
@@ -102,7 +102,7 @@ For the vectorial unknowns the degrees of freedom are the inner tangential compo
 ```{figure} ../images/primal_dual_quad.png
 ---
 height: 400px
-name: stokes
+name: primal_dual_quad
 ---
 primal and dual quad-meshes
 ```

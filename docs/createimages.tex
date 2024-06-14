@@ -2,6 +2,7 @@
 \usepackage{amsfonts}
 \usepackage{pgfplots}
 \usetikzlibrary{math}
+\usetikzlibrary{perspective}
 \usepackage{amsmath}
 \usepackage{lmodern}
 \usepackage[T1]{fontenc}
@@ -146,7 +147,7 @@
   \def\bgxx{8};
   \def\bgy{-7}
   \def\bgyy{7}
-  \fill[opacity=0.15] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
+  \fill[opacity=0.] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
   %\draw[] (-\a,-\a-\b-\c)--++(2*\a,0)--++(0,2*\a+2*\b+2*\c)--++(-2*\a,0)--++(0,-2*\a-2*\b-2*\c);
   %\draw[] (-\a-\p,\a)--++(2*\a+2*\p,0);
   \draw[] (-\a-\p,\a)--++(2*\a+2*\p,0);
@@ -198,7 +199,7 @@
   \def\bgxx{8};
   \def\bgy{-7}
   \def\bgyy{7}
-  \fill[opacity=0.15] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
+  \fill[opacity=0.] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
   \draw[] (-\a,-\a-\b-\c-\p)--++(2*\a,0)--++(0,2*\a+2*\b+2*\c+2*\p)--++(-2*\a,0)--++(0,-2*\a-2*\b-2*\c-2*\p);
   \draw[] (-\a-\p,\a)--++(2*\a+2*\p,0);
   \draw[] (-\a-\p,\a)--++(2*\a+2*\p,0);
@@ -259,7 +260,7 @@
   \def\bgxx{8};
   \def\bgy{-4}
   \def\bgyy{4}
-  \fill[opacity=0.15] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
+  \fill[opacity=0.] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
         \draw[fill=white,opacity=0.7] (-\dxx+\dyx,-\dxy+\dyy)
         --++(-\dzx,-\dzy)%--++(-\dzx,-\dzy)
         --++(2*\dxx,2*\dxy)
@@ -314,7 +315,7 @@
   \def\bgxx{8};
   \def\bgy{-5}
   \def\bgyy{4}
-  \fill[opacity=0.15] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
+  \fill[opacity=0.] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
         %red invisible
         \draw (-\dxx+3*\dyx-\dzx,-\dxy+3*\dyy-\dzy)
         --++(2*\dzx,2*\dzy);
@@ -426,7 +427,7 @@
   \def\bgxx{25};
   \def\bgy{-7};
   \def\bgyy{12};
-  \fill[opacity=0.15] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
+  \fill[opacity=0.] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
     %red invisible
     \draw (-\dxx+3*\dyx-\dzx,-\dxy+3*\dyy-\dzy)
     --++(2*\dzx,2*\dzy);
@@ -580,7 +581,7 @@
   \def\bgxx{25};
   \def\bgy{-5};
   \def\bgyy{12};
-  \fill[opacity=0.15] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
+  \fill[opacity=0.] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
     \draw[fill=gray,opacity=0.2] (0,0)--++(4*\dx,0)--++(0,4*\dy)--++(-4*\dx,0);
     \draw[gray] (\dx,0)--++(0,4*\dy);
     \draw[gray] (2*\dx,0)--++(0,4*\dy);
@@ -678,158 +679,404 @@
     \end{scope}
   \end{tikzpicture}%
 
+\tikzsetnextfilename{barycentric}
 
-\tikzsetnextfilename{dual_mesh_left}
-        \begin{tikzpicture}[thick,scale=3.0, every node/.style={scale=3.0}]
-        \coordinate (p1) at (0.0,0.0);
-        \coordinate (p2) at (0.5,0.0);
-        \coordinate (p3) at (1.0,0.0);
-        \coordinate (p4) at (0.4,0.5);
-        \coordinate (p5) at (1.0,0.5);
-        \coordinate (p6) at (0.0,1.0);
-        \coordinate (p7) at (0.5,1.0);
-        \coordinate (p8) at (1.0,1.0);  
-        \draw (p1) -- (p2) -- (p4) -- (p1);
-        \draw[fill=gray] (p1) -- (p4) -- (p6) -- (p1);
-        \draw (p4) -- (p6) -- (p7) -- (p4);
-        \draw (p4) -- (p2) -- (p3) -- (p4);
-        \draw (p4) -- (p3) -- (p5) -- (p4);
-        \draw (p4) -- (p7) -- (p8) -- (p4);
-        \draw (p4) -- (p8) -- (p5) -- (p4);
-        \draw[color=red] (p4) -- (p5);
-        % \node[scale=0.3] at (0.4+0.07,1/2+0.1) {$\mathbf{v}$};
-        % \node[scale=0.3,color=red,thick] at (3/4,1/2+0.05) {$E$};
-        \node[scale=0.3] at (1/6,1/2) {$T$};
-        \node[circle,fill,scale=0.1] at (p1) {};
-        \node[circle,fill,scale=0.1] at (p2) {};
-        \node[circle,fill,scale=0.1] at (p3) {};
-        \node[circle,fill,scale=0.1] at (p4) {};
-        \node[circle,fill,scale=0.1] at (p5) {};
-        \node[circle,fill,scale=0.1] at (p6) {};
-        \node[circle,fill,scale=0.1] at (p7) {};
-        \node[circle,fill,scale=0.1] at (p8) {};  
-        \end{tikzpicture}
-\tikzsetnextfilename{dual_mesh_center}
+\newcommand\trignew[6]{\draw[thick](#1,#2)--(#3,#4)--(#5,#6)--cycle;
+\draw(0.5*#1+0.5*#3,0.5*#2+0.5*#4)--(1/3*#1+1/3*#3+1/3*#5,1/3*#2+1/3*#4+1/3*#6);
+\draw(0.5*#1+0.5*#5,0.5*#2+0.5*#6)--(1/3*#1+1/3*#3+1/3*#5,1/3*#2+1/3*#4+1/3*#6);
+\draw(0.5*#3+0.5*#5,0.5*#4+0.5*#6)--(1/3*#1+1/3*#3+1/3*#5,1/3*#2+1/3*#4+1/3*#6);}
+\newcommand\trigfilled[6]{\draw[thick,fill=emph2,opacity=0.2](#1,#2)--(#3,#4)--(#5,#6)--node[above right,opacity=1]{$T_i$}cycle;}
 
-        \begin{tikzpicture}[thick,scale=3.0, every node/.style={scale=3.0}]
+  \begin{tikzpicture}
+    \def\ax{0};
+    \def\ay{-1};
+    \def\bx{3};
+    \def\by{0};
+    \def\cx{1};
+    \def\cy{1};
+    \def\dx{3};
+    \def\dy{2};
+    \def\ex{1};
+    \def\ey{4};
+    \def\fx{-1};
+    \def\fy{1};
+    \def\gx{-3};
+    \def\gy{4};
+    \def\hx{-5};
+    \def\hy{0};
+  \def\bgx{-6};
+  \def\bgxx{4};
+  \def\bgy{-3};
+  \def\bgyy{6};
+  \fill[opacity=0.] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
+    \trignew{\ax}{\ay}{\bx}{\by}{\cx}{\cy};
+    \trignew{\bx}{\by}{\cx}{\cy}{\dx}{\dy};
+    \trignew{\cx}{\cy}{\dx}{\dy}{\ex}{\ey};
+    \trignew{\cx}{\cy}{\fx}{\fy}{\ex}{\ey};
+    \trignew{\cx}{\cy}{\fx}{\fy}{\ax}{\ay};
+    \trignew{\gx}{\gy}{\fx}{\fy}{\ex}{\ey};
+    \trignew{\gx}{\gy}{\fx}{\fy}{\hx}{\hy};
+    \trignew{\ax}{\ay}{\fx}{\fy}{\hx}{\hy};
+    %dual cell
+    \draw[fill=emph1,opacity=0.2](0.5*\hx+0.5*\fx,0.5*\hy+0.5*\fy)
+    --(1/3*\gx+1/3*\fx+1/3*\hx,1/3*\gy+1/3*\fy+1/3*\hy)node[right,opacity=1]{\small${C}_{\tilde k(j)}$}
+    --(0.5*\gx+0.5*\fx,0.5*\gy+0.5*\fy)
+    --(1/3*\gx+1/3*\fx+1/3*\ex,1/3*\gy+1/3*\fy+1/3*\ey)
+    --(0.5*\ex+0.5*\fx,0.5*\ey+0.5*\fy)
+    --(1/3*\ex+1/3*\fx+1/3*\cx,1/3*\cy+1/3*\fy+1/3*\ey)
+    --(0.5*\cx+0.5*\fx,0.5*\cy+0.5*\fy)node[above left,opacity=1]{$\tilde{T}_j$}
+    --(1/3*\ax+1/3*\fx+1/3*\cx,1/3*\cy+1/3*\fy+1/3*\ay)
+    --(0.5*\ax+0.5*\fx,0.5*\ay+0.5*\fy)
+    --(1/3*\ax+1/3*\fx+1/3*\hx,1/3*\hy+1/3*\fy+1/3*\ay)--cycle;
+    %mapped quad dual
+    %primal cell
+    \trigfilled{\cx}{\cy}{\dx}{\dy}{\ex}{\ey};
+    %mapped quad primal
+    %comment \varphi
+    %ref dual
+    \node[] at (1/9*\cx+1/9*\dx+1/9*\ex+2/3*\dx-0.4,1/9*\cy+1/9*\dy+1/9*\ey+2/3*\dy){$C_{l(i)}$};
+  \end{tikzpicture}
 
-          \coordinate (p1) at (0.0,0.0);
-          \coordinate (p2) at (0.5,0.0);
-          \coordinate (p3) at (1.0,0.0);
-          \coordinate (p4) at (0.4,0.5);
-          \coordinate (p5) at (1.0,0.5);
-          \coordinate (p6) at (0.0,1.0);
-          \coordinate (p7) at (0.5,1.0);
-          \coordinate (p8) at (1.0,1.0);   
-          \coordinate (p9) at (0.3000,0.1667);
-          \coordinate (p10) at (0.1333,0.5000);
-          \coordinate (p11) at (0.3000,0.8333);
-          \coordinate (p12) at (0.6333,0.1667);
-          \coordinate (p13) at (0.8000,0.3333);
-          \coordinate (p14) at (0.8000,0.6667);
-          \coordinate (p15) at (0.6333,0.8333);
-          \coordinate (p16) at (0.2500,0);
-          \coordinate (p17) at (0.2000,0.2500);
-          \coordinate (p18) at (0.0,0.5000);
-          \coordinate (p19) at (0.7500,0);
-          \coordinate (p20) at (0.4500,0.2500);
-          \coordinate (p21) at (0.7000,0.2500);
-          \coordinate (p22) at (1.0000,0.2500);
-          \coordinate (p23) at (0.7000,0.5000);
-          \coordinate (p24) at (0.2000,0.7500);
-          \coordinate (p25) at (0.4500,0.7500);
-          \coordinate (p26) at (0.7000,0.7500);
-          \coordinate (p27) at (1.0000,0.7500);
-          \coordinate (p28) at (0.2500,1.0000);
-          \coordinate (p29) at (0.7500,1.0000);
-          \draw[fill=gray] (p13) -- (p23) -- (p14) -- (p26) -- (p15) -- (p25) -- (p11) -- (p24) --
-                           (p10) -- (p17) -- (p9) -- (p20) -- (p12) -- (p21) -- (p13);
-          \draw[fill=lightgray] (p1) -- (p16) -- (p9) -- (p17) -- (p10) -- (p18) -- (p1);
-          \draw[dashed] (p1) -- (p2) -- (p4) -- (p1);
-          \draw[dashed] (p1) -- (p4) -- (p6) -- (p1);
-          \draw[dashed] (p4) -- (p6) -- (p7) -- (p4);
-          \draw[dashed] (p4) -- (p2) -- (p3) -- (p4);
-          \draw[dashed] (p4) -- (p3) -- (p5) -- (p4);
-          \draw[dashed] (p4) -- (p7) -- (p8) -- (p4);
-          \draw[dashed] (p4) -- (p8) -- (p5) -- (p4);
-        \draw[color=black] (p16) -- (p9);
-        \draw[color=black] (p19) -- (p12);
-        \draw[color=black] (p22) -- (p13);
-        \draw[color=black] (p27) -- (p14);
-        \draw[color=black] (p29) -- (p15);
-        \draw[color=black] (p28) -- (p11);
-        \draw[color=black] (p18) -- (p10);
-        \draw[color=red] (p13) -- (p23) -- (p14);
-        \node[circle,fill,scale=0.1] at (p9) {};
-        \node[circle,fill,scale=0.1] at (p10) {};
-        \node[circle,fill,scale=0.1] at (p11) {};
-        \node[circle,fill,scale=0.1] at (p12) {};
-        \node[circle,fill,scale=0.1] at (p13) {};
-        \node[circle,fill,scale=0.1] at (p14) {};
-        \node[circle,fill,scale=0.1] at (p15) {}; 
-        \node[scale=0.3] at (1/2+0.13,1/2+0.1) {$\tilde{T}$};
-        % \node[scale=0.3,thick,color=red] at (5/6,1/2+0.07) {$\tilde{E}$};
-        % \node[scale=0.3] at (1/9,3/7) {$\tilde{\mathbf{v}}$};
-        \end{tikzpicture}
-\tikzsetnextfilename{dual_mesh_right}
-        \begin{tikzpicture}[thick,scale=3.0, every node/.style={scale=3.0}]
-          \coordinate (p1) at (0.0,0.0);
-          \coordinate (p2) at (0.5,0.0);
-          \coordinate (p3) at (1.0,0.0);
-          \coordinate (p4) at (0.4,0.5);
-          \coordinate (p5) at (1.0,0.5);
-          \coordinate (p6) at (0.0,1.0);
-          \coordinate (p7) at (0.5,1.0);
-          \coordinate (p8) at (1.0,1.0);   
-          \coordinate (p9) at (0.3000,0.1667);
-          \coordinate (p10) at (0.1333,0.5000);
-          \coordinate (p11) at (0.3000,0.8333);
-          \coordinate (p12) at (0.6333,0.1667);
-          \coordinate (p13) at (0.8000,0.3333);
-          \coordinate (p14) at (0.8000,0.6667);
-          \coordinate (p15) at (0.6333,0.8333);
-          \coordinate (p16) at (0.2500,0);
-          \coordinate (p17) at (0.2000,0.2500);
-          \coordinate (p18) at (0,0.5000);
-          \coordinate (p19) at (0.7500,0);
-          \coordinate (p20) at (0.4500,0.2500);
-          \coordinate (p21) at (0.7000,0.2500);
-          \coordinate (p22) at (1.0000,0.2500);
-          \coordinate (p23) at (0.7000,0.5000);
-          \coordinate (p24) at (0.2000,0.7500);
-          \coordinate (p25) at (0.4500,0.7500);
-          \coordinate (p26) at (0.7000,0.7500);
-          \coordinate (p27) at (1.0000,0.7500);
-          \coordinate (p28) at (0.2500,1.0000);
-          \coordinate (p29) at (0.7500,1.0000);
-          \draw[dashed,fill=gray] (p4) -- (p24) -- (p10) --
-                                  (p17) -- (p4);
-          \draw            (p13) -- (p23) -- (p14) -- (p26) -- (p15) -- 
-                           (p25) -- (p11) -- (p24) -- (p10) -- (p17) -- 
-                           (p9) -- (p20) -- (p12) -- (p21) -- (p13);
-          \draw (p1) -- (p2) -- (p4) -- (p1);
-          \draw (p1) -- (p4) -- (p6) -- (p1);
-          \draw (p4) -- (p6) -- (p7) -- (p4);
-          \draw (p4) -- (p2) -- (p3) -- (p4);
-          \draw (p4) -- (p3) -- (p5) -- (p4);
-          \draw (p4) -- (p7) -- (p8) -- (p4);
-          \draw (p4) -- (p8) -- (p5) -- (p4);
-        \draw[color=black] (p16) -- (p9);
-        \draw[color=black] (p19) -- (p12);
-        \draw[color=black] (p22) -- (p13);
-        \draw[color=black] (p27) -- (p14);
-        \draw[color=black] (p29) -- (p15);
-        \draw[color=black] (p28) -- (p11);
-        \draw[color=black] (p18) -- (p10);
-        \node[scale=0.3,left of=p4, node distance=2.5mm] (v1)  {$\mathrm v_1$};
-        \node[scale=0.3,above of=p24, node distance=2.5mm] (v2) {$\mathrm v_2$};
-        \node[scale=0.3,above left of=p10, node distance=2.5mm] (v3) {$\mathrm v_3$};
-        \node[scale=0.3,below of=p17, node distance=2.5mm] (v4) {$\mathrm v_4$};
-        % \draw[color=red] (p24) -- (p10) -- (p17);
-        % \draw[color=green] (p24) -- (p4) -- (p17);
-        \node[scale=0.3,below] at (0.95*1/4,0.95*1/2) {$K$};
-        % \node[scale=0.3,thick,color=red] at (1/8,1/3) {$\tilde{e}$};
-        % \node[scale=0.3,thick,color=green] at (1/3,2/3) {${e}$};
-        \end{tikzpicture}
+\tikzsetnextfilename{mapping_primal_h1}
+
+
+  \begin{tikzpicture}
+    \def\ax{0};
+    \def\ay{-1};
+    \def\bx{3};
+    \def\by{0};
+    \def\cx{1};
+    \def\cy{1};
+    \def\dx{3};
+    \def\dy{2};
+    \def\ex{1};
+    \def\ey{4};
+    \def\fx{-1};
+    \def\fy{1};
+    \def\gx{-3};
+    \def\gy{4};
+    \def\hx{-5};
+    \def\hy{0};
+  \def\bgx{-6};
+  \def\bgxx{7};
+  \def\bgy{-2};
+  \def\bgyy{5};
+  \fill[opacity=0.] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
+    \trignew{\ax}{\ay}{\bx}{\by}{\cx}{\cy};
+    \trignew{\bx}{\by}{\cx}{\cy}{\dx}{\dy};
+    \trignew{\cx}{\cy}{\dx}{\dy}{\ex}{\ey};
+    \trignew{\cx}{\cy}{\fx}{\fy}{\ex}{\ey};
+    \trignew{\cx}{\cy}{\fx}{\fy}{\ax}{\ay};
+    \trignew{\gx}{\gy}{\fx}{\fy}{\ex}{\ey};
+    \trignew{\gx}{\gy}{\fx}{\fy}{\hx}{\hy};
+    \trignew{\ax}{\ay}{\fx}{\fy}{\hx}{\hy};
+    %dual cell
+    \draw[fill=emph1,opacity=0.2](0.5*\hx+0.5*\fx,0.5*\hy+0.5*\fy)
+    --(1/3*\gx+1/3*\fx+1/3*\hx,1/3*\gy+1/3*\fy+1/3*\hy)node[right,opacity=1]{\small${C}_{\tilde k(j)}$}
+    --(0.5*\gx+0.5*\fx,0.5*\gy+0.5*\fy)
+    --(1/3*\gx+1/3*\fx+1/3*\ex,1/3*\gy+1/3*\fy+1/3*\ey)
+    --(0.5*\ex+0.5*\fx,0.5*\ey+0.5*\fy)
+    --(1/3*\ex+1/3*\fx+1/3*\cx,1/3*\cy+1/3*\fy+1/3*\ey)
+    --(0.5*\cx+0.5*\fx,0.5*\cy+0.5*\fy)node[above left,opacity=1]{$\tilde{T}_j$}
+    --(1/3*\ax+1/3*\fx+1/3*\cx,1/3*\cy+1/3*\fy+1/3*\ay)
+    --(0.5*\ax+0.5*\fx,0.5*\ay+0.5*\fy)
+    --(1/3*\ax+1/3*\fx+1/3*\hx,1/3*\hy+1/3*\fy+1/3*\ay)--cycle;
+    %mapped quad dual
+    \draw[->,emph2]plot[smooth,tension=0.6] coordinates{ (3.8,2)(3.4,2.6)(3,2.5)};
+    \node[emph2,above] at(3.4,2.6){$\varphi_{C_{l(i)}}$};
+    \draw[very thick,dashed](0.5*\ex+0.5*\dx,0.5*\ey+0.5*\dy)
+    --(1/3*\cx+1/3*\dx+1/3*\ex,1/3*\cy+1/3*\dy+1/3*\ey)
+    --(0.5*\dx+0.5*\cx,0.5*\dy+0.5*\cy)
+    --(\dx,\dy)--cycle;
+    %primal cell
+    \trigfilled{\cx}{\cy}{\dx}{\dy}{\ex}{\ey};
+    %mapped quad primal
+    %comment \varphi
+    \draw[thick](4,1)--++(2,0)--++(0,2)--++(-2,0)--cycle;
+    \node[circle,thick,draw=emph2] at (6,3){};
+    \node[circle,thick,draw=emph2] at (4.8,3){};
+    \node[circle,thick,draw=emph2] at (4.8,1.8){};
+    \node[circle,thick,draw=emph2] at (6,1.8){};
+    %mappofs primal
+    \node[circle,thick,draw=emph2] at (1/3*\cx+1/3*\dx+1/3*\ex,1/3*\cy+1/3*\dy+1/3*\ey){};
+    \node[circle,thick,draw=emph2] at (0.5*2/3*\ex+0.5*2/3*\dx+1/9*\cx+1/9*\dx+1/9*\ex,0.5*2/3*\ey+0.5*2/3*\dy+1/9*\cy+1/9*\dy+1/9*\ey){};
+    \node[circle,thick,draw=emph2] at (0.5*2/3*\cx+0.5*2/3*\dx+1/9*\cx+1/9*\dx+1/9*\ex,0.5*2/3*\cy+0.5*2/3*\dy+1/9*\cy+1/9*\dy+1/9*\ey){};
+    \node[circle,thick,draw=emph2] at (1/9*\cx+1/9*\dx+1/9*\ex+2/3*\dx,1/9*\cy+1/9*\dy+1/9*\ey+2/3*\dy){};
+    %ref dual
+    \node[] at (1/9*\cx+1/9*\dx+1/9*\ex+2/3*\dx-0.4,1/9*\cy+1/9*\dy+1/9*\ey+2/3*\dy){$C_{l(i)}$};
+  \end{tikzpicture}
+
+\tikzsetnextfilename{mapping_dual_hcurl}
+
+  \begin{tikzpicture}
+    \def\ax{0};
+    \def\ay{-1};
+    \def\bx{3};
+    \def\by{0};
+    \def\cx{1};
+    \def\cy{1};
+    \def\dx{3};
+    \def\dy{2};
+    \def\ex{1};
+    \def\ey{4};
+    \def\fx{-1};
+    \def\fy{1};
+    \def\gx{-3};
+    \def\gy{4};
+    \def\hx{-5};
+    \def\hy{0};
+  \def\bgx{-9};
+  \def\bgxx{4};
+  \def\bgy{-3};
+  \def\bgyy{6};
+  \fill[opacity=0.] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
+    \trignew{\ax}{\ay}{\bx}{\by}{\cx}{\cy};
+    \trignew{\bx}{\by}{\cx}{\cy}{\dx}{\dy};
+    \trignew{\cx}{\cy}{\dx}{\dy}{\ex}{\ey};
+    \trignew{\cx}{\cy}{\fx}{\fy}{\ex}{\ey};
+    \trignew{\cx}{\cy}{\fx}{\fy}{\ax}{\ay};
+    \trignew{\gx}{\gy}{\fx}{\fy}{\ex}{\ey};
+    \trignew{\gx}{\gy}{\fx}{\fy}{\hx}{\hy};
+    \trignew{\ax}{\ay}{\fx}{\fy}{\hx}{\hy};
+    %dual cell
+    \draw[fill=emph1,opacity=0.2](0.5*\hx+0.5*\fx,0.5*\hy+0.5*\fy)
+    --(1/3*\gx+1/3*\fx+1/3*\hx,1/3*\gy+1/3*\fy+1/3*\hy)node[right,opacity=1]{\small${C}_{\tilde k(j)}$}
+    --(0.5*\gx+0.5*\fx,0.5*\gy+0.5*\fy)
+    --(1/3*\gx+1/3*\fx+1/3*\ex,1/3*\gy+1/3*\fy+1/3*\ey)
+    --(0.5*\ex+0.5*\fx,0.5*\ey+0.5*\fy)
+    --(1/3*\ex+1/3*\fx+1/3*\cx,1/3*\cy+1/3*\fy+1/3*\ey)
+    --(0.5*\cx+0.5*\fx,0.5*\cy+0.5*\fy)node[above left,opacity=1]{$\tilde{T}_j$}
+    --(1/3*\ax+1/3*\fx+1/3*\cx,1/3*\cy+1/3*\fy+1/3*\ay)
+    --(0.5*\ax+0.5*\fx,0.5*\ay+0.5*\fy)
+    --(1/3*\ax+1/3*\fx+1/3*\hx,1/3*\hy+1/3*\fy+1/3*\ay)--cycle;
+    %mapped quad dual
+    \draw[very thick,dashed](0.5*\hx+0.5*\fx,0.5*\hy+0.5*\fy)
+    --(1/3*\gx+1/3*\fx+1/3*\hx,1/3*\gy+1/3*\fy+1/3*\hy)
+    --(0.5*\gx+0.5*\fx,0.5*\gy+0.5*\fy)
+    --(\fx,\fy)--cycle;
+    \draw[->,emph1]plot[smooth,tension=0.6] coordinates{ (-5.5,2)(-4,2.2)(-3,2)};
+    \node[emph1,above left] at(-4,2.2){$\varphi_{\tilde k(j)}$};
+    %primal cell
+    \trigfilled{\cx}{\cy}{\dx}{\dy}{\ex}{\ey};
+    %mapped quad primal
+    %comment \varphi
+    %ref dual
+    \draw[thick,black](-8,1)--++(2,0)--++(0,2)--++(-2,0)--cycle;
+    \draw[very thick,->,emph1](-8,1)--++(0.5,0);
+    \draw[very thick,->,emph1](-8,1)--++(0,0.5);
+    \draw[very thick,->,emph1](-8,2.2)--++(0.5,0);
+    \draw[very thick,->,emph1](-8,2.2)--++(0,0.5);
+    \draw[very thick,->,emph1](-6.8,1)--++(0,0.5);
+    \draw[very thick,->,emph1](-6.8,1)--++(0.5,0);
+    \draw[very thick,->,emph1](-6.8,2.2)--++(0,0.5);
+    \draw[very thick,->,emph1](-6.8,2.2)--++(0.5,0);
+    %dofsped dual
+    \node at (-6,3.5) {\tiny$\varphi_{\tilde k(j)}:[0,1]\times[0,1]\to C_{\tilde k(j)}$ is bilinear};
+    \draw[very thick,->,emph1](\fx,\fy)--++(0.125*\hx-0.125*\fx,0.125*\hy-0.125*\fy);
+    \draw[very thick,->,emph1](\fx,\fy)--++(0.125*\gx-0.125*\fx,0.125*\gy-0.125*\fy);
+    \draw[very thick,->,emph1](\fx+0.25*\hx-0.25*\fx,\fy+0.25*\hy-0.25*\fy)--++(0.125*\hx-0.125*\fx,0.125*\hy-0.125*\fy);
+    \draw[very thick,->,emph1](\fx+0.25*\hx-0.25*\fx,\fy+0.25*\hy-0.25*\fy)--++(0.125*\hy-0.125*\fy,-0.125*\hx+0.125*\fx);
+    \draw[very thick,->,emph1](\fx+0.25*\gx-0.25*\fx,\fy+0.25*\gy-0.25*\fy)--++(0.125*\gx-0.125*\fx,0.125*\gy-0.125*\fy);
+    \draw[very thick,->,emph1](\fx+0.25*\gx-0.25*\fx,\fy+0.25*\gy-0.25*\fy)--++(-0.125*\gy+0.125*\fy,0.125*\gx-0.125*\fx);
+    \draw[very thick,->,emph1](0.5*\fx+0.18*\gx+0.18*\fx+0.18*\hx,0.5*\fy+0.18*\gy+0.18*\fy+0.18*\hy)--++(-0.125*\gy+0.125*\fy,0.125*\gx-0.125*\fx);
+    \draw[very thick,->,emph1](0.5*\fx+0.18*\gx+0.18*\fx+0.18*\hx,0.5*\fy+0.18*\gy+0.18*\fy+0.18*\hy)--++(0.125*\hy-0.125*\fy,-0.125*\hx+0.125*\fx);
+    \node[] at (1/9*\cx+1/9*\dx+1/9*\ex+2/3*\dx-0.4,1/9*\cy+1/9*\dy+1/9*\ey+2/3*\dy){$C_{l(i)}$};
+  \end{tikzpicture}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newcommand\arrowdofcube[7][]{%
+  \draw[emph1,-latex,very thick](#2,#3,#4)--(#5,#6,#7);
+  }
+\newcommand\arrowdoftet[7][]{%
+  \def\x{#2/2-#2*#3/6-#2*#4/6+#2*#3*#4/12};
+  \def\y{#3/2-#3*#2/6-#3*#4/6+#2*#3*#4/12};
+  \def\z{#4/2-#4*#3/6-#2*#4/6+#2*#3*#4/12};
+  \def\xx{#5/2-#5*#6/6-#5*#7/6+#5*#6*#7/12};
+  \def\yy{#6/2-#6*#5/6-#6*#7/6+#5*#6*#7/12};
+  \def\zz{#7/2-#7*#6/6-#5*#7/6+#5*#6*#7/12};
+  \def\xyz{1-#2/2-#3/2-#4/2-#2*#3*#4/4+#2*#3/6+#2*#4/6+#3*#2/6+#3*#4/6+#4*#3/6+#2*#4/6}
+  \def\xxyyzz{1-#5/2-#6/2-#7/2-#5*#6*#7/4+#5*#6/6+#5*#7/6+#6*#5/6+#6*#7/6+#7*#6/6+#5*#7/6}
+  \draw[emph1,-latex,very thick] (\x,\y,\z)--(\xx,\yy,\zz);
+  %\draw[#1,-latex,very thick] (\y,\z,\xyz)--(\yy,\zz,\xxyyzz);
+  %\draw[#1,-latex,very thick] (\z,\xyz,\x)--(\zz,\xxyyzz,\xx);
+  %\draw[#1,-latex,very thick] (\xyz,\x,\y)--(\xxyyzz,\xx,\yy);
+}
+\newcommand\arrowdofcubep[7][]{%
+  \draw[emph2,-latex,very thick](#2,#3,#4)--(#5,#6,#7);
+  }
+\newcommand\arrowdoftetp[7][]{%
+  \def\x{#2/2-#2*#3/6-#2*#4/6+#2*#3*#4/12};
+  \def\y{#3/2-#3*#2/6-#3*#4/6+#2*#3*#4/12};
+  \def\z{#4/2-#4*#3/6-#2*#4/6+#2*#3*#4/12};
+  \def\xx{#5/2-#5*#6/6-#5*#7/6+#5*#6*#7/12};
+  \def\yy{#6/2-#6*#5/6-#6*#7/6+#5*#6*#7/12};
+  \def\zz{#7/2-#7*#6/6-#5*#7/6+#5*#6*#7/12};
+  \def\xyz{1-#2/2-#3/2-#4/2-#2*#3*#4/4+#2*#3/6+#2*#4/6+#3*#2/6+#3*#4/6+#4*#3/6+#2*#4/6}
+  \def\xxyyzz{1-#5/2-#6/2-#7/2-#5*#6*#7/4+#5*#6/6+#5*#7/6+#6*#5/6+#6*#7/6+#7*#6/6+#5*#7/6}
+  \draw[emph2,-latex,very thick] (\x,\y,\z)--(\xx,\yy,\zz);
+  %\draw[#1,-latex,very thick] (\y,\z,\xyz)--(\yy,\zz,\xxyyzz);
+  %\draw[#1,-latex,very thick] (\z,\xyz,\x)--(\zz,\xxyyzz,\xx);
+  %\draw[#1,-latex,very thick] (\xyz,\x,\y)--(\xxyyzz,\xx,\yy);
+}
+
+
+
+
+\tikzsetnextfilename{hcurl3dprimal}
+\begin{tikzpicture}[scale=4]
+  \def\bgx{-2.2};
+  \def\bgxx{1.2};
+  \def\bgy{-0.6};
+  \def\bgyy{1.1};
+  \fill[opacity=0.] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
+    \begin{scope}[shift={(-2,0)},scale=0.8,3d view={50}{10}]
+      \draw(0,0,0)--++(1,0,0)--++(0,1,0)--++(-1,0,0)--cycle;
+      \draw(0,0,1)--++(1,0,0)--++(0,1,0)--++(-1,0,0)--cycle;
+      \draw(0,0,0)--++(0,0,1);
+      \draw(1,0,0)--++(0,0,1);
+      \draw(1,1,0)--++(0,0,1);
+      \draw(0,1,0)--++(0,0,1);
+    \arrowdofcubep[]{1}{1}{1}{0.7}{1}{1};
+    \arrowdofcubep[]{1}{1}{1}{1}{0.7}{1};
+    \arrowdofcubep[]{1}{1}{1}{1}{1}{0.7};
+    \arrowdofcubep[]{0.3}{1}{1}{0}{1}{1};
+    \arrowdofcubep[]{0.3}{1}{1}{0.3}{0.7}{1};
+    \arrowdofcubep[]{0.3}{1}{1}{0.3}{1}{0.7};
+    \arrowdofcubep[]{1}{0.3}{1}{0.7}{0.3}{1};
+    \arrowdofcubep[]{1}{0.3}{1}{1}{0}{1};
+    \arrowdofcubep[]{1}{0.3}{1}{1}{0.3}{0.7};
+    \arrowdofcubep[]{1}{1}{0.3}{0.7}{1}{0.3};
+    \arrowdofcubep[]{1}{1}{0.3}{1}{0.7}{0.3};
+    \arrowdofcubep[]{1}{1}{0.3}{1}{1}{0};
+    \arrowdofcubep[]{0.3}{0.3}{1}{0}{0.3}{1};
+    \arrowdofcubep[]{0.3}{0.3}{1}{0.3}{0}{1};
+    \arrowdofcubep[]{0.3}{0.3}{1}{0.3}{0.3}{0.7};
+    \arrowdofcubep[]{1}{0.3}{0.3}{0.7}{0.3}{0.3};
+    \arrowdofcubep[]{1}{0.3}{0.3}{1}{0}{0.3};
+    \arrowdofcubep[]{1}{0.3}{0.3}{1}{0.3}{0};
+    \arrowdofcubep[]{0.3}{1}{0.3}{0}{1}{0.3};
+    \arrowdofcubep[]{0.3}{1}{0.3}{0.3}{0.7}{0.3};
+    \arrowdofcubep[]{0.3}{0.3}{0.3}{0.3}{0.3}{0};
+    \arrowdofcubep[]{0.3}{0.3}{0.3}{0}{0.3}{0.3};
+    \arrowdofcubep[]{0.3}{0.3}{0.3}{0.3}{0}{0.3};
+    \arrowdofcubep[]{0.3}{1}{0.3}{0.3}{1}{0};
+   \end{scope}  
+    \draw[->](-0.8,0,0)--node[above]{$\varphi_C$}(-0.4,0,0);
+    \begin{scope}[3d view={100}{15}]
+    \draw[gray,thick, dashed] (0,0,0)--(1,0,0)--(0,1,0)--(0,0,0)(0,1,0)--(0,0,1)--(0,0,0)(1,0,0)--(0,0,1);
+    \draw[thick] (0,0,0)--(1/2,0,0)(0,1/2,0)--(0,0,0)--(0,0,1/2);
+    \draw (0,1/2,0)--(1/3,1/3,0)--(1/2,0,0)(1/3,0,1/3)--(1/4,1/4,1/4)--(1/3,1/3,0)(1/4,1/4,1/4)--(0,1/3,1/3)(1/2,0,0)--(1/3,0,1/3)--(0,0,1/2)(0,0,1/2)--(0,1/3,1/3)--(0,1/2,0);
+    \draw[gray,dashed] (0,1/3,1/3)--(0,1/2,1/2)(1/3,1/3,0)--(1/2,1/2,0)(1/3,0,1/3)--(1/2,0,1/2)(1/2,1/2,0)--(1/3,1/3,1/3)--(0,1/2,1/2)(1/3,1/3,1/3)--(1/2,0,1/2)(1/3,1/3,1/3)--(1/4,1/4,1/4);
+    \arrowdoftetp[]{1}{1}{1}{0.7}{1}{1};
+    \arrowdoftetp[]{1}{1}{1}{1}{0.7}{1};
+    \arrowdoftetp[]{1}{1}{1}{1}{1}{0.7};
+    \arrowdoftetp[]{0.3}{1}{1}{0}{1}{1};
+    \arrowdoftetp[]{0.3}{1}{1}{0.3}{0.7}{1};
+    \arrowdoftetp[]{0.3}{1}{1}{0.3}{1}{0.7};
+    \arrowdoftetp[]{1}{0.3}{1}{0.7}{0.3}{1};
+    \arrowdoftetp[]{1}{0.3}{1}{1}{0}{1};
+    \arrowdoftetp[]{1}{0.3}{1}{1}{0.3}{0.7};
+    \arrowdoftetp[]{1}{1}{0.3}{0.7}{1}{0.3};
+    \arrowdoftetp[]{1}{1}{0.3}{1}{0.7}{0.3};
+    \arrowdoftetp[]{1}{1}{0.3}{1}{1}{0};
+    \arrowdoftetp[]{0.3}{0.3}{1}{0}{0.3}{1};
+    \arrowdoftetp[]{0.3}{0.3}{1}{0.3}{0}{1};
+    \arrowdoftetp[]{0.3}{0.3}{1}{0.3}{0.3}{0.7};
+    \arrowdoftetp[]{1}{0.3}{0.3}{0.7}{0.3}{0.3};
+    \arrowdoftetp[]{1}{0.3}{0.3}{1}{0}{0.3};
+    \arrowdoftetp[]{1}{0.3}{0.3}{1}{0.3}{0};
+    \arrowdoftetp[]{0.3}{1}{0.3}{0}{1}{0.3};
+    \arrowdoftetp[]{0.3}{1}{0.3}{0.3}{0.7}{0.3};
+    \arrowdoftetp[]{0.3}{0.3}{0.3}{0.3}{0.3}{0};
+    \arrowdoftetp[]{0.3}{0.3}{0.3}{0}{0.3}{0.3};
+    \arrowdoftetp[]{0.3}{0.3}{0.3}{0.3}{0}{0.3};
+    \arrowdoftetp[]{0.3}{1}{0.3}{0.3}{1}{0};
+    \end{scope}
+  \end{tikzpicture}
+
+
+\tikzsetnextfilename{hcurl3ddual}
+  \begin{tikzpicture}[scale=4]
+  \def\bgx{-2.2};
+  \def\bgxx{1.2};
+  \def\bgy{-0.6};
+  \def\bgyy{1.1};
+  \fill[opacity=0.] (\bgx,\bgy)rectangle(\bgxx,\bgyy);
+    \begin{scope}[shift={(-2,0)},scale=0.8,3d view={50}{10}]
+      \draw(0,0,0)--++(1,0,0)--++(0,1,0)--++(-1,0,0)--cycle;
+      \draw(0,0,1)--++(1,0,0)--++(0,1,0)--++(-1,0,0)--cycle;
+      \draw(0,0,0)--++(0,0,1);
+      \draw(1,0,0)--++(0,0,1);
+      \draw(1,1,0)--++(0,0,1);
+      \draw(0,1,0)--++(0,0,1);
+      \arrowdofcube[]{0}{0}{0}{0.3}{0}{0};
+      \arrowdofcube[]{0}{0}{0}{0}{0.3}{0};
+      \arrowdofcube[]{0}{0}{0}{0}{0}{0.3};
+      \arrowdofcube[]{0.7}{0}{0}{1}{0}{0};
+      \arrowdofcube[]{0.7}{0}{0}{0.7}{0.3}{0};
+      \arrowdofcube[]{0.7}{0}{0}{0.7}{0}{0.3};
+      \arrowdofcube[]{0}{0.7}{0}{0.3}{0.7}{0};
+      \arrowdofcube[]{0}{0.7}{0}{0}{1}{0};
+      \arrowdofcube[]{0}{0.7}{0}{0}{0.7}{0.3};
+      \arrowdofcube[]{0}{0}{0.7}{0.3}{0}{0.7};
+      \arrowdofcube[]{0}{0}{0.7}{0}{0.3}{0.7};
+      \arrowdofcube[]{0}{0}{0.7}{0}{0}{1};
+      \arrowdofcube[]{0.7}{0.7}{0}{1}{0.7}{0};
+      \arrowdofcube[]{0.7}{0.7}{0}{0.7}{1}{0};
+      \arrowdofcube[]{0.7}{0.7}{0}{0.7}{0.7}{0.3};
+      \arrowdofcube[]{0}{0.7}{0.7}{0.3}{0.7}{0.7};
+      \arrowdofcube[]{0}{0.7}{0.7}{0}{1}{0.7};
+      \arrowdofcube[]{0}{0.7}{0.7}{0}{0.7}{1};
+      \arrowdofcube[]{0.7}{0}{0.7}{1}{0}{0.7};
+      \arrowdofcube[]{0.7}{0}{0.7}{0.7}{0.3}{0.7};
+      \arrowdofcube[]{0.7}{0.7}{0.7}{0.7}{0.7}{1};
+      \arrowdofcube[]{0.7}{0.7}{0.7}{1}{0.7}{0.7};
+      \arrowdofcube[]{0.7}{0.7}{0.7}{0.7}{1}{0.7};
+      \arrowdofcube[]{0.7}{0}{0.7}{0.7}{0}{1};
+    \end{scope}  
+    \draw[->](-0.8,0,0)--node[above]{$\varphi_C$}(-0.4,0,0);
+    \begin{scope}[3d view={100}{15}]
+    \draw[gray,thick, dashed] (0,0,0)--(1,0,0)--(0,1,0)--(0,0,0)(0,1,0)--(0,0,1)--(0,0,0)(1,0,0)--(0,0,1);
+    \draw[thick] (0,0,0)--(1/2,0,0)(0,1/2,0)--(0,0,0)--(0,0,1/2);
+    \draw (0,1/2,0)--(1/3,1/3,0)--(1/2,0,0)(1/3,0,1/3)--(1/4,1/4,1/4)--(1/3,1/3,0)(1/4,1/4,1/4)--(0,1/3,1/3)(1/2,0,0)--(1/3,0,1/3)--(0,0,1/2)(0,0,1/2)--(0,1/3,1/3)--(0,1/2,0);
+    \draw[gray,dashed] (0,1/3,1/3)--(0,1/2,1/2)(1/3,1/3,0)--(1/2,1/2,0)(1/3,0,1/3)--(1/2,0,1/2)(1/2,1/2,0)--(1/3,1/3,1/3)--(0,1/2,1/2)(1/3,1/3,1/3)--(1/2,0,1/2)(1/3,1/3,1/3)--(1/4,1/4,1/4)(0,1/2,0)--(1/3,1/3,0)--(1/2,0,0)(1/3,0,1/3)--(1/4,1/4,1/4)--(1/3,1/3,0)(1/4,1/4,1/4)--(0,1/3,1/3)(1/2,0,0)--(1/3,0,1/3)--(0,0,1/2)(0,0,1/2)--(0,1/3,1/3)--(0,1/2,0);
+    \arrowdoftet[]{0}{0}{0}{0.3}{0}{0};
+    \arrowdoftet[]{0}{0}{0}{0}{0.3}{0};
+    \arrowdoftet[]{0}{0}{0}{0}{0}{0.3};
+    \arrowdoftet[]{0.7}{0}{0}{1}{0}{0};
+    \arrowdoftet[]{0.7}{0}{0}{0.7}{0.3}{0};
+    \arrowdoftet[]{0.7}{0}{0}{0.7}{0}{0.3};
+    \arrowdoftet[]{0}{0.7}{0}{0.3}{0.7}{0};
+    \arrowdoftet[]{0}{0.7}{0}{0}{1}{0};
+    \arrowdoftet[]{0}{0.7}{0}{0}{0.7}{0.3};
+    \arrowdoftet[]{0}{0}{0.7}{0.3}{0}{0.7};
+    \arrowdoftet[]{0}{0}{0.7}{0}{0.3}{0.7};
+    \arrowdoftet[]{0}{0}{0.7}{0}{0}{1};
+    \arrowdoftet[]{0.7}{0.7}{0}{1}{0.7}{0};
+    \arrowdoftet[]{0.7}{0.7}{0}{0.7}{1}{0};
+    \arrowdoftet[]{0.7}{0.7}{0}{0.7}{0.7}{0.3};
+    \arrowdoftet[]{0}{0.7}{0.7}{0.3}{0.7}{0.7};
+    \arrowdoftet[]{0}{0.7}{0.7}{0}{1}{0.7};
+    \arrowdoftet[]{0}{0.7}{0.7}{0}{0.7}{1};
+    \arrowdoftet[]{0.7}{0}{0.7}{1}{0}{0.7};
+    \arrowdoftet[]{0.7}{0}{0.7}{0.7}{0.3}{0.7};
+    \arrowdoftet[]{0.7}{0.7}{0.7}{0.7}{0.7}{1};
+    \arrowdoftet[]{0.7}{0.7}{0.7}{1}{0.7}{0.7};
+    \arrowdoftet[]{0.7}{0.7}{0.7}{0.7}{1}{0.7};
+    \arrowdoftet[]{0.7}{0}{0.7}{0.7}{0}{1};
+    \end{scope}
+  \end{tikzpicture}
 
 \end{document}:
+

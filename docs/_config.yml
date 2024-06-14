@@ -18,6 +18,7 @@ execute:
     - 'asdfadf'
     - '*resonator*'
     - '*qualitative*'
+    - 'mass_lumping*'
 
 # Define the name of the latex output file for PDF builds
 latex:
@@ -48,4 +49,5 @@ parse:
     - dollarmath
 sphinx:
   extra_extensions:
-    - sphinx_proof
+  - sphinx_proof
+  - 'sphinx.ext.autodoc'
