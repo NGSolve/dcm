@@ -58,11 +58,13 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'maxwell/mass_lumping';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="2.5. Time stepping" href="time_stepping.html" />
-    <link rel="prev" title="2.3. Construction of discrete spaces on dual cells" href="hcurl.html" />
+    <link rel="next" title="2.5. The discrete differential operators" href="diffops.html" />
+    <link rel="prev" title="2.3. Discrete spaces on dual cells" href="hcurl.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -181,9 +183,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">1. Installation</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../maxwell.html">2. The dual cell method for the time-domain Maxwell system</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="introduction.html">2.2. Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hcurl.html">2.3. Construction of discrete spaces on dual cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hcurl.html">2.3. Discrete spaces on dual cells</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">2.4. Mass lumping</a></li>
-<li class="toctree-l2"><a class="reference internal" href="time_stepping.html">2.5. Time stepping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diffops.html">2.5. The discrete differential operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_stepping.html">2.6. Time stepping</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../examples.html">3. Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -388,8 +391,253 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="mass-lumping">
+  <section class="tex2jax_ignore mathjax_ignore" id="mass-lumping">
 <span id="id1"></span><h1><span class="section-number">2.4. </span>Mass lumping<a class="headerlink" href="#mass-lumping" title="Link to this heading">#</a></h1>
+<p>For the use of explicit time-stepping methods in each time step the inverse of the mass matrices have to be applied. Thus it would be optimal if the basis functions are chosen such that the mass matrices are diagonal.
+Classical mass lumping techniques approximate the mass integrals by numerical integration rules to obtain diagonal matrices. We use a  similar approach</p>
+<p>In <a class="reference internal" href="hcurl.html#spaces"><span class="std std-numref">Section 2.3</span></a> we have defined polynomial nodal basis functions of order <span class="math notranslate nohighlight">\(P\)</span> with respect to nodes <span class="math notranslate nohighlight">\(x_0,\ldots,x_P\)</span> on the unit interval <span class="math notranslate nohighlight">\([0,1]\)</span> (and tensorized on the unit square/cube). Apart from the fact that we need <span class="math notranslate nohighlight">\(x_0=0\)</span> for the dual and <span class="math notranslate nohighlight">\(x_P=1\)</span> for the dual spaces we have not yet specified which nodes we choose exactly.</p>
+<p>The main idea is now to choose the nodes such that they are the integration points of a numerical quadrature rule of as high order as possible. Since the nodal polynomials vanish in every integration node except one we expect very sparse mass matrices when using the corresponding integration rules to approximate the mass integrals.</p>
+<p>The quadrature rules of choice are <a class="reference external" href="https://mathworld.wolfram.com/RadauQuadrature.html">Gauss-Radau</a> rules, where we fix, depending on whether we treat the dual or primal space, the starting or endpoint of the interval in question. As usual for Gaussian quadratures, the integration points and weights may be easily computed via a eigenvalue problem of dimension <span class="math notranslate nohighlight">\(P+1\)</span>.</p>
+<p>To compare the sparsity patterns of the exact mass matrices to the ones obtained by using mass lumping we have to compute the exact mass matrices. Since our basis functions are not smooth (and for the dual spaces even discontinuous) in the primal elements we may not use the standard integration rules provided by <code class="docutils literal notranslate"><span class="pre">NGSolve</span></code> here. The package provides <code class="docutils literal notranslate"><span class="pre">dualcellspaces.GetIntegrationRules</span></code> to obtain fitting quadrature formulas (Gauss rules on the reference shape transformed to the cells):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ngsolve</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">dualcellspaces</span> <span class="k">as</span> <span class="nn">dcs</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">pl</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">irs</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">et</span> <span class="ow">in</span> <span class="n">irs</span><span class="p">:</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">et</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">irs</span><span class="p">[</span><span class="n">et</span><span class="p">])</span>
+
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]);</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">],[</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">]);</span>
+
+<span class="n">trig_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">irs</span><span class="p">[</span><span class="n">TRIG</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+<span class="n">px</span><span class="p">,</span><span class="n">py</span> <span class="o">=</span> <span class="n">trig_points</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">trig_points</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">px</span><span class="p">,</span><span class="n">py</span><span class="p">,</span><span class="s1">&#39;ob&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ET.SEGM
+ locnr = -1: (0.105662, 0, 0), weight = 0.25
+ locnr = -1: (0.394338, 0, 0), weight = 0.25
+ locnr = -1: (0.894338, 0, 0), weight = 0.25
+ locnr = -1: (0.605662, 0, 0), weight = 0.25
+
+ET.TRIG
+ locnr = -1: (0.803561, 0.0982194, 0), weight = 0.0536948
+ locnr = -1: (0.555556, 0.0778847, 0), weight = 0.0416667
+ locnr = -1: (0.555556, 0.36656, 0), weight = 0.0416667
+ locnr = -1: (0.418661, 0.290669, 0), weight = 0.0296385
+ locnr = -1: (0.0982194, 0.803561, 0), weight = 0.0536948
+ locnr = -1: (0.36656, 0.555556, 0), weight = 0.0416667
+ locnr = -1: (0.0778847, 0.555556, 0), weight = 0.0416667
+ locnr = -1: (0.290669, 0.418661, 0), weight = 0.0296385
+ locnr = -1: (0.0982194, 0.0982194, 0), weight = 0.0536948
+ locnr = -1: (0.0778847, 0.36656, 0), weight = 0.0416667
+ locnr = -1: (0.36656, 0.0778847, 0), weight = 0.0416667
+ locnr = -1: (0.290669, 0.290669, 0), weight = 0.0296385
+
+ET.TET
+ locnr = -1: (0.725312, 0.0915628, 0.0915628), weight = 0.00999851
+ locnr = -1: (0.51153, 0.0733767, 0.0733767), weight = 0.00616387
+ locnr = -1: (0.51153, 0.0733767, 0.341717), weight = 0.00616387
+ locnr = -1: (0.391248, 0.0610607, 0.273846), weight = 0.00365801
+ locnr = -1: (0.51153, 0.341717, 0.0733767), weight = 0.00616387
+ locnr = -1: (0.391248, 0.273846, 0.0610607), weight = 0.00365801
+ locnr = -1: (0.391248, 0.273846, 0.273846), weight = 0.00365801
+ locnr = -1: (0.316355, 0.227882, 0.227882), weight = 0.0022025
+ locnr = -1: (0.0915628, 0.725312, 0.0915628), weight = 0.00999851
+ locnr = -1: (0.341717, 0.51153, 0.0733767), weight = 0.00616387
+ locnr = -1: (0.0733767, 0.51153, 0.0733767), weight = 0.00616387
+ locnr = -1: (0.273846, 0.391248, 0.0610607), weight = 0.00365801
+ locnr = -1: (0.0733767, 0.51153, 0.341717), weight = 0.00616387
+ locnr = -1: (0.273846, 0.391248, 0.273846), weight = 0.00365801
+ locnr = -1: (0.0610607, 0.391248, 0.273846), weight = 0.00365801
+ locnr = -1: (0.227882, 0.316355, 0.227882), weight = 0.0022025
+ locnr = -1: (0.0915628, 0.0915628, 0.725312), weight = 0.00999851
+ locnr = -1: (0.0733767, 0.341717, 0.51153), weight = 0.00616387
+ locnr = -1: (0.341717, 0.0733767, 0.51153), weight = 0.00616387
+ locnr = -1: (0.273846, 0.273846, 0.391248), weight = 0.00365801
+ locnr = -1: (0.0733767, 0.0733767, 0.51153), weight = 0.00616387
+ locnr = -1: (0.0610607, 0.273846, 0.391248), weight = 0.00365801
+ locnr = -1: (0.273846, 0.0610607, 0.391248), weight = 0.00365801
+ locnr = -1: (0.227882, 0.227882, 0.316355), weight = 0.0022025
+ locnr = -1: (0.0915628, 0.0915628, 0.0915628), weight = 0.00999851
+ locnr = -1: (0.0733767, 0.0733767, 0.341717), weight = 0.00616387
+ locnr = -1: (0.0733767, 0.341717, 0.0733767), weight = 0.00616387
+ locnr = -1: (0.0610607, 0.273846, 0.273846), weight = 0.00365801
+ locnr = -1: (0.341717, 0.0733767, 0.0733767), weight = 0.00616387
+ locnr = -1: (0.273846, 0.0610607, 0.273846), weight = 0.00365801
+ locnr = -1: (0.273846, 0.273846, 0.0610607), weight = 0.00365801
+ locnr = -1: (0.227882, 0.227882, 0.227882), weight = 0.0022025
+</pre></div>
+</div>
+<img alt="../_images/2e695bd287c9d9e38f612d3844a5c03a4f3abe2eafa1bd19f69174c91803a753.png" src="../_images/2e695bd287c9d9e38f612d3844a5c03a4f3abe2eafa1bd19f69174c91803a753.png" />
+</div>
+</div>
+<p>Using these <code class="docutils literal notranslate"><span class="pre">IntegrationRules</span></code> we may compute the exact mass matrices:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ngsolve</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">dualcellspaces</span> <span class="k">as</span> <span class="nn">dcs</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">pl</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">order</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="n">irs</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">order</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">unit_square</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">(</span><span class="n">maxh</span><span class="o">=</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="c1">#fes = dcs.HCurlDualCells(mesh,order=order)</span>
+<span class="n">fes</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">H1PrimalCells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+<span class="n">u</span><span class="p">,</span><span class="n">v</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">TnT</span><span class="p">()</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">irs</span><span class="p">))</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">mat</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">spy</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">ToDense</span><span class="p">());</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" src="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" />
+</div>
+</div>
+<p>The resulting matrix can easily be seen to be block-diagonal.
+To approximate the mass matrix using the integration rule which was used in the construction of the basis functions we may obtain the <code class="docutils literal notranslate"><span class="pre">IntegrationRule</span></code> from the <code class="docutils literal notranslate"><span class="pre">FESpace</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">irs_fes</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">()</span>
+
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]);</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">],[</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">]);</span>
+
+<span class="n">trig_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">irs_fes</span><span class="p">[</span><span class="n">TRIG</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+<span class="n">px</span><span class="p">,</span><span class="n">py</span> <span class="o">=</span> <span class="n">trig_points</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">trig_points</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">px</span><span class="p">,</span><span class="n">py</span><span class="p">,</span><span class="s1">&#39;ob&#39;</span><span class="p">);</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">irs_fes</span><span class="p">))</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">mat</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">spy</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">ToDense</span><span class="p">());</span>
+<span class="n">M_diag</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">DeleteZeroElements</span><span class="p">(</span><span class="mf">1e-10</span><span class="p">)</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">spy</span><span class="p">(</span><span class="n">M_diag</span><span class="o">.</span><span class="n">ToDense</span><span class="p">());</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/896c2785c22f261110fa6d90f986c579936ae8e236ec4d59aafa247ee0b381c8.png" src="../_images/896c2785c22f261110fa6d90f986c579936ae8e236ec4d59aafa247ee0b381c8.png" />
+<img alt="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" src="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" />
+<img alt="../_images/f4b611030371c1d76a893e1c7c2eb1b3867555692416fb234feb385fff34a002.png" src="../_images/f4b611030371c1d76a893e1c7c2eb1b3867555692416fb234feb385fff34a002.png" />
+</div>
+</div>
+<p>We can observe that the coupling entries between basis function of the same element are numerically zero, by construction and we obtain a diagonal matrix.
+For the vectorial spaces the lumped mass matrices are block diagonal:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fes_curl</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">HCurlDualCells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+<span class="n">u</span><span class="p">,</span><span class="n">v</span> <span class="o">=</span> <span class="n">fes_curl</span><span class="o">.</span><span class="n">TnT</span><span class="p">()</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">irs</span><span class="p">))</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">mat</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">spy</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">ToDense</span><span class="p">());</span>
+
+<span class="n">irs_fes_curl</span> <span class="o">=</span> <span class="n">fes_curl</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">()</span>
+<span class="n">M_lumped</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">irs_fes_curl</span><span class="p">))</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">mat</span>
+<span class="n">M_lumped</span> <span class="o">=</span> <span class="n">M_lumped</span><span class="o">.</span><span class="n">DeleteZeroElements</span><span class="p">(</span><span class="mf">1e-10</span><span class="p">)</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">spy</span><span class="p">(</span><span class="n">M_lumped</span><span class="o">.</span><span class="n">ToDense</span><span class="p">());</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/23fc9162068c78dabf3a23a1eb9d66877e4da59bd9dbf5921cd71290f5768bb0.png" src="../_images/23fc9162068c78dabf3a23a1eb9d66877e4da59bd9dbf5921cd71290f5768bb0.png" />
+<img alt="../_images/0574d5aa866622d1c568f1f5f4b2eb293899dcc65ace710d09ee2ab2ea38e11d.png" src="../_images/0574d5aa866622d1c568f1f5f4b2eb293899dcc65ace710d09ee2ab2ea38e11d.png" />
+</div>
+</div>
+<p>Since the entries corresponding to basis functions of the dual elements are not stored together the block structure is less obvious here.
+Exploiting this block structure is implemented in the finite element spaces. The mass matrices may be accessed via <code class="docutils literal notranslate"><span class="pre">FESpace.Mass</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+
+<span class="n">order</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="n">irs</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">order</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">unit_cube</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">(</span><span class="n">maxh</span><span class="o">=</span><span class="mf">0.4</span><span class="p">))</span>
+<span class="n">fes</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">HCurlDualCells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ndof = &quot;</span><span class="p">,</span><span class="n">fes</span><span class="o">.</span><span class="n">ndof</span><span class="p">)</span>
+
+<span class="n">irs_fes</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">()</span>
+<span class="n">u</span><span class="p">,</span><span class="n">v</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">TnT</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">TaskManager</span><span class="p">():</span>
+  <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+  <span class="n">M_exact</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">irs</span><span class="p">))</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">mat</span>
+  <span class="n">exacttime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+
+  <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+  <span class="n">M_supersparse</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">Mass</span><span class="p">()</span>
+  <span class="n">stime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#### assembling ####&#39;</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exact: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exacttime</span><span class="p">))</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;supersparse: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stime</span><span class="p">))</span>
+
+
+  <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+  <span class="n">M_exact_inv</span> <span class="o">=</span> <span class="n">M_exact</span><span class="o">.</span><span class="n">Inverse</span><span class="p">(</span><span class="n">inverse</span><span class="o">=</span><span class="s1">&#39;sparsecholesky&#39;</span><span class="p">)</span>
+  <span class="n">exacttime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+
+  <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+  <span class="k">with</span> <span class="n">TaskManager</span><span class="p">():</span>
+    <span class="n">M_supersparse_inv</span> <span class="o">=</span> <span class="n">M_supersparse</span><span class="o">.</span><span class="n">Inverse</span><span class="p">()</span>
+  <span class="n">stime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#### factorization ####&#39;</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exact: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exacttime</span><span class="p">))</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;supersparse: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stime</span><span class="p">))</span>
+
+  <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
+  <span class="n">tmp</span> <span class="o">=</span> <span class="n">M_exact</span><span class="o">.</span><span class="n">CreateVector</span><span class="p">()</span>
+  <span class="n">tmp</span><span class="o">.</span><span class="n">SetRandom</span><span class="p">()</span>
+  <span class="n">tmp2</span> <span class="o">=</span> <span class="n">M_exact</span><span class="o">.</span><span class="n">CreateVector</span><span class="p">()</span>
+
+  <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">tmp2</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">M_exact_inv</span> <span class="o">*</span> <span class="n">tmp</span>
+  <span class="n">exacttime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+
+  <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">tmp2</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">M_supersparse_inv</span> <span class="o">*</span> <span class="n">tmp</span>
+  <span class="n">stime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#### application ####&#39;</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exact: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exacttime</span><span class="p">))</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;supersparse: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stime</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ndof =  65232
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### assembling ####
+exact: 1.1457281112670898s
+supersparse: 0.0982968807220459s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### factorization ####
+exact: 9.94332766532898s
+supersparse: 0.0051441192626953125s
+#### application ####
+exact: 0.1732780933380127s
+supersparse: 0.000850677490234375s
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 
     <script type="text/x-thebe-config">
@@ -428,15 +676,15 @@ document.write(`
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">2.3. </span>Construction of discrete spaces on dual cells</p>
+        <p class="prev-next-title"><span class="section-number">2.3. </span>Discrete spaces on dual cells</p>
       </div>
     </a>
     <a class="right-next"
-       href="time_stepping.html"
+       href="diffops.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">2.5. </span>Time stepping</p>
+        <p class="prev-next-title"><span class="section-number">2.5. </span>The discrete differential operators</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

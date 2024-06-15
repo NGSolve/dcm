@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>2.5. Time stepping &#8212; The Dual Cell Method in NGSolve</title>
+    <title>2.6. Time stepping &#8212; The Dual Cell Method in NGSolve</title>
   
   
   
@@ -58,11 +58,13 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'maxwell/time_stepping';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="3. Examples" href="../examples.html" />
-    <link rel="prev" title="2.4. Mass lumping" href="mass_lumping.html" />
+    <link rel="prev" title="2.5. The discrete differential operators" href="diffops.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -181,9 +183,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">1. Installation</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../maxwell.html">2. The dual cell method for the time-domain Maxwell system</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="introduction.html">2.2. Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hcurl.html">2.3. Construction of discrete spaces on dual cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hcurl.html">2.3. Discrete spaces on dual cells</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mass_lumping.html">2.4. Mass lumping</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">2.5. Time stepping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diffops.html">2.5. The discrete differential operators</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">2.6. Time stepping</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../examples.html">3. Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -388,8 +391,25 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="time-stepping">
-<span id="id1"></span><h1><span class="section-number">2.5. </span>Time stepping<a class="headerlink" href="#time-stepping" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="time-stepping">
+<span id="id1"></span><h1><span class="section-number">2.6. </span>Time stepping<a class="headerlink" href="#time-stepping" title="Link to this heading">#</a></h1>
+<p>For the semi-discrete system of differential equations of the form</p>
+<div class="math notranslate nohighlight" id="equation-semi-disc-1o">
+<span class="eqno">(2.1)<a class="headerlink" href="#equation-semi-disc-1o" title="Link to this equation">#</a></span>\[\begin{split}\begin{aligned}
+\mathbf M_p\partial_t{\mathbf p}&amp;=\mathbf B\mathbf v,\\
+\mathbf M_v\partial_t{\mathbf v}&amp;=-\mathbf B^\top\mathbf p,\\
+\mathbf p(0)&amp;=\mathbf p_0,\quad {\mathbf v}(0)=\mathbf v_0,
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf M_p,\mathbf M_v\)</span> are the discrete mass matrices and <span class="math notranslate nohighlight">\(\mathbf B\)</span> is the matrix of the discrete differential operator,
+We use the Leap-Frog scheme given by</p>
+<div class="math notranslate nohighlight" id="equation-leap-frog">
+<span class="eqno">(2.2)<a class="headerlink" href="#equation-leap-frog" title="Link to this equation">#</a></span>\[\begin{split}\mathbf v_{1/2}&amp;=\mathbf v_0 -\frac{\tau}{2} \mathbf M_v^{-1}\mathbf B^\top\mathbf p_0,\\
+\mathbf p_{j+1}&amp;=\mathbf p_{j} +\tau \mathbf M_p^{-1}\mathbf B\mathbf v_{j+1/2},\\
+\mathbf v_{j+1/2}&amp;=\mathbf v_{j-1/2} -\tau \mathbf M_v^{-1}\mathbf B^\top\mathbf p_j.\end{split}\]</div>
+<p>It is well-known that this scheme is stable for timesteps <span class="math notranslate nohighlight">\(\tau&gt;0\)</span> fulfilling</p>
+<div class="math notranslate nohighlight">
+\[\tau^2 &lt; \frac{4}{\sigma \left( \mathbf M_p^{-1}\mathbf B\mathbf M_v^{-1}\mathbf B^\top \right)}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma\)</span> is the spectral radius.</p>
 </section>
 
     <script type="text/x-thebe-config">
@@ -423,12 +443,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mass_lumping.html"
+       href="diffops.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><span class="section-number">2.4. </span>Mass lumping</p>
+        <p class="prev-next-title"><span class="section-number">2.5. </span>The discrete differential operators</p>
       </div>
     </a>
     <a class="right-next"

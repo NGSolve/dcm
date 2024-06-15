@@ -63,7 +63,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'maxwell/introduction';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="3. Examples" href="../examples.html" />
+    <link rel="next" title="2.3. Discrete spaces on dual cells" href="hcurl.html" />
     <link rel="prev" title="2. The dual cell method for the time-domain Maxwell system" href="../maxwell.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -183,6 +183,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">1. Installation</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../maxwell.html">2. The dual cell method for the time-domain Maxwell system</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">2.2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hcurl.html">2.3. Discrete spaces on dual cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mass_lumping.html">2.4. Mass lumping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diffops.html">2.5. The discrete differential operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_stepping.html">2.6. Time stepping</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../examples.html">3. Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -417,15 +421,15 @@ document.write(`
 <section id="scattering-type-problems">
 <h3>scattering type problems<a class="headerlink" href="#scattering-type-problems" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>time-domain solvers for Helmholtz (2020s e.g., <span id="id2">[<a class="reference internal" href="../intro.html#id6" title="Daniel Appelö, Fortino Garcia, and Olof Runborg. Waveholtz: iterative solution of the helmholtz equation via the wave equation. SIAM Journal on Scientific Computing, 42(4):A1950-A1983, 2020. doi:10.1137/19M1299062.">AppeloGR20</a>]</span>)</p></li>
-<li><p>time-domain preconditioners (2020s, e.g., <span id="id3">[<a class="reference internal" href="../intro.html#id5" title="Christiaan C. Stolk. A time-domain preconditioner for the helmholtz equation. SIAM Journal on Scientific Computing, 43(5):A3469-A3502, 2021. doi:10.1137/20M1359997.">Sto21</a>]</span> )</p></li>
+<li><p>time-domain solvers for Helmholtz (2020s e.g., <span id="id2">[]</span>)</p></li>
+<li><p>time-domain preconditioners (2020s, e.g., <span id="id3">[]</span> )</p></li>
 </ul>
 </section>
 <section id="resonance-type-problems">
 <h3>resonance type problems<a class="headerlink" href="#resonance-type-problems" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>explicit eigenvalue solvers lite PINVIT, LOBPCG (early 2000s, e.g., <span id="id4">[<a class="reference internal" href="../intro.html#id8" title="Andrew V. Knyazev. Toward the optimal preconditioned eigensolver: locally optimal block preconditioned conjugate gradient method. SIAM Journal on Scientific Computing, 23(2):517-541, 2001. doi:10.1137/S1064827500366124.">Kny01</a>]</span> )</p></li>
-<li><p>time-domain filters for eigenvalue problems (very recent  <span id="id5">[<a class="reference internal" href="../intro.html#id7" title="Lothar Nannen and Markus Wess. A krylov eigenvalue solver based on filtered time domain solutions. 2024. arXiv:2402.08515.">NW24</a>]</span>)</p></li>
+<li><p>explicit eigenvalue solvers lite PINVIT, LOBPCG (early 2000s, e.g., <span id="id4">[]</span> )</p></li>
+<li><p>time-domain filters for eigenvalue problems (very recent  <span id="id5">[]</span>)</p></li>
 </ul>
 </section>
 </section>
@@ -468,10 +472,10 @@ document.write(`
 </figcaption>
 </figure>
 <p>This leads to discrete quantities on interlaced hexahedral grids.</p>
-<figure class="align-default" id="id6">
+<figure class="align-default" id="stokes-disc">
 <a class="reference internal image-reference" href="../_images/stokes_disc.png"><img alt="../_images/stokes_disc.png" src="../_images/stokes_disc.png" style="height: 400px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 2.2 </span><span class="caption-text">Discrete, pointwise approximations mimmicking Stokes’ theorem.</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
+<p><span class="caption-number">Fig. 2.2 </span><span class="caption-text">Discrete, pointwise approximations mimmicking Stokes’ theorem.</span><a class="headerlink" href="#stokes-disc" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p><span class="math notranslate nohighlight">\(h^l_{i,j,k},e^l_{i,j,k}\)</span> are point values of the fields at points <span class="math notranslate nohighlight">\((x_i,y_j,z_k)\)</span> (tangential to the staggered grid) at timestep number <span class="math notranslate nohighlight">\(l\)</span> and satisfy</p>
@@ -498,20 +502,20 @@ document.write(`
 <section id="basic-idea-of-the-dual-cell-construction">
 <h2>Basic idea of the dual cell construction<a class="headerlink" href="#basic-idea-of-the-dual-cell-construction" title="Link to this heading">#</a></h2>
 <p>For motivation of the construction of the basis functions and spaces we start by focussing on the two dimensional problem.</p>
-<figure class="align-default" id="id7">
+<figure class="align-default" id="fdtd-2d">
 <a class="reference internal image-reference" href="../_images/fdtd_2d.png"><img alt="../_images/fdtd_2d.png" src="../_images/fdtd_2d.png" style="height: 400px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 2.3 </span><span class="caption-text">Going to two dimensions.</span><a class="headerlink" href="#id7" title="Link to this image">#</a></p>
+<p><span class="caption-number">Fig. 2.3 </span><span class="caption-text">Going to two dimensions.</span><a class="headerlink" href="#fdtd-2d" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="galerkin-setting-and-high-order-spaces">
 <h3>Galerkin setting and high order spaces<a class="headerlink" href="#galerkin-setting-and-high-order-spaces" title="Link to this heading">#</a></h3>
 <p>Interpreting the scalar point values (orange circles) as piecewise constant basis functions on each element <span class="math notranslate nohighlight">\(\mathbf C\)</span> (dark grey, consisting of four cells) we may proceed from a finite difference setting, to a Galerkin setting.</p>
 <p>For the vectorial unknowns the degrees of freedom are the inner tangential components between two neighbouring cells. The respective basis functions are tangentially continuous on each dual element <span class="math notranslate nohighlight">\(\tilde {\mathbf C}\)</span> (again consisting of four cells).</p>
-<figure class="align-default" id="id8">
+<figure class="align-default" id="primal-dual-quad">
 <a class="reference internal image-reference" href="../_images/primal_dual_quad.png"><img alt="../_images/primal_dual_quad.png" src="../_images/primal_dual_quad.png" style="height: 400px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 2.4 </span><span class="caption-text">primal and dual quad-meshes</span><a class="headerlink" href="#id8" title="Link to this image">#</a></p>
+<p><span class="caption-number">Fig. 2.4 </span><span class="caption-text">primal and dual quad-meshes</span><a class="headerlink" href="#primal-dual-quad" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>Thus if the primal and dual elements are given by</p>
@@ -583,11 +587,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="../examples.html"
+       href="hcurl.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title"><span class="section-number">3. </span>Examples</p>
+        <p class="prev-next-title"><span class="section-number">2.3. </span>Discrete spaces on dual cells</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
