@@ -18,7 +18,7 @@ execute:
     - 'asdfadf'
     - '*resonator*'
     - '*qualitative*'
-    - 'mass_lumping*'
+      #- 'mass_lumping*'
 
 # Define the name of the latex output file for PDF builds
 latex:

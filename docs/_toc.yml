@@ -14,6 +14,7 @@ chapters:
       - file: maxwell/introduction
       - file: maxwell/hcurl
       - file: maxwell/mass_lumping
+      - file: maxwell/diffops
       - file: maxwell/time_stepping
       - file: maxwell/bibliography
   - file: examples
