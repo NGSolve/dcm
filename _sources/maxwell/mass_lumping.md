@@ -55,7 +55,7 @@ import numpy as np
 order = 3
 
 irs = dcs.GetIntegrationRules(2*order+2)
-mesh = Mesh(unit_square.GenerateMesh(maxh=0.5))
+mesh = Mesh(unit_square.GenerateMesh(maxh=0.2))
 #fes = dcs.HCurlDualCells(mesh,order=order)
 fes = dcs.H1PrimalCells(mesh,order=order)
 u,v = fes.TnT()
