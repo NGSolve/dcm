@@ -490,7 +490,7 @@ ET.TET
 <span class="n">order</span> <span class="o">=</span> <span class="mi">3</span>
 
 <span class="n">irs</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">order</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">unit_square</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">(</span><span class="n">maxh</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">unit_square</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">(</span><span class="n">maxh</span><span class="o">=</span><span class="mf">0.5</span><span class="p">))</span>
 <span class="c1">#fes = dcs.HCurlDualCells(mesh,order=order)</span>
 <span class="n">fes</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">H1PrimalCells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
 <span class="n">u</span><span class="p">,</span><span class="n">v</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">TnT</span><span class="p">()</span>
@@ -501,7 +501,7 @@ ET.TET
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8b294d952b2ef7c59f79775d8d1c42bd98cf44df7149ad31a896ff0140a326bc.png" src="../_images/8b294d952b2ef7c59f79775d8d1c42bd98cf44df7149ad31a896ff0140a326bc.png" />
+<img alt="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" src="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" />
 </div>
 </div>
 <p>The resulting matrix can easily be seen to be block-diagonal.
@@ -528,8 +528,8 @@ To approximate the mass matrix using the integration rule which was used in the 
 </div>
 <div class="cell_output docutils container">
 <img alt="../_images/896c2785c22f261110fa6d90f986c579936ae8e236ec4d59aafa247ee0b381c8.png" src="../_images/896c2785c22f261110fa6d90f986c579936ae8e236ec4d59aafa247ee0b381c8.png" />
-<img alt="../_images/8b294d952b2ef7c59f79775d8d1c42bd98cf44df7149ad31a896ff0140a326bc.png" src="../_images/8b294d952b2ef7c59f79775d8d1c42bd98cf44df7149ad31a896ff0140a326bc.png" />
-<img alt="../_images/6492a47f15c7ad32b37b206b1e4ef630d3eccaa1aab857d89573667ac0ee77db.png" src="../_images/6492a47f15c7ad32b37b206b1e4ef630d3eccaa1aab857d89573667ac0ee77db.png" />
+<img alt="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" src="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" />
+<img alt="../_images/f4b611030371c1d76a893e1c7c2eb1b3867555692416fb234feb385fff34a002.png" src="../_images/f4b611030371c1d76a893e1c7c2eb1b3867555692416fb234feb385fff34a002.png" />
 </div>
 </div>
 <p>We can observe that the coupling entries between basis function of the same element are numerically zero, by construction and we obtain a diagonal matrix.
@@ -551,8 +551,8 @@ For the vectorial spaces the lumped mass matrices are block diagonal:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/7056f42bb0d3a747ce568ecc315bb119a6ad4b54a127421c1a53153f4cac3f9e.png" src="../_images/7056f42bb0d3a747ce568ecc315bb119a6ad4b54a127421c1a53153f4cac3f9e.png" />
-<img alt="../_images/e70cf191724cbf501a38f141e38bbdb85c971fbe8a5dd846c67eb3a8aba35fed.png" src="../_images/e70cf191724cbf501a38f141e38bbdb85c971fbe8a5dd846c67eb3a8aba35fed.png" />
+<img alt="../_images/23fc9162068c78dabf3a23a1eb9d66877e4da59bd9dbf5921cd71290f5768bb0.png" src="../_images/23fc9162068c78dabf3a23a1eb9d66877e4da59bd9dbf5921cd71290f5768bb0.png" />
+<img alt="../_images/0574d5aa866622d1c568f1f5f4b2eb293899dcc65ace710d09ee2ab2ea38e11d.png" src="../_images/0574d5aa866622d1c568f1f5f4b2eb293899dcc65ace710d09ee2ab2ea38e11d.png" />
 </div>
 </div>
 <p>Since the entries corresponding to basis functions of the dual elements are not stored together the block structure is less obvious here.
@@ -564,7 +564,7 @@ Exploiting this block structure is implemented in the finite element spaces. The
 <span class="n">order</span> <span class="o">=</span> <span class="mi">3</span>
 
 <span class="n">irs</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">order</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">unit_cube</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">(</span><span class="n">maxh</span><span class="o">=</span><span class="mf">0.4</span><span class="p">))</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">unit_cube</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">(</span><span class="n">maxh</span><span class="o">=</span><span class="mf">0.3</span><span class="p">))</span>
 <span class="n">fes</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">HCurlDualCells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ndof = &quot;</span><span class="p">,</span><span class="n">fes</span><span class="o">.</span><span class="n">ndof</span><span class="p">)</span>
@@ -620,20 +620,22 @@ Exploiting this block structure is implemented in the finite element spaces. The
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ndof =  65232
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ndof =  122352
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### assembling ####
-exact: 1.2047088146209717s
-supersparse: 0.11965441703796387s
+exact: 2.0105292797088623s
+supersparse: 0.21221518516540527s
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### factorization ####
-exact: 10.138391017913818s
-supersparse: 0.005194664001464844s
-#### application ####
-exact: 0.17090559005737305s
-supersparse: 0.0008075237274169922s
+exact: 22.43076729774475s
+supersparse: 0.007737159729003906s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### application ####
+exact: 0.389972448348999s
+supersparse: 0.0016677379608154297s
 </pre></div>
 </div>
 </div>
