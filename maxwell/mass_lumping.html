@@ -192,6 +192,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../examples.html">3. Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../examples/qualitative_dispersion.html">3.1. A plane wave on a square</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../examples/ring_resonator.html">3.2. Ring resonator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/waveguide_3d.html">3.3. Dualmesh method for an electromagnetic waveguide in 3d</a></li>
 </ul>
 </li>
 </ul>
@@ -401,7 +402,7 @@ Classical mass lumping techniques approximate the mass integrals by numerical in
 <p>To compare the sparsity patterns of the exact mass matrices to the ones obtained by using mass lumping we have to compute the exact mass matrices. Since our basis functions are not smooth (and for the dual spaces even discontinuous) in the primal elements we may not use the standard integration rules provided by <code class="docutils literal notranslate"><span class="pre">NGSolve</span></code> here. The package provides <code class="docutils literal notranslate"><span class="pre">dualcellspaces.GetIntegrationRules</span></code> to obtain fitting quadrature formulas (Gauss rules on the reference shape transformed to the cells):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ngsolve</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ngsolve</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">dualcellspaces</span> <span class="k">as</span> <span class="nn">dcs</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">pl</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -420,69 +421,11 @@ Classical mass lumping techniques approximate the mass integrals by numerical in
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ET.SEGM
- locnr = -1: (0.105662, 0, 0), weight = 0.25
- locnr = -1: (0.394338, 0, 0), weight = 0.25
- locnr = -1: (0.894338, 0, 0), weight = 0.25
- locnr = -1: (0.605662, 0, 0), weight = 0.25
-
-ET.TRIG
- locnr = -1: (0.803561, 0.0982194, 0), weight = 0.0536948
- locnr = -1: (0.555556, 0.0778847, 0), weight = 0.0416667
- locnr = -1: (0.555556, 0.36656, 0), weight = 0.0416667
- locnr = -1: (0.418661, 0.290669, 0), weight = 0.0296385
- locnr = -1: (0.0982194, 0.803561, 0), weight = 0.0536948
- locnr = -1: (0.36656, 0.555556, 0), weight = 0.0416667
- locnr = -1: (0.0778847, 0.555556, 0), weight = 0.0416667
- locnr = -1: (0.290669, 0.418661, 0), weight = 0.0296385
- locnr = -1: (0.0982194, 0.0982194, 0), weight = 0.0536948
- locnr = -1: (0.0778847, 0.36656, 0), weight = 0.0416667
- locnr = -1: (0.36656, 0.0778847, 0), weight = 0.0416667
- locnr = -1: (0.290669, 0.290669, 0), weight = 0.0296385
-
-ET.TET
- locnr = -1: (0.725312, 0.0915628, 0.0915628), weight = 0.00999851
- locnr = -1: (0.51153, 0.0733767, 0.0733767), weight = 0.00616387
- locnr = -1: (0.51153, 0.0733767, 0.341717), weight = 0.00616387
- locnr = -1: (0.391248, 0.0610607, 0.273846), weight = 0.00365801
- locnr = -1: (0.51153, 0.341717, 0.0733767), weight = 0.00616387
- locnr = -1: (0.391248, 0.273846, 0.0610607), weight = 0.00365801
- locnr = -1: (0.391248, 0.273846, 0.273846), weight = 0.00365801
- locnr = -1: (0.316355, 0.227882, 0.227882), weight = 0.0022025
- locnr = -1: (0.0915628, 0.725312, 0.0915628), weight = 0.00999851
- locnr = -1: (0.341717, 0.51153, 0.0733767), weight = 0.00616387
- locnr = -1: (0.0733767, 0.51153, 0.0733767), weight = 0.00616387
- locnr = -1: (0.273846, 0.391248, 0.0610607), weight = 0.00365801
- locnr = -1: (0.0733767, 0.51153, 0.341717), weight = 0.00616387
- locnr = -1: (0.273846, 0.391248, 0.273846), weight = 0.00365801
- locnr = -1: (0.0610607, 0.391248, 0.273846), weight = 0.00365801
- locnr = -1: (0.227882, 0.316355, 0.227882), weight = 0.0022025
- locnr = -1: (0.0915628, 0.0915628, 0.725312), weight = 0.00999851
- locnr = -1: (0.0733767, 0.341717, 0.51153), weight = 0.00616387
- locnr = -1: (0.341717, 0.0733767, 0.51153), weight = 0.00616387
- locnr = -1: (0.273846, 0.273846, 0.391248), weight = 0.00365801
- locnr = -1: (0.0733767, 0.0733767, 0.51153), weight = 0.00616387
- locnr = -1: (0.0610607, 0.273846, 0.391248), weight = 0.00365801
- locnr = -1: (0.273846, 0.0610607, 0.391248), weight = 0.00365801
- locnr = -1: (0.227882, 0.227882, 0.316355), weight = 0.0022025
- locnr = -1: (0.0915628, 0.0915628, 0.0915628), weight = 0.00999851
- locnr = -1: (0.0733767, 0.0733767, 0.341717), weight = 0.00616387
- locnr = -1: (0.0733767, 0.341717, 0.0733767), weight = 0.00616387
- locnr = -1: (0.0610607, 0.273846, 0.273846), weight = 0.00365801
- locnr = -1: (0.341717, 0.0733767, 0.0733767), weight = 0.00616387
- locnr = -1: (0.273846, 0.0610607, 0.273846), weight = 0.00365801
- locnr = -1: (0.273846, 0.273846, 0.0610607), weight = 0.00365801
- locnr = -1: (0.227882, 0.227882, 0.227882), weight = 0.0022025
-</pre></div>
-</div>
-<img alt="../_images/2e695bd287c9d9e38f612d3844a5c03a4f3abe2eafa1bd19f69174c91803a753.png" src="../_images/2e695bd287c9d9e38f612d3844a5c03a4f3abe2eafa1bd19f69174c91803a753.png" />
-</div>
 </div>
 <p>Using these <code class="docutils literal notranslate"><span class="pre">IntegrationRules</span></code> we may compute the exact mass matrices:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ngsolve</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ngsolve</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">dualcellspaces</span> <span class="k">as</span> <span class="nn">dcs</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">pl</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -500,15 +443,12 @@ ET.TET
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" src="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" />
-</div>
 </div>
 <p>The resulting matrix can easily be seen to be block-diagonal.
 To approximate the mass matrix using the integration rule which was used in the construction of the basis functions we may obtain the <code class="docutils literal notranslate"><span class="pre">IntegrationRule</span></code> from the <code class="docutils literal notranslate"><span class="pre">FESpace</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">irs_fes</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">irs_fes</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">()</span>
 
 <span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]);</span>
 <span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">],[</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">]);</span>
@@ -526,17 +466,12 @@ To approximate the mass matrix using the integration rule which was used in the 
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../_images/896c2785c22f261110fa6d90f986c579936ae8e236ec4d59aafa247ee0b381c8.png" src="../_images/896c2785c22f261110fa6d90f986c579936ae8e236ec4d59aafa247ee0b381c8.png" />
-<img alt="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" src="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" />
-<img alt="../_images/f4b611030371c1d76a893e1c7c2eb1b3867555692416fb234feb385fff34a002.png" src="../_images/f4b611030371c1d76a893e1c7c2eb1b3867555692416fb234feb385fff34a002.png" />
-</div>
 </div>
 <p>We can observe that the coupling entries between basis function of the same element are numerically zero, by construction and we obtain a diagonal matrix.
 For the vectorial spaces the lumped mass matrices are block diagonal:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fes_curl</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">HCurlDualCells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fes_curl</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">HCurlDualCells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
 <span class="n">u</span><span class="p">,</span><span class="n">v</span> <span class="o">=</span> <span class="n">fes_curl</span><span class="o">.</span><span class="n">TnT</span><span class="p">()</span>
 
 <span class="n">M</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">irs</span><span class="p">))</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">mat</span>
@@ -550,16 +485,12 @@ For the vectorial spaces the lumped mass matrices are block diagonal:</p>
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<img alt="../_images/23fc9162068c78dabf3a23a1eb9d66877e4da59bd9dbf5921cd71290f5768bb0.png" src="../_images/23fc9162068c78dabf3a23a1eb9d66877e4da59bd9dbf5921cd71290f5768bb0.png" />
-<img alt="../_images/0574d5aa866622d1c568f1f5f4b2eb293899dcc65ace710d09ee2ab2ea38e11d.png" src="../_images/0574d5aa866622d1c568f1f5f4b2eb293899dcc65ace710d09ee2ab2ea38e11d.png" />
-</div>
 </div>
 <p>Since the entries corresponding to basis functions of the dual elements are not stored together the block structure is less obvious here.
 Exploiting this block structure is implemented in the finite element spaces. The mass matrices may be accessed via <code class="docutils literal notranslate"><span class="pre">FESpace.Mass</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
 
 <span class="n">order</span> <span class="o">=</span> <span class="mi">3</span>
 
@@ -616,26 +547,6 @@ Exploiting this block structure is implemented in the finite element spaces. The
   <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#### application ####&#39;</span><span class="p">)</span>
   <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exact: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exacttime</span><span class="p">))</span>
   <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;supersparse: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stime</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ndof =  122352
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### assembling ####
-exact: 2.2654900550842285s
-supersparse: 0.2561802864074707s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### factorization ####
-exact: 22.194032430648804s
-supersparse: 0.008639097213745117s
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### application ####
-exact: 0.3899693489074707s
-supersparse: 0.0015819072723388672s
 </pre></div>
 </div>
 </div>
