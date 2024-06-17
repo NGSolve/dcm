@@ -749,14 +749,14 @@ namespace ngcomp
   tuple<Array<array<int,4>>,int> GetNanoFaces<ET_TRIG> 
       (int order, bool dual)
   {
-    ;
+    throw Exception ("Nano faces not implemented for ET_TRIG");
   }
 
   template <>
   tuple<Array<array<int,8>>,int> GetNanoCells<ET_TRIG>
      (int order, bool dual)
   {
-    ;
+    throw Exception ("Nano cells not implemented for ET_TRIG");
   }
 
 
@@ -962,7 +962,7 @@ namespace ngcomp
   tuple<Table<array<int,8>>,Table<array<int,4>>>
       GetNanoVolumes<ET_TRIG> (int order, bool dual)
   {
-    ;
+    throw Exception ("Nano volumes not implemented for ET_TRIG");
   }
 
   //TET
@@ -1028,21 +1028,21 @@ namespace ngcomp
   tuple<Array<array<int,2>>,int> GetNanoEdges<ET_TET>
    (int order, bool dual)
   {
-    ;
+    throw Exception ("Nano edges not implemented for ET_TET");
   }
   
   template <>
   tuple<Array<array<int,4>>,int> GetNanoFaces<ET_TET> 
       (int order, bool dual)
   {
-    ;
+    throw Exception ("Nano faces not implemented for ET_TET");
   }
 
   template <>
   tuple<Array<array<int,8>>,int> GetNanoCells<ET_TET>
      (int order, bool dual)
   {
-    ;
+    throw Exception ("Nano cells not implemented for ET_TET");
   }
 
 
@@ -1130,14 +1130,14 @@ namespace ngcomp
   tuple<Table<array<int,4>>,Table<array<int,2>>>
         GetNanoSurfaces<ET_TET> (int order, bool dual)
   {
-    ;
+    throw Exception ("Nano surfaces not implemented for ET_TET");
   }
 
   template <>
   tuple<Table<array<int,8>>,Table<array<int,4>>>
       GetNanoVolumes<ET_TET> (int order, bool dual)
   {
-    ;
+    throw Exception ("Nano volumes not implemented for ET_TET");
   }
 
   
