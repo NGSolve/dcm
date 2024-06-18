@@ -1,0 +1,783 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3.2. Mass Lumping for dual cell spaces &#8212; The Dual Cell Method in NGSolve</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/mass_lumping';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3.3. Computing the gradient of a Gaussian peak in dual cell spaces" href="grad.html" />
+    <link rel="prev" title="3.1. Basics on dual cell spaces" href="basics.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="The Dual Cell Method in NGSolve - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="The Dual Cell Method in NGSolve - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    The Dual Cell Method in NGSolve
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">1. Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../maxwell.html">2. The dual cell method for the time-domain Maxwell system</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../maxwell/introduction.html">2.2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maxwell/hcurl.html">2.3. Discrete spaces on dual cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maxwell/mass_lumping.html">2.4. Mass lumping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maxwell/diffops.html">2.5. The discrete differential operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maxwell/time_stepping.html">2.6. Time stepping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maxwell/bibliography.html">2.7. Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">3. Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3.1. Basics on dual cell spaces</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">3.2. Mass Lumping for dual cell spaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grad.html">3.3. Computing the gradient of a Gaussian peak in dual cell spaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qualitative_dispersion.html">3.4. A plane wave on a square</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ring_resonator.html">3.5. Ring resonator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="waveguide_3d.html">3.6. Electromagnetic 3d waveguide</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/ngsolve/dcm" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/ngsolve/dcm/issues/new?title=Issue%20on%20page%20%2Fexamples/mass_lumping.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/examples/mass_lumping.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Mass Lumping for dual cell spaces</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#by-m-wess-2024">by M. Wess, 2024</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dual-cell-integration-rules">Dual cell integration rules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mass-lumping">Mass lumping</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">Exercises:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#application-of-inverse-lumped-mass-matrices">Application of (inverse) lumped mass matrices</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="mass-lumping-for-dual-cell-spaces">
+<h1><span class="section-number">3.2. </span>Mass Lumping for dual cell spaces<a class="headerlink" href="#mass-lumping-for-dual-cell-spaces" title="Link to this heading">#</a></h1>
+<section id="by-m-wess-2024">
+<h2>by M. Wess, 2024<a class="headerlink" href="#by-m-wess-2024" title="Link to this heading">#</a></h2>
+<p><em>This Notebook is part of the <code class="docutils literal notranslate"><span class="pre">dualcellspaces</span></code> <a class="reference external" href="https://ngsolve.github.io/dcm">documentation</a> for the addon package implementing the Dual Cell method in <a class="reference external" href="https://ngsolve.org">NGSolve</a>.</em></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ngsolve</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">dualcellspaces</span> <span class="k">as</span> <span class="nn">dcs</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">pl</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="dual-cell-integration-rules">
+<h2>Dual cell integration rules<a class="headerlink" href="#dual-cell-integration-rules" title="Link to this heading">#</a></h2>
+<p>Since our spaces consist of functions which are smooth (polynomials) on the single cells (instead of the whole elements) we cannot use the standard integration rules provided by <code class="docutils literal notranslate"><span class="pre">NGSolve</span></code> for computing itegrals.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">dualcellspaces</span></code> package provides <code class="docutils literal notranslate"><span class="pre">dualcellspaces.GetIntegrationRules</span></code>, which returns rules which respect the cell structure. These are not the integration nodes used for generating the spaces!</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">irs</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">irs</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">et</span> <span class="ow">in</span> <span class="n">irs</span><span class="p">:</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">et</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">irs</span><span class="p">[</span><span class="n">et</span><span class="p">])</span>
+
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]);</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">],[</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">]);</span>
+
+<span class="n">trig_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">irs</span><span class="p">[</span><span class="n">TRIG</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+<span class="n">px</span><span class="p">,</span><span class="n">py</span> <span class="o">=</span> <span class="n">trig_points</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">trig_points</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">px</span><span class="p">,</span><span class="n">py</span><span class="p">,</span><span class="s1">&#39;ob&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&lt;ET.SEGM: 1&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x7a06ccc9ddf0&gt;, &lt;ET.TRIG: 10&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x7a06ccc9deb0&gt;, &lt;ET.TET: 20&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x7a06ccc9dfb0&gt;}
+ET.SEGM
+ locnr = -1: (0.105662, 0, 0), weight = 0.25
+ locnr = -1: (0.394338, 0, 0), weight = 0.25
+ locnr = -1: (0.894338, 0, 0), weight = 0.25
+ locnr = -1: (0.605662, 0, 0), weight = 0.25
+
+ET.TRIG
+ locnr = -1: (0.803561, 0.0982194, 0), weight = 0.0536948
+ locnr = -1: (0.555556, 0.0778847, 0), weight = 0.0416667
+ locnr = -1: (0.555556, 0.36656, 0), weight = 0.0416667
+ locnr = -1: (0.418661, 0.290669, 0), weight = 0.0296385
+ locnr = -1: (0.0982194, 0.803561, 0), weight = 0.0536948
+ locnr = -1: (0.36656, 0.555556, 0), weight = 0.0416667
+ locnr = -1: (0.0778847, 0.555556, 0), weight = 0.0416667
+ locnr = -1: (0.290669, 0.418661, 0), weight = 0.0296385
+ locnr = -1: (0.0982194, 0.0982194, 0), weight = 0.0536948
+ locnr = -1: (0.0778847, 0.36656, 0), weight = 0.0416667
+ locnr = -1: (0.36656, 0.0778847, 0), weight = 0.0416667
+ locnr = -1: (0.290669, 0.290669, 0), weight = 0.0296385
+
+ET.TET
+ locnr = -1: (0.725312, 0.0915628, 0.0915628), weight = 0.00999851
+ locnr = -1: (0.51153, 0.0733767, 0.0733767), weight = 0.00616387
+ locnr = -1: (0.51153, 0.0733767, 0.341717), weight = 0.00616387
+ locnr = -1: (0.391248, 0.0610607, 0.273846), weight = 0.00365801
+ locnr = -1: (0.51153, 0.341717, 0.0733767), weight = 0.00616387
+ locnr = -1: (0.391248, 0.273846, 0.0610607), weight = 0.00365801
+ locnr = -1: (0.391248, 0.273846, 0.273846), weight = 0.00365801
+ locnr = -1: (0.316355, 0.227882, 0.227882), weight = 0.0022025
+ locnr = -1: (0.0915628, 0.725312, 0.0915628), weight = 0.00999851
+ locnr = -1: (0.341717, 0.51153, 0.0733767), weight = 0.00616387
+ locnr = -1: (0.0733767, 0.51153, 0.0733767), weight = 0.00616387
+ locnr = -1: (0.273846, 0.391248, 0.0610607), weight = 0.00365801
+ locnr = -1: (0.0733767, 0.51153, 0.341717), weight = 0.00616387
+ locnr = -1: (0.273846, 0.391248, 0.273846), weight = 0.00365801
+ locnr = -1: (0.0610607, 0.391248, 0.273846), weight = 0.00365801
+ locnr = -1: (0.227882, 0.316355, 0.227882), weight = 0.0022025
+ locnr = -1: (0.0915628, 0.0915628, 0.725312), weight = 0.00999851
+ locnr = -1: (0.0733767, 0.341717, 0.51153), weight = 0.00616387
+ locnr = -1: (0.341717, 0.0733767, 0.51153), weight = 0.00616387
+ locnr = -1: (0.273846, 0.273846, 0.391248), weight = 0.00365801
+ locnr = -1: (0.0733767, 0.0733767, 0.51153), weight = 0.00616387
+ locnr = -1: (0.0610607, 0.273846, 0.391248), weight = 0.00365801
+ locnr = -1: (0.273846, 0.0610607, 0.391248), weight = 0.00365801
+ locnr = -1: (0.227882, 0.227882, 0.316355), weight = 0.0022025
+ locnr = -1: (0.0915628, 0.0915628, 0.0915628), weight = 0.00999851
+ locnr = -1: (0.0733767, 0.0733767, 0.341717), weight = 0.00616387
+ locnr = -1: (0.0733767, 0.341717, 0.0733767), weight = 0.00616387
+ locnr = -1: (0.0610607, 0.273846, 0.273846), weight = 0.00365801
+ locnr = -1: (0.341717, 0.0733767, 0.0733767), weight = 0.00616387
+ locnr = -1: (0.273846, 0.0610607, 0.273846), weight = 0.00365801
+ locnr = -1: (0.273846, 0.273846, 0.0610607), weight = 0.00365801
+ locnr = -1: (0.227882, 0.227882, 0.227882), weight = 0.0022025
+</pre></div>
+</div>
+<img alt="../_images/2e695bd287c9d9e38f612d3844a5c03a4f3abe2eafa1bd19f69174c91803a753.png" src="../_images/2e695bd287c9d9e38f612d3844a5c03a4f3abe2eafa1bd19f69174c91803a753.png" />
+</div>
+</div>
+<p>Using these integration rules we may compute the exact mass matrices</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">order</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="n">irs</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">order</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">unit_square</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">(</span><span class="n">maxh</span><span class="o">=</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="c1">#fes = dcs.HCurlDualCells(mesh,order=order)</span>
+<span class="n">fes</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">H1PrimalCells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+<span class="n">u</span><span class="p">,</span><span class="n">v</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">TnT</span><span class="p">()</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">irs</span><span class="p">))</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">mat</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">spy</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">ToDense</span><span class="p">());</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" src="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" />
+</div>
+</div>
+</section>
+<section id="mass-lumping">
+<h2>Mass lumping<a class="headerlink" href="#mass-lumping" title="Link to this heading">#</a></h2>
+<p>We want to explot the fact that we used nodal basis functions with respect to the nodes of Gauss-Radau integration rules. Thus we need to assemble the mass matrices approximated by these integration rules.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">irs_fes</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">()</span>
+
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]);</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">],[</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">]);</span>
+
+<span class="n">trig_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">irs_fes</span><span class="p">[</span><span class="n">TRIG</span><span class="p">]</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+<span class="n">px</span><span class="p">,</span><span class="n">py</span> <span class="o">=</span> <span class="n">trig_points</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">trig_points</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">px</span><span class="p">,</span><span class="n">py</span><span class="p">,</span><span class="s1">&#39;ob&#39;</span><span class="p">);</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">irs_fes</span><span class="p">))</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">mat</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">spy</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">ToDense</span><span class="p">());</span>
+<span class="n">M_diag</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">DeleteZeroElements</span><span class="p">(</span><span class="mf">1e-10</span><span class="p">)</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">spy</span><span class="p">(</span><span class="n">M_diag</span><span class="o">.</span><span class="n">ToDense</span><span class="p">());</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/896c2785c22f261110fa6d90f986c579936ae8e236ec4d59aafa247ee0b381c8.png" src="../_images/896c2785c22f261110fa6d90f986c579936ae8e236ec4d59aafa247ee0b381c8.png" />
+<img alt="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" src="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" />
+<img alt="../_images/f4b611030371c1d76a893e1c7c2eb1b3867555692416fb234feb385fff34a002.png" src="../_images/f4b611030371c1d76a893e1c7c2eb1b3867555692416fb234feb385fff34a002.png" />
+</div>
+</div>
+<section id="exercises">
+<h3>Exercises:<a class="headerlink" href="#exercises" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Explain why we need apply the function <code class="docutils literal notranslate"><span class="pre">DeleteZeroElements</span></code>. Use the function <code class="docutils literal notranslate"><span class="pre">BaseMatrix.nze</span></code> to check the number of non-zero elements in the assembled matrix</p></li>
+<li><p>Look at the sparsity pattern of the exact and lumped mass matrix for the <code class="docutils literal notranslate"><span class="pre">HCurlDualCells</span></code> and <code class="docutils literal notranslate"><span class="pre">H1DualCells</span></code> spaces.</p></li>
+</ul>
+</section>
+</section>
+<section id="application-of-inverse-lumped-mass-matrices">
+<h2>Application of (inverse) lumped mass matrices<a class="headerlink" href="#application-of-inverse-lumped-mass-matrices" title="Link to this heading">#</a></h2>
+<p>Since the entries corresponding to basis functions of the dual elements are not stored together the block structure is less obvious here. Exploiting this block structure is implemented in the finite element spaces. The mass matrices may be accessed via <code class="docutils literal notranslate"><span class="pre">FESpace.Mass</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+
+<span class="n">order</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="n">irs</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">order</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">unit_cube</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">(</span><span class="n">maxh</span><span class="o">=</span><span class="mf">0.3</span><span class="p">))</span>
+<span class="n">fes</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">HCurlDualCells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ndof = &quot;</span><span class="p">,</span><span class="n">fes</span><span class="o">.</span><span class="n">ndof</span><span class="p">)</span>
+
+<span class="n">irs_fes</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">()</span>
+<span class="n">u</span><span class="p">,</span><span class="n">v</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">TnT</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">TaskManager</span><span class="p">():</span>
+  <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+  <span class="n">M_exact</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">irs</span><span class="p">))</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">mat</span>
+  <span class="n">exacttime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+
+  <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+  <span class="n">M_supersparse</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">Mass</span><span class="p">()</span>
+  <span class="n">stime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#### assembling ####&#39;</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exact: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exacttime</span><span class="p">))</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;supersparse: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stime</span><span class="p">))</span>
+
+
+  <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+  <span class="n">M_exact_inv</span> <span class="o">=</span> <span class="n">M_exact</span><span class="o">.</span><span class="n">Inverse</span><span class="p">(</span><span class="n">inverse</span><span class="o">=</span><span class="s1">&#39;sparsecholesky&#39;</span><span class="p">)</span>
+  <span class="n">exacttime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+
+  <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+  <span class="k">with</span> <span class="n">TaskManager</span><span class="p">():</span>
+    <span class="n">M_supersparse_inv</span> <span class="o">=</span> <span class="n">M_supersparse</span><span class="o">.</span><span class="n">Inverse</span><span class="p">()</span>
+  <span class="n">stime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#### factorization ####&#39;</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exact: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exacttime</span><span class="p">))</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;supersparse: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stime</span><span class="p">))</span>
+
+  <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
+  <span class="n">tmp</span> <span class="o">=</span> <span class="n">M_exact</span><span class="o">.</span><span class="n">CreateVector</span><span class="p">()</span>
+  <span class="n">tmp</span><span class="o">.</span><span class="n">SetRandom</span><span class="p">()</span>
+  <span class="n">tmp2</span> <span class="o">=</span> <span class="n">M_exact</span><span class="o">.</span><span class="n">CreateVector</span><span class="p">()</span>
+
+  <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">tmp2</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">M_exact_inv</span> <span class="o">*</span> <span class="n">tmp</span>
+  <span class="n">exacttime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+
+  <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">tmp2</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">M_supersparse_inv</span> <span class="o">*</span> <span class="n">tmp</span>
+  <span class="n">stime</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#### application ####&#39;</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;exact: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exacttime</span><span class="p">))</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;supersparse: </span><span class="si">{}</span><span class="s1">s&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stime</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ndof =  122352
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### assembling ####
+exact: 5.64348030090332s
+supersparse: 0.468813419342041s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### factorization ####
+exact: 26.60693645477295s
+supersparse: 0.031007051467895508s
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### application ####
+exact: 0.7979543209075928s
+supersparse: 0.0057141780853271484s
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./examples"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="basics.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">3.1. </span>Basics on dual cell spaces</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="grad.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">3.3. </span>Computing the gradient of a Gaussian peak in dual cell spaces</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#by-m-wess-2024">by M. Wess, 2024</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dual-cell-integration-rules">Dual cell integration rules</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mass-lumping">Mass lumping</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exercises">Exercises:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#application-of-inverse-lumped-mass-matrices">Application of (inverse) lumped mass matrices</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By M. Wess
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,15 +1,4 @@
 Traceback (most recent call last):
-  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 780, in _async_poll_for_reply
-    msg = await ensure_async(self.kc.shell_channel.get_msg(timeout=new_timeout))
-  File "/usr/local/lib/python3.10/dist-packages/nbclient/util.py", line 97, in ensure_async
-    result = await obj
-  File "/usr/local/lib/python3.10/dist-packages/jupyter_client/channels.py", line 230, in get_msg
-    raise Empty
-_queue.Empty
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
   File "/home/mwess/.local/lib/python3.10/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
     executenb(
   File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 1269, in execute
@@ -22,18 +11,61 @@ Traceback (most recent call last):
     return future.result()
   File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 707, in async_execute
     await self.async_execute_cell(
-  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 1006, in async_execute_cell
-    exec_reply = await self.task_poll_for_reply
-  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 804, in _async_poll_for_reply
-    error_on_timeout_execute_reply = await self._async_handle_timeout(timeout, cell)
-  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 856, in _async_handle_timeout
-    raise CellTimeoutError.error_from_timeout_and_cell(
-nbclient.exceptions.CellTimeoutError: A cell timed out while it was being executed, after 100 seconds.
-The message was: Cell execution timed out.
-Here is a preview of the cell contents:
--------------------
-['from time import time', '', 'startnow = time()', 'now = time()', '']
-...
-['            gfp_history.AddMultiDimComponent(gfu.components[0].vec)', '            drawtime += time()-drawnow', '', 'computetime = time()-startnow-drawtime', 'dofss = fes.ndof*i/computetime']
--------------------
+  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 1025, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 919, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+from time import time
+
+startnow = time()
+now = time()
+
+drawevery = 400
+drawtime = 0
+with TaskManager():
+    while t < tend:
+        tmp.data = -B_big.T * gfu.vec
+
+        if abs(t_envelope(t))>0:
+            tmp.data += t_envelope(t)*emb_p*lsrc.vec
+            
+        tmp.data -= alpha * dampp_big * gfu.vec
+
+        gfu.vec.data += tau * invmassp_big * tmp
+        tmp.data = B_big * gfu.vec
+        tmp.data -= alpha * dampu_big * gfu.vec
+
+        gfu.vec.data += tau * invmassu_big * tmp
+
+        t += tau
+        i += 1
+        if i%drawevery == 0:
+            #drawnow = time()
+            #scene.Redraw()
+            #print("t = {}, \t {:e} DoFs/s".format(t,fes.ndof*drawevery/(time()-now)),end = "\r")
+            #now = time()
+            gfp_history.AddMultiDimComponent(gfu.components[0].vec)
+            #drawtime += time()-drawnow
+
+computetime = time()-startnow-drawtime
+dofss = fes.ndof*i/computetime
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mKeyboardInterrupt[0m                         Traceback (most recent call last)
+Input [0;32mIn [16][0m, in [0;36m<cell line: 8>[0;34m()[0m
+[1;32m     23[0m t [38;5;241m+[39m[38;5;241m=[39m tau
+[1;32m     24[0m i [38;5;241m+[39m[38;5;241m=[39m [38;5;241m1[39m
+[0;32m---> 25[0m [38;5;28;01mif[39;00m i[38;5;241m%[39mdrawevery [38;5;241m==[39m [38;5;241m0[39m:
+[1;32m     26[0m     [38;5;66;03m#drawnow = time()[39;00m
+[1;32m     27[0m     [38;5;66;03m#scene.Redraw()[39;00m
+[1;32m     28[0m     [38;5;66;03m#print("t = {}, \t {:e} DoFs/s".format(t,fes.ndof*drawevery/(time()-now)),end = "\r")[39;00m
+[1;32m     29[0m     [38;5;66;03m#now = time()[39;00m
+[1;32m     30[0m     gfp_history[38;5;241m.[39mAddMultiDimComponent(gfu[38;5;241m.[39mcomponents[[38;5;241m0[39m][38;5;241m.[39mvec)
+[1;32m     31[0m     [38;5;66;03m#drawtime += time()-drawnow[39;00m
+
+[0;31mKeyboardInterrupt[0m: 
+KeyboardInterrupt: 
 

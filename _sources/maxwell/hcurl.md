@@ -128,12 +128,12 @@ print("number of (primal) elements in mesh: ", mesh_curl.ne)
 print("number of dofs per element: ", hcurl.ndof/mesh_curl.ne)
 ```
 
-We may take a look at the basis functions:
-```{code-cell} ipython
-gfu_curl = GridFunction(hcurl,multidim = hcurl.ndof)
-for i in range(hcurl.ndof):
-    gfu_curl.vecs[i][i] = 1
-Draw(gfu_curl, animate = True, min = 0, max = 1,vectors = True, intpoints = dcs.GetWebGuiPoints(2),order = 2,);
+%We may take a look at the basis functions:
+%```{code-cell} ipython
+%gfu_curl = GridFunction(hcurl,multidim = hcurl.ndof)
+%for i in range(hcurl.ndof):
+%    gfu_curl.vecs[i][i] = 1
+%Draw(gfu_curl, animate = True, min = 0, max = 1,vectors = True, intpoints = dcs.GetWebGuiPoints(2),order = 2,);
 ```
 
 
