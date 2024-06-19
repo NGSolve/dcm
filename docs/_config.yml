@@ -9,16 +9,17 @@ copyright: '2024'
 # See https://jupyterbook.org/content/execute.html
 only_build_toc_files: true
 execute:
-    #  execute_notebooks: cache 
+    # execute_notebooks: cache 
     #  execute_notebooks: 'off' 
   execute_notebooks: auto
     #  execute_notebooks: force
   timeout: 100
   exclude_patterns:
-    - 'asdfadf'
-    - '*resonator*'
-    - '*qualitative*'
-      #- 'mass_lumping*'
+      - 'asdfadf'
+        #- '*resonator*'
+        #- '*qualitative*'
+        #- 'mass_lumping*'
+        #- '*waveguide*'
 
 # Define the name of the latex output file for PDF builds
 latex:

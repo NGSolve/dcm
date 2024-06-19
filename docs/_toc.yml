@@ -19,5 +19,9 @@ chapters:
       - file: maxwell/bibliography
   - file: examples
     sections:
+      - file: examples/basics
+      - file: examples/mass_lumping
+      - file: examples/grad
       - file: examples/qualitative_dispersion
       - file: examples/ring_resonator
+      - file: examples/waveguide_3d

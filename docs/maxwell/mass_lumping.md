@@ -109,7 +109,7 @@ from time import time
 order = 3
 
 irs = dcs.GetIntegrationRules(2*order+2)
-mesh = Mesh(unit_cube.GenerateMesh(maxh=0.4))
+mesh = Mesh(unit_cube.GenerateMesh(maxh=0.3))
 fes = dcs.HCurlDualCells(mesh,order=order)
 
 print("ndof = ",fes.ndof)
