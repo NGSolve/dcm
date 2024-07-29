@@ -15,7 +15,7 @@ This book is designed to provide an introduction and examples to the implementat
 
 The *Dual Cell Method* (DCM) is a Galerkin Method for the simulation of time-domain waves (e.g., electromagnetic or acoustiv waves) in mixed formulation. It is a Disconitinuous Galerkin variant where the two wave-fields are approximated by conforming functions on meshes dual to each other. Thus the respective ansatz functions feature discontinuities on different element boundaries.
 
-For a full mathematical introduction to the method we refer to {cite}`WKCS2023,KCS2021`.
+For a full mathematical introduction to the method we refer to {cite}`WKCS2023,KCS2021` and to {cite}`CKSW2024_waves` for a shorter read.
 
 ---
 

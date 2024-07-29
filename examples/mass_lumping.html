@@ -449,7 +449,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&lt;ET.SEGM: 1&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x7a06ccc9ddf0&gt;, &lt;ET.TRIG: 10&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x7a06ccc9deb0&gt;, &lt;ET.TET: 20&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x7a06ccc9dfb0&gt;}
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&lt;ET.SEGM: 1&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x7f8ea00a6430&gt;, &lt;ET.TRIG: 10&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x7f8ea00a6530&gt;, &lt;ET.TET: 20&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x7f8ea00a65f0&gt;}
 ET.SEGM
  locnr = -1: (0.105662, 0, 0), weight = 0.25
  locnr = -1: (0.394338, 0, 0), weight = 0.25
@@ -515,8 +515,8 @@ ET.TET
 
 <span class="n">irs</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">order</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">unit_square</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">(</span><span class="n">maxh</span><span class="o">=</span><span class="mf">0.5</span><span class="p">))</span>
-<span class="c1">#fes = dcs.HCurlDualCells(mesh,order=order)</span>
-<span class="n">fes</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">H1PrimalCells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+<span class="n">fes</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">HCurlDualCells</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+<span class="c1">#fes = dcs.H1PrimalCells(mesh,order=order)</span>
 <span class="n">u</span><span class="p">,</span><span class="n">v</span> <span class="o">=</span> <span class="n">fes</span><span class="o">.</span><span class="n">TnT</span><span class="p">()</span>
 
 <span class="n">M</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">v</span><span class="o">*</span><span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">irs</span><span class="p">))</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">mat</span>
@@ -525,7 +525,7 @@ ET.TET
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" src="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" />
+<img alt="../_images/23fc9162068c78dabf3a23a1eb9d66877e4da59bd9dbf5921cd71290f5768bb0.png" src="../_images/23fc9162068c78dabf3a23a1eb9d66877e4da59bd9dbf5921cd71290f5768bb0.png" />
 </div>
 </div>
 </section>
@@ -549,13 +549,14 @@ ET.TET
 <span class="n">M_diag</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">DeleteZeroElements</span><span class="p">(</span><span class="mf">1e-10</span><span class="p">)</span>
 <span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">pl</span><span class="o">.</span><span class="n">spy</span><span class="p">(</span><span class="n">M_diag</span><span class="o">.</span><span class="n">ToDense</span><span class="p">());</span>
+<span class="c1">#pl.spy(M.ToDense());</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/896c2785c22f261110fa6d90f986c579936ae8e236ec4d59aafa247ee0b381c8.png" src="../_images/896c2785c22f261110fa6d90f986c579936ae8e236ec4d59aafa247ee0b381c8.png" />
-<img alt="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" src="../_images/f8577e13e480c8909a1fdab89261d419bf619260e9eddefbcf7b1f387228289a.png" />
-<img alt="../_images/f4b611030371c1d76a893e1c7c2eb1b3867555692416fb234feb385fff34a002.png" src="../_images/f4b611030371c1d76a893e1c7c2eb1b3867555692416fb234feb385fff34a002.png" />
+<img alt="../_images/2614e2abeeafa9e7432f69611dfe16d84df719634fea4b24a3456da409f71b4d.png" src="../_images/2614e2abeeafa9e7432f69611dfe16d84df719634fea4b24a3456da409f71b4d.png" />
+<img alt="../_images/23fc9162068c78dabf3a23a1eb9d66877e4da59bd9dbf5921cd71290f5768bb0.png" src="../_images/23fc9162068c78dabf3a23a1eb9d66877e4da59bd9dbf5921cd71290f5768bb0.png" />
+<img alt="../_images/0574d5aa866622d1c568f1f5f4b2eb293899dcc65ace710d09ee2ab2ea38e11d.png" src="../_images/0574d5aa866622d1c568f1f5f4b2eb293899dcc65ace710d09ee2ab2ea38e11d.png" />
 </div>
 </div>
 <section id="exercises">
@@ -636,18 +637,18 @@ ET.TET
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### assembling ####
-exact: 5.64348030090332s
-supersparse: 0.468813419342041s
+exact: 1.8344414234161377s
+supersparse: 0.17027854919433594s
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### factorization ####
-exact: 26.60693645477295s
-supersparse: 0.031007051467895508s
+exact: 21.325812339782715s
+supersparse: 0.007603645324707031s
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### application ####
-exact: 0.7979543209075928s
-supersparse: 0.0057141780853271484s
+exact: 0.397078275680542s
+supersparse: 0.00144195556640625s
 </pre></div>
 </div>
 </div>
