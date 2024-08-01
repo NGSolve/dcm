@@ -6,10 +6,13 @@
 #include "supersparse.hpp"
 #include "smallsparse.hpp"
 
-
 namespace ngcomp
 {
-  
+  // getting rid of the problems with ConstEBE<T> and make_shared
+  //
+  typedef decltype (ConstantElementByElementMatrix (5,5,Matrix<>(),
+                                                  declval<Table<int>>(), declval<Table<int>>())) T_ConstEBE;
+
   class HCurlDualCellTrig : public HCurlCellFiniteElement<2>, public VertexOrientedFE<ET_TRIG>
   {
     const IntegrationRule & GaussRadauIR;
@@ -3217,7 +3220,7 @@ namespace ngcomp
             ydofs[i] = dnumsy;
           }
         
-        auto mat = make_shared<ConstantElementByElementMatrix>
+        auto mat = make_shared<T_ConstEBE>
           (fescurl->GetNDof(), GetNDof(),
            finalmat, std::move(ydofs), std::move(xdofs));
         
@@ -3389,7 +3392,7 @@ namespace ngcomp
                 ydofs[i] = dnumsy;
               }
 
-            auto mat = make_shared<ConstantElementByElementMatrix>
+            auto mat = make_shared<T_ConstEBE>
               (fescurl->GetNDof(), GetNDof(),
                curlmat, std::move(ydofs), std::move(xdofs));
         
@@ -3581,7 +3584,7 @@ namespace ngcomp
               cout << "ydofs = " << ydofs << endl;
             */
         
-            auto mat = make_shared<ConstantElementByElementMatrix>
+            auto mat = make_shared<T_ConstEBE>
               (fescurl->GetNDof(), GetNDof(),
                curlmat, std::move(ydofs), std::move(xdofs));
         
@@ -3858,7 +3861,7 @@ namespace ngcomp
               cout << "ydofs = " << ydofs << endl;
             */
         
-            auto mat = make_shared<ConstantElementByElementMatrix>
+            auto mat = make_shared<T_ConstEBE>
               (fescurl->GetNDof(), GetNDof(),
                curlmat, std::move(ydofs), std::move(xdofs));
         
@@ -4060,7 +4063,7 @@ namespace ngcomp
             ydofs[i] = dnumsy;
           }
         
-        auto mat = make_shared<ConstantElementByElementMatrix>
+        auto mat = make_shared<T_ConstEBE>
           (this->GetNDof(), fespot->GetNDof(),
            finalmat, std::move(ydofs), std::move(xdofs));
         
@@ -4194,7 +4197,7 @@ namespace ngcomp
                 ydofs[i] = dnumsy;
               }
 
-            auto mat = make_shared<ConstantElementByElementMatrix>
+            auto mat = make_shared<T_ConstEBE>
               (this->GetNDof(), fespot->GetNDof(),
                tmp, std::move(ydofs), std::move(xdofs));
         
@@ -4322,7 +4325,7 @@ namespace ngcomp
                 ydofs[i] = dnumsy;
               }
 
-            auto mat = make_shared<ConstantElementByElementMatrix>
+            auto mat = make_shared<T_ConstEBE>
               (this->GetNDof(), fespot->GetNDof(),
                tmp, std::move(ydofs), std::move(xdofs));
         

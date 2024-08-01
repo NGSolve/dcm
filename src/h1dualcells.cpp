@@ -8,6 +8,10 @@
 namespace ngcomp
 {
 
+  // getting rid of the problems with ConstEBE<T> and make_shared
+  //
+  typedef decltype (ConstantElementByElementMatrix (5,5,Matrix<>(),
+                                                  declval<Table<int>>(), declval<Table<int>>())) T_ConstEBE;
 
   class H1DualCellSegm : public ScalarFiniteElement<1>, public VertexOrientedFE<ET_SEGM>
   {
@@ -506,7 +510,7 @@ namespace ngcomp
             xdofs[i] = dnumsx;
             ydofs[i] = dnumsy;
           }
-        auto mat = make_shared<ConstantElementByElementMatrix>
+        auto mat = make_shared<T_ConstEBE>
           ( feshdiv->GetNDof(),GetNDof(),
            gradmat, std::move(ydofs),std::move(xdofs));
         if (sum)
