@@ -21,7 +21,7 @@ add_ngsolve_addon(${addon_name}
   )
 
 # for opimization
-set(CMAKE_CXX_FLAGS "-O3")
+# set(CMAKE_CXX_FLAGS "-O3")
 # install the compiled python module and __init__.py ( don't change this )
 set(install_dir ${ADDON_INSTALL_DIR_PYTHON}/${addon_name})
 install(TARGETS ${addon_name} DESTINATION ${install_dir})
