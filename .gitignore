@@ -42,7 +42,9 @@ build/*
 docs/images/*.dpth
 docs/images/*.log
 docs/images/*.md5
+docs/createimages.pdf
 
 # latex files
 *.aux
 *.aux*
+*.log*
