@@ -33,7 +33,7 @@
 
 # Python
 __pycache__/
-
+*.ipynb_checkpoints*
 
 # building
 build/*
@@ -43,3 +43,6 @@ docs/images/*.dpth
 docs/images/*.log
 docs/images/*.md5
 
+# latex files
+*.aux
+*.aux*
