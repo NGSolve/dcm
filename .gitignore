@@ -37,3 +37,9 @@ __pycache__/
 
 # building
 build/*
+
+# image tmp files
+docs/images/*.dpth
+docs/images/*.log
+docs/images/*.md5
+
