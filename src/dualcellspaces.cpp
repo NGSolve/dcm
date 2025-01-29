@@ -25,30 +25,30 @@ PYBIND11_MODULE(dualcellspaces,m) {
 
   using namespace ngcomp;
 
-  ExportFESpace<H1DualCells>(m, "H1DualCells", true)
+  ExportFESpace<H1DualCells>(m, "H1DualCells"/*, true*/)
       .def("GetIntegrationRules", &H1DualCells::GetIntegrationRules, py::arg("intorder")=nullopt)
       .def("Gradient", &H1DualCells::GetGradientOperator2D, py::arg("dual")=true)
     ;
-  ExportFESpace<HDivPrimalCells>(m, "HDivPrimalCells", true)
+  ExportFESpace<HDivPrimalCells>(m, "HDivPrimalCells"/*, true*/)
     .def("GetIntegrationRules", &HDivPrimalCells::GetIntegrationRules)
     .def("ConvertGR2GOperator", &HDivPrimalCells::ConvertGR2GOperator)
     ; 
 
   auto h1dualpy = 
-    ExportFESpace<H1DualCells3D>(m, "H1DualCells3D", true)
+    ExportFESpace<H1DualCells3D>(m, "H1DualCells3D"/*, true*/)
       .def("GetIntegrationRules", &H1DualCells3D::GetIntegrationRules)
       .def("Gradient", &H1DualCells3D::GetGradientOperator3D,py::arg("dual")=true)
     ;
   m.attr("H1DualCells3D") = h1dualpy;
   
-  auto h1primalpy = ExportFESpace<H1PrimalCells>(m, "H1PrimalCells", true)
+  auto h1primalpy = ExportFESpace<H1PrimalCells>(m, "H1PrimalCells"/*, true*/)
       .def("GetIntegrationRules", &H1PrimalCells::GetIntegrationRules)
     // .def("Rot", &H1PrimalCells::GetRotOperator, py::arg("dual")=true)
     ;
   m.attr("H1PrimalCells3D") = h1primalpy;
   
   auto hcurldualpy =
-    ExportFESpace<HCurlDualCells>(m, "HCurlDualCells", true)
+    ExportFESpace<HCurlDualCells>(m, "HCurlDualCells"/*, true*/)
     .def("GetIntegrationRules", &HCurlDualCells::GetIntegrationRules)
     .def("GetPotentialSpace", &HCurlDualCells::GetPotentialSpace, py::arg("include_central")=false)
     .def("Curl", &HCurlDualCells::GetCurlOperator, py::arg("dual")=true, py::arg("nanocells")=true,
@@ -59,7 +59,7 @@ PYBIND11_MODULE(dualcellspaces,m) {
   m.attr("HCurlDualCells3D") = hcurldualpy;
 
   auto hcurlprimalpy = 
-    ExportFESpace<HCurlPrimalCells>(m, "HCurlPrimalCells", true)
+    ExportFESpace<HCurlPrimalCells>(m, "HCurlPrimalCells"/*, true*/)
     .def("GetIntegrationRules", &HCurlPrimalCells::GetIntegrationRules)
     ;
   m.attr("HCurlPrimalCells3D") = hcurlprimalpy;  
