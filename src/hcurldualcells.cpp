@@ -35,7 +35,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = PosMax(lam);
 
-      shape.AddSize(ndof, 2) = 0;
+      //shape.AddSize(ndof, 2) = 0;
+      shape = 0;
       int minv = (maxlam+1)%3;
       int maxv = (maxlam+2)%3;
 
@@ -275,9 +276,9 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = PosMax(lam);
 
-      //shape = 0;
+      shape = 0;
       //
-      shape.AddSize(ndof, 2) = 0;
+      //shape.AddSize(ndof, 2) = 0;
       int minv = (maxlam+1)%3;
       int maxv = (maxlam+2)%3;
 
@@ -405,8 +406,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = PosMax(lam);
 
-      //shape = 0;
-      shape.AddSize(ndof, 2) = 0;
+      shape = 0;
+      //shape.AddSize(ndof, 2) = 0;
       int minv = (maxlam+1)%3;
       int maxv = (maxlam+2)%3;
 
@@ -593,7 +594,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      shape.AddSize(ndof, 3) = 0;
+      //shape.AddSize(ndof, 3) = 0;
+      shape = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;
@@ -876,8 +878,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      //shape = 0;
-      shape.AddSize(ndof, 3) = 0;
+      shape = 0;
+      //shape.AddSize(ndof, 3) = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;
@@ -1018,8 +1020,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      //shape = 0;
-      shape.AddSize(ndof, 3) = 0;
+      shape = 0;
+      //shape.AddSize(ndof, 3) = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;
@@ -1161,8 +1163,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      //shape = 0;
-      shape.AddSize(ndof, 3) = 0;
+      shape = 0;
+      //shape.AddSize(ndof, 3) = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;
@@ -3233,7 +3235,7 @@ namespace ngcomp
     return sum;
   }
 
-  shared_ptr<BaseMatrix> HCurlDualCells::GetCurlOperator3DNano(bool dual) const
+  shared_ptr<BaseMatrix> HCurlDualCells::GetCurlOperator3DNano(bool dual, bool altshapes, bool lumping) const
   {
     LocalHeap lh(10*1000*1000);
     shared_ptr<BaseMatrix> sum;
@@ -3264,7 +3266,9 @@ namespace ngcomp
 
     // bool altshapesH = false;
     auto mappingtypeB = POLYNOMIAL;
-    auto mappingtypeH = POLYNOMIAL;        
+    auto mappingtypeH = PIOLA;
+    if (altshapes)
+      mappingtypeH = POLYNOMIAL;        
 
     for (auto elclass_inds : table)
     {
@@ -3343,10 +3347,11 @@ namespace ngcomp
       // lumpedmass ...
 
       // lumped integration is the same (except order=0 fixup)
-      // auto irs = fescurl->GetIntegrationRules();
       // IntegrationRule ir = move(irs[ET_TET]);
 
-      auto irs = ngcomp::GetIntegrationRules(2*order+4);
+      auto irs = fescurl->GetIntegrationRules();
+      if (lumping)
+        irs = ngcomp::GetIntegrationRules(2*order+4);
       IntegrationRule ir = move(irs[ET_TET]);            
 
       Matrix shapes(felc.GetNDof(), ir.Size()*3);
@@ -3372,7 +3377,7 @@ namespace ngcomp
       Matrix<> tmp(felc.GetNDof(), fel.GetNDof());
       tmp = mixedmass * curlmat;
 
-      if (dual)
+      if (!dual)
         curlmat = lumpedmass * tmp;
       else
         curlmat = tmp;              
@@ -3410,7 +3415,7 @@ namespace ngcomp
     throw Exception("not implemented for 2D");
   }
 
-  shared_ptr<BaseMatrix> HCurlDualCells::GetCurlOperator2DNano(bool dual) const
+  shared_ptr<BaseMatrix> HCurlDualCells::GetCurlOperator2DNano(bool dual, bool altshapes, bool lumping) const
   { 
     LocalHeap lh(10*1000*1000);
     shared_ptr<BaseMatrix> sum;
@@ -3443,7 +3448,12 @@ namespace ngcomp
     //MAPPINGTYPE mappingE = COVARIANT; // POLYNOMIAL doesn't make any difference
     MAPPINGTYPE mappingE = POLYNOMIAL;
     //MAPPINGTYPEH1 mappingB = L2; // L2
-    MAPPINGTYPEH1 mappingB = L2POLYNOMIAL; // 
+    //
+    
+    MAPPINGTYPEH1 mappingB = L2; // 
+    if (altshapes)
+      mappingB = NONE;
+
     for (auto elclass_inds : table)
     {
       if (elclass_inds.Size() == 0) continue;
@@ -3531,8 +3541,9 @@ namespace ngcomp
 
       // integrate
       // lumpedmass ...
-      auto irs = fescurl->GetIntegrationRules();
-      //auto irs = ngcomp::GetIntegrationRules(2*order+6);
+      auto irs = ngcomp::GetIntegrationRules(2*order+6);
+      if (lumping)
+        irs = fescurl->GetIntegrationRules();
 
       IntegrationRule ir = move(irs[ET_TRIG]);
 
@@ -3558,7 +3569,7 @@ namespace ngcomp
       Matrix<> tmp(felc.GetNDof(), fel.GetNDof());
       tmp = mixedmass * curlmat;
 
-      if (dual)
+      if (!dual)
         curlmat = lumpedmass * tmp;
       else
         curlmat = tmp;              
@@ -3737,7 +3748,6 @@ namespace ngcomp
       // cout << "curlmat = " << curlmat << endl;
 
 #ifdef OLD            
-
       //cout << "fel.ndof = " << fel.GetNDof() << endl;
       //cout << "felc.ndof = " << felc.GetNDof() << endl;
 
@@ -3838,8 +3848,8 @@ namespace ngcomp
         curlmat = lumpedmass * tmp;
       else
         curlmat = tmp;              
-#endif
 
+#endif
       // cout << "final mat = " << curlmat << endl;
 
       Table<DofId> xdofs(elclass_inds.Size(), fel.GetNDof()),
@@ -3878,23 +3888,23 @@ namespace ngcomp
 
 
   shared_ptr<BaseMatrix> HCurlDualCells::
-    GetCurlOperator(bool dual, bool nanocells, bool Kronecker) const
+    GetCurlOperator(bool dual, bool altshapes, bool lumping, bool Kronecker) const
     {
       if (ma -> GetDimension() == 2)
       {
         if (Kronecker)
           return GetCurlOperator2DKronecker(dual);
-        else if (nanocells)
-          return GetCurlOperator2DNano(dual);
         else
-          return GetCurlOperator2D(dual);
+          return GetCurlOperator2DNano(dual,altshapes,lumping);
       }
       else // dim == 3
       {
-        if (nanocells)
-          return GetCurlOperator3DNano(dual);
+        if (Kronecker)
+          throw Exception("Kronecker only available for 2d");
+
         else
-          return GetCurlOperator3D(dual);
+        return GetCurlOperator3DNano(dual, altshapes, lumping);
+
       }
     }
 

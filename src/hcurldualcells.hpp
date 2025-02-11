@@ -45,16 +45,16 @@ for staggered: polynomial order is between order and order+1
     
     shared_ptr<FESpace> GetPotentialSpace(bool include_central) const;
     shared_ptr<BaseMatrix> GetGradientOperator(bool nanocell = false) const;
-    shared_ptr<BaseMatrix> GetCurlOperator(bool dual = true, bool nanocells = false, bool Kronecker=false) const;
+    shared_ptr<BaseMatrix> GetCurlOperator(bool dual = true, bool altshapes  = true, bool lumping = true, bool Kronecker=false) const;
     shared_ptr<BaseMatrix> GetRotOperator(bool altshapes = true) const;
     shared_ptr<BaseMatrix> GetNanoOperator(bool altshapes = true) const;
     shared_ptr<BaseMatrix> GetNanoOperatorRect(shared_ptr<FESpace> feshcurl, bool altshapes = true) const;
     shared_ptr<BaseMatrix> GetMassOperator2DNano(bool altshapes = true) const;
 
   protected:
-    shared_ptr<BaseMatrix> GetCurlOperator3DNano(bool dual) const;
+    shared_ptr<BaseMatrix> GetCurlOperator3DNano(bool dual, bool altshapes, bool lumping) const;
     shared_ptr<BaseMatrix> GetCurlOperator3D(bool dual) const;
-    shared_ptr<BaseMatrix> GetCurlOperator2DNano(bool dual) const;
+    shared_ptr<BaseMatrix> GetCurlOperator2DNano(bool dual, bool altshapes, bool lumping) const;
     shared_ptr<BaseMatrix> GetCurlOperator2D(bool dual) const;
     shared_ptr<BaseMatrix> GetCurlOperator2DKronecker(bool dual) const;
     shared_ptr<BaseMatrix> GetGradientOperator3D() const;
