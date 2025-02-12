@@ -2217,6 +2217,198 @@ namespace ngcomp
 
 
 
+  class HCurlDualCellPotentialTrigDist : public ScalarFiniteElement<2>, public VertexOrientedFE<ET_TRIG>
+  {
+    const IntegrationRule & GaussRadauIRplus;
+    bool include_central;
+    public:
+    HCurlDualCellPotentialTrigDist (const IntegrationRule & _GaussRadauIRplus, bool inc_cent)
+      : ScalarFiniteElement<2> (3 + 3         // vertex + edge MP
+          + 6*(_GaussRadauIRplus.Size()-2)   // edges
+          + 3*sqr(_GaussRadauIRplus.Size()-2) // face-quad inner
+          + 3*(_GaussRadauIRplus.Size()-2)    // edges inside face
+          + (inc_cent ? 1 : 0)
+          , _GaussRadauIRplus.Size()-1),
+      GaussRadauIRplus(_GaussRadauIRplus), include_central(inc_cent)
+      { ; }
+
+    using VertexOrientedFE<ET_TRIG>::SetVertexNumbers;
+    virtual ELEMENT_TYPE ElementType() const override { return ET_TRIG; }
+
+
+    virtual void CalcShape (const IntegrationPoint & ip, 
+        BareSliceVector<> shape) const override
+    {
+      double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
+      int maxlam = PosMax(lam);
+
+      shape.Range(ndof) = 0;
+
+      int minvi = (maxlam+1)%3;
+      int maxvi = minvi;
+      for (int i = 0; i < 3; i++)
+        if (i != maxlam)
+        {
+          if (vnums[i] < vnums[minvi]) minvi = i;
+          if (vnums[i] > vnums[maxvi]) maxvi = i;
+        }
+
+      int vdir[3];
+      vdir[maxlam] = -1;
+      vdir[minvi] = 0;
+      vdir[maxvi] = 1;
+
+      Vec<2> x(lam[minvi], lam[maxvi]);
+      Vec<2> xi = MapTrig2Quad (x);
+
+      Mat<2,2> F = DMapQuad2Trig(xi);
+      Mat<2,2> F2;    // trafo from vertex permutation
+      Vec<2> verts[] = { Vec<2>(1,0), Vec<2>(0,1), Vec<2> (0,0) };
+      F2.Col(0) = verts[minvi]-verts[maxlam];
+      F2.Col(1) = verts[maxvi]-verts[maxlam];
+
+      Mat<2> trafo = Trans(Inv(F2*F));
+      int ndGR = GaussRadauIRplus.Size();
+
+      ArrayMem<double, 20> polxi(ndGR), poleta(ndGR);
+      LagrangePolynomials(xi(0), GaussRadauIRplus.Range(0,ndGR-1), polxi.Range(0,ndGR-1));
+      LagrangePolynomials(xi(1), GaussRadauIRplus.Range(0,ndGR-1), poleta.Range(0,ndGR-1));
+      polxi[ndGR-1] = xi(0) > 1-1e-6 ? 1 : 0;
+      poleta[ndGR-1] = xi(1) > 1-1e-6 ? 1 : 0;
+      
+      auto assign =  [&](int nr, IVec<2> i)
+      {
+        shape(nr) = polxi[i[0]]*poleta[i[1]];
+      };
+
+      for (int i = 0; i < 3; i++)
+      {
+        IVec<2> ind = { 0, 0 };
+        if (i == maxlam)          
+          assign(i, ind);
+      }
+
+      int ii = 3;
+      for (int i = 0; i < 3; i++)
+      {
+        IVec<2> e = GetVertexOrientedEdge(i);
+
+        // shape at edge mid-point
+        for (int j = 0; j < 2; j++)
+          if (e[j] == maxlam)
+          {
+            IVec<2> ind = { 0, 0 };
+            int dirv2 = vdir[e[1-j]];
+            ind[dirv2] = ndGR-1;
+            assign(ii, ind);
+          }
+        ii++;
+
+        // inner shapes on half-edges
+        for (int j = 0; j < 2; j++)
+        {
+          if (e[j] == maxlam)
+          {
+            IVec<2> ind = { 0, 0 };
+            int dirv2 = vdir[e[1-j]];
+            for (int k = 0; k < ndGR-2; k++)
+            {
+              ind[dirv2] = k+1;
+              assign(ii+k, ind);
+            }
+          }
+          ii += ndGR-2;
+        }
+      }
+
+      {
+        IVec<4> f = GetVertexOrientedFace(0);
+        for (int j = 0; j < 3; j++)
+        {
+          if (f[j] == maxlam)
+          {
+            int v1 = f[(j+1)%3];
+            int v2 = f[(j+2)%3];
+
+            IVec<2> ind = { 0, 0 };
+            int dirv1 = vdir[v1];
+            int dirv2 = vdir[v2];
+            int kk = ii;
+            for (int l = 1; l < ndGR-1; l++)
+              for (int k = 1; k < ndGR-1; k++)
+              {
+                ind[dirv1] = k;
+                ind[dirv2] = l;
+                assign(kk++, ind);
+              }
+          }
+          ii += sqr(ndGR-2);
+        }
+
+        // edge in face between f[j] and f[j+1]
+
+        for (int j = 0; j < 3; j++)
+        {
+          int v0 = f[j];
+          int v1 = f[(j+1)%3];
+          int v2 = f[(j+2)%3];
+
+          if (v0 == maxlam || v1 == maxlam)
+          {
+            int ve2 = (v0 == maxlam) ? v1 : v0;
+            int vop = v2;
+
+            IVec<2> ind = { 0, 0 };
+            int dirvop = vdir[vop];
+            int dirve2 = vdir[ve2];
+            for (int k = 1; k < ndGR-1; k++)
+            {
+              ind[dirvop] = k;
+              ind[dirve2] = ndGR-1;
+              assign(ii+k-1, ind);
+            }
+          }
+          ii += ndGR-2;
+        }
+
+        if (include_central)
+          assign(ii++, IVec<2> (ndGR-1, ndGR-1));
+      }
+    }
+
+
+    virtual void CalcDShape (const IntegrationPoint & ip, 
+        BareSliceMatrix<> _dshape) const override
+    {
+      throw Exception("no CalcDshape for Distributional element");
+    }
+
+    virtual void Interpolate (const ElementTransformation & trafo, 
+        const class CoefficientFunction & func, SliceMatrix<> coefs,
+        LocalHeap & lh) const override
+    {
+      auto [pnts, inds, nump] = GetMicroCellPoints<ET_TRIG> (order, true);
+      Matrix mat(this->ndof, this->ndof);
+      Vector rhs(this->ndof);
+      Vec<1> fi;
+      for (int i = 0; i < this->ndof; i++)
+      {
+        Vec<2> x = pnts[i];
+        IntegrationPoint ip(x(0), x(1), 0, 0);
+        MappedIntegrationPoint<2,2> mip(ip, trafo);
+        func.Evaluate (mip, fi);
+        rhs(i) = fi(0);
+        this->CalcShape(ip, mat.Row(i));
+      }
+
+      CalcInverse (mat);
+      coefs.Col(0) = mat * rhs;
+    }      
+
+  };
+
+
+
 
 
 
@@ -2236,7 +2428,8 @@ namespace ngcomp
         evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdEdge<2>>>();
         flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpCurlEdge<2>>>();
         additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShape<2>>> ());
-        additional_evaluators.Set ("Grad", make_shared<T_DifferentialOperator<DiffOpGradHCurl<2>>> ());        
+        additional_evaluators.Set ("Grad", make_shared<T_DifferentialOperator<DiffOpGradHCurl<2>>> ());
+        additional_evaluators.Set ("jumpninner", make_shared<T_DifferentialOperator<DiffOpJumpNInnerHCurl<2>>> ());                
       }
       else
       {
@@ -2944,7 +3137,8 @@ namespace ngcomp
 
       if (flags.GetDefineFlag("include_central"))
         include_central = true;
-
+      distributional = flags.GetDefineFlag("distributional");
+      
       Array<double> xi, wi;
       ComputeGaussRadauRule (order, xi, wi);
       for (auto i : Range(xi))
@@ -3049,9 +3243,18 @@ namespace ngcomp
         }
       case ET_TRIG:
         {
-          auto trig = new (alloc) HCurlDualCellPotentialTrig(GaussRadauIRplus, include_central);
-          trig->SetVertexNumbers (ngel.vertices);
-          return *trig;
+          if (distributional)
+            {
+              auto trig = new (alloc) HCurlDualCellPotentialTrigDist(GaussRadauIRplus, include_central);
+              trig->SetVertexNumbers (ngel.vertices);
+              return *trig;
+            }
+          else
+            {
+              auto trig = new (alloc) HCurlDualCellPotentialTrig(GaussRadauIRplus, include_central);
+              trig->SetVertexNumbers (ngel.vertices);
+              return *trig;
+            }
         }
 
       default:
@@ -3060,11 +3263,13 @@ namespace ngcomp
   }
 
 
-  shared_ptr<FESpace> HCurlDualCells::GetPotentialSpace(bool include_central) const
+  shared_ptr<FESpace> HCurlDualCells::GetPotentialSpace(bool include_central, bool distributional) const
   {
     Flags flags;
     flags.SetFlag ("order", order+1);
     flags.SetFlag ("dirichlet", this->flags.GetNumListFlag("dirichlet"));
+    if (distributional)
+      flags.SetFlag("distributional");
     if (include_central)
       flags.SetFlag("include_central");
     auto pot = make_shared<HCurlDualCellsPotential3D>(ma, flags);

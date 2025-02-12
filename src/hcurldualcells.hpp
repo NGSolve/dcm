@@ -43,7 +43,7 @@ for staggered: polynomial order is between order and order+1
     virtual shared_ptr<BaseMatrix> GetMassOperator(shared_ptr<CoefficientFunction> rho, shared_ptr<Region> defon, LocalHeap & lh) const override;
     std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules() const;
     
-    shared_ptr<FESpace> GetPotentialSpace(bool include_central) const;
+    shared_ptr<FESpace> GetPotentialSpace(bool include_central, bool distributional=false) const;
     shared_ptr<BaseMatrix> GetGradientOperator(bool nanocell = false) const;
     shared_ptr<BaseMatrix> GetCurlOperator(bool dual = true, bool altshapes  = true, bool lumping = true, bool Kronecker=false) const;
     shared_ptr<BaseMatrix> GetRotOperator(bool altshapes = true) const;
@@ -73,6 +73,7 @@ for staggered: polynomial order is between order and order+1
     Array<DofId> first_cell_dofs;
     IntegrationRule GaussRadauIRplus;
     bool include_central = false;
+    bool distributional = false;
   public:
     HCurlDualCellsPotential3D (shared_ptr<MeshAccess> ama, const Flags & flags);
     string GetClassName () const override;

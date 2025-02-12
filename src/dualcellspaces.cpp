@@ -51,7 +51,8 @@ PYBIND11_MODULE(dualcellspaces,m) {
   auto hcurldualpy =
     ExportFESpace<HCurlDualCells>(m, "HCurlDualCells"/*, true*/)
     .def("GetIntegrationRules", &HCurlDualCells::GetIntegrationRules)
-    .def("GetPotentialSpace", &HCurlDualCells::GetPotentialSpace, py::arg("include_central")=false)
+    .def("GetPotentialSpace", &HCurlDualCells::GetPotentialSpace,
+         py::arg("include_central")=false, py::arg("distributional")=false)
     .def("Curl", &HCurlDualCells::GetCurlOperator, py::arg("dual")=true, py::arg("altshapes")=true, py::arg("lumping")=true,
          py::arg("Kronecker")=false)
     // .def("Rot", &HCurlDualCells::GetRotOperator, py::arg("zerobd")=true)

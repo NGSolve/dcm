@@ -191,7 +191,8 @@ namespace ngcomp
             AutoDiff<1> x = lami[0];
             AutoDiff<1> y = lami[1];
 
-            irtrig += IntegrationPoint(x.Value(), y.Value(), 0, sqrt(sqr(x.DValue(0))+sqr(y.DValue(0))));
+            // irtrig += IntegrationPoint(x.Value(), y.Value(), 0, sqrt(sqr(x.DValue(0))+sqr(y.DValue(0))));
+            irtrig += IntegrationPoint(x.Value(), y.Value(), 0, ip.Weight()/6);
           }
       }
     rules[ET_TRIG] = std::move(irtrig);
