@@ -34,6 +34,7 @@ PYBIND11_MODULE(dualcellspaces,m) {
     .def("ConvertGR2GOperator", &HDivPrimalCells::ConvertGR2GOperator)
     ; 
 
+  
   auto h1dualpy = 
     ExportFESpace<H1DualCells3D>(m, "H1DualCells3D"/*, true*/)
       .def("GetIntegrationRules", &H1DualCells3D::GetIntegrationRules)
@@ -72,7 +73,14 @@ PYBIND11_MODULE(dualcellspaces,m) {
   py::class_<HCurlDualCellsPotential3D, PotentialFESpace, shared_ptr<HCurlDualCellsPotential3D>> (m, "HCurlDualCellsPotential3D")
     ;
   
-  m.def("GetIntegrationRules", &GetIntegrationRules);
+  m.def("GetIntegrationRules", [](int order, bool innerfacets)
+  {
+    if (!innerfacets)
+      return GetIntegrationRules(order);
+    else
+      return GetIntegrationRulesInnerFacets(order);
+  }, py::arg("order"), py::arg("innerfacets")=false);
+  
   m.def("GetWebGuiPoints", &GetWebGuiPoints);
 
   m.def("MicroJacobiDet", [](int dim) -> shared_ptr<CoefficientFunction>

@@ -35,6 +35,7 @@ namespace ngcomp
 
   template void LagrangePolynomials<double> (double x, const IntegrationRule & ir, FlatArray<double> shapes);
   template void LagrangePolynomials<AutoDiff<1>> (AutoDiff<1> x, const IntegrationRule & ir, FlatArray<AutoDiff<1>> shapes);
+  template void LagrangePolynomials<AutoDiff<2>> (AutoDiff<2> x, const IntegrationRule & ir, FlatArray<AutoDiff<2>> shapes);  
 
   
   IntegrationRule PrimalVolIR(const IntegrationRule & IR, bool mirroredIR)
@@ -131,7 +132,7 @@ namespace ngcomp
           irsegm += IntegrationPoint(x, 0, 0, w);
         }
     
-    rules[ET_SEGM] = move(irsegm);
+    rules[ET_SEGM] = std::move(irsegm);
 
     
 
@@ -147,7 +148,7 @@ namespace ngcomp
               irtrig += IntegrationPoint(x(0), x(1), 0, w);
             }
     
-    rules[ET_TRIG] = move(irtrig);
+    rules[ET_TRIG] = std::move(irtrig);
 
     
     IntegrationRule irtet;
@@ -163,11 +164,43 @@ namespace ngcomp
               irtet += IntegrationPoint(x(0), x(1), x(2), w);
             }
     
-    rules[ET_TET] = move(irtet);
+    rules[ET_TET] = std::move(irtet);
 
     return rules;
   }
 
+
+
+  std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRulesInnerFacets(int intorder)
+  {
+    std::map<ELEMENT_TYPE, IntegrationRule> rules;
+
+    IntegrationRule ir(ET_SEGM, intorder);
+
+    IntegrationRule irtrig;
+    for (int i = 0; i < 3; i++)
+      {
+        for (auto ip : ir)
+          {
+            AutoDiff<1> s(ip(0),0);
+            AutoDiff<1> lami[3];
+            lami[i] = 1.0/3 * s;
+            lami[(i+1)%3] = 0.5 - 1.0/6 * s;
+            lami[(i+2)%3] = 0.5 - 1.0/6 * s;
+
+            AutoDiff<1> x = lami[0];
+            AutoDiff<1> y = lami[1];
+
+            irtrig += IntegrationPoint(x.Value(), y.Value(), 0, sqrt(sqr(x.DValue(0))+sqr(y.DValue(0))));
+          }
+      }
+    rules[ET_TRIG] = std::move(irtrig);
+
+    return rules;
+  }
+
+
+  
   // i ... 2D coordinates inm corner
   // returns 3D coordinates on manifold
   //
@@ -186,7 +219,7 @@ namespace ngcomp
     Array<array<int,2>> edges;
     
     auto [pnts, _inds, np] = GetMicroCellPoints<ET_TRIG> (order, dual);
-    auto inds = move(_inds);
+    auto inds = std::move(_inds);
     
     auto addedge = [&] (int corner, IVec<2> p0, IVec<2> p1)
       {
@@ -219,7 +252,7 @@ namespace ngcomp
   {
     // cout << "Called GetMicroCellFaces" << endl;
     auto [pnts, _inds, np] = GetMicroCellPoints<ET_TRIG> (order, dual);
-    auto inds = move(_inds);
+    auto inds = std::move(_inds);
     TableCreator<array<int,4>> creator;
 
     auto addface = [&] (int i, int corner, IVec<2> p0, IVec<2> p2)
@@ -371,7 +404,7 @@ namespace ngcomp
     Array<array<int,2>> edges;
     
     auto [pnts, _inds, np] = GetMicroCellPoints<ET_TET> (order, dual);
-    auto inds = move(_inds);
+    auto inds = std::move(_inds);
     
     auto addedge = [&] (int corner, IVec<3> p0, IVec<3> p1)
       {
@@ -439,7 +472,7 @@ namespace ngcomp
   {
     // cout << "Called GetMicroCellFaces" << endl;
     auto [pnts, _inds, np] = GetMicroCellPoints<ET_TET> (order, dual);
-    auto inds = move(_inds);
+    auto inds = std::move(_inds);
     TableCreator<array<int,4>> creator;
 
     auto addface = [&] (int ind, int corner, IVec<3> p0, int dir1, int dir2)
@@ -693,7 +726,7 @@ namespace ngcomp
     Array<array<int,2>> edges;
     
     auto [pnts, _inds, np] = GetNanoPoints<ET_TRIG> (order, dual);
-    auto inds = move(_inds);
+    auto inds = std::move(_inds);
     
     auto addedge = [&] (int corner, IVec<2> p0, IVec<2> p1)
       {
@@ -765,7 +798,7 @@ namespace ngcomp
         GetNanoLines<ET_TRIG> (int order, bool dual)
   {
     auto [pnts, _inds, np] = GetNanoPoints<ET_TRIG> (order, dual);
-    auto inds = move(_inds);
+    auto inds = std::move(_inds);
     TableCreator<array<int,2>> creator;
     
     if (dual)
@@ -891,7 +924,7 @@ namespace ngcomp
   {
     // cout << "Called GetMicroCellFaces" << endl;
     auto [pnts, _inds, np] = GetNanoPoints<ET_TRIG> (order, dual);
-    auto inds = move(_inds);
+    auto inds = std::move(_inds);
     TableCreator<array<int,4>> creator;
 
     auto addface = [&] (int i, int corner, IVec<2> p0, IVec<2> p2)
@@ -1051,7 +1084,7 @@ namespace ngcomp
         GetNanoLines<ET_TET> (int order, bool dual)
   {
     auto [pnts, _inds, np] = GetNanoPoints<ET_TET> (order, dual);
-    auto inds = move(_inds);
+    auto inds = std::move(_inds);
     TableCreator<array<int,2>> creator;
     auto addline = [&] (int i, int corner, IVec<3> p0, IVec<3> p1)
       {
@@ -1214,7 +1247,7 @@ namespace ngcomp
         throw Exception ("only order 1,2, and 3 are supported");
       }
       
-    rules[ET_TRIG] = move(irtrig);
+    rules[ET_TRIG] = std::move(irtrig);
 
 
     IntegrationRule irtet;
@@ -1278,7 +1311,7 @@ namespace ngcomp
       default:
         throw Exception ("only order 1 is supported");
       }
-    rules[ET_TET] = move(irtet);
+    rules[ET_TET] = std::move(irtet);
 
     return rules;
   }

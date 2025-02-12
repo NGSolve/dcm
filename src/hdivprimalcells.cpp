@@ -342,7 +342,7 @@ namespace ngcomp
 
       auto feshdiv = dynamic_pointer_cast<HDivPrimalCells>(fes); 
       auto irs = feshdiv->GetIntegrationRules();
-      trigir = move(irs[ET_TRIG]);
+      trigir = std::move(irs[ET_TRIG]);
       //cout << trigir << endl;
 
       auto & felref = static_cast<const HDivPrimalCellTrig&>(fes->GetFE(ElementId(0), lh));
@@ -1747,7 +1747,7 @@ namespace ngcomp
       
     HeapReset hr(lh);
     auto irs = this->GetIntegrationRules();
-    IntegrationRule ir = move(irs[ET_TET]);
+    IntegrationRule ir = std::move(irs[ET_TET]);
 
     auto & felref = dynamic_cast<const HDivPrimalCellTet&> (GetFE(ElementId(VOL,0), lh));
     Matrix shapes(felref.GetNDof(), 3*ir.Size());
@@ -1851,7 +1851,7 @@ namespace ngcomp
       auto spmat = SparseMatrix<double>::CreateFromCOO(rowind, colind, values, GetNDof(), GetNDof());
       tsp.Stop();
       
-      return make_shared<MySuperSparseMatrix> (move(*spmat));
+      return make_shared<MySuperSparseMatrix> (std::move(*spmat));
     }
     if (ma->GetDimension()==2)
     {
@@ -1869,7 +1869,7 @@ namespace ngcomp
       // assemble a (very) sparse mass matrix
       HeapReset hr(lh);
       auto irs = GetIntegrationRules();
-      IntegrationRule ir = move(irs[ET_TRIG]);
+      IntegrationRule ir = std::move(irs[ET_TRIG]);
 
       auto & felref = dynamic_cast<const HDivPrimalCellTrig&> (GetFE(ElementId(VOL,0), lh));
       Matrix shapes(felref.GetNDof(), 2*ir.Size());
@@ -1943,7 +1943,7 @@ namespace ngcomp
       auto spmat = SparseMatrix<double>::CreateFromCOO(rowind, colind, values, GetNDof(), GetNDof());
       tsp.Stop();
       
-      return make_shared<MySuperSparseMatrix> (move(*spmat));
+      return make_shared<MySuperSparseMatrix> (std::move(*spmat));
     }
     else
       throw Exception("only 2d and 3d implemented");
@@ -1959,7 +1959,7 @@ namespace ngcomp
         LagrangePolynomials (TransversalIR[i](0), NormalIR, FlatArray<double> (mat.Width(), &mat(i,0)));
       cout << "GR2G matrix: " << endl << mat << endl;
       size_t ndofel = first_element_dofs[1] - first_element_dofs[0];
-      return make_shared<StructuredElementByElementMatrix> (ma->GetNE() * ndofel/mat.Height(), move(mat));
+      return make_shared<StructuredElementByElementMatrix> (ma->GetNE() * ndofel/mat.Height(), std::move(mat));
     }
 
 

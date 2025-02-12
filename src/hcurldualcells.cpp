@@ -527,6 +527,136 @@ namespace ngcomp
 
     }
 
+    virtual void CalcGradShape (const IntegrationPoint & ip, 
+                                BareSliceMatrix<> shape) const override
+    {
+      double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
+      int maxlam = PosMax(lam);
+
+      shape.AddSize(ndof, 4) = 0;
+      int minv = (maxlam+1)%3;
+      int maxv = (maxlam+2)%3;
+
+      if (vnums[minv]>vnums[maxv])
+      {
+        minv = (maxlam+2)%3;
+        maxv = (maxlam+1)%3;
+      }
+
+      Vec<2> x(lam[minv],lam[maxv]);
+      Vec<2> xi = MapTrig2Quad(x);
+
+      Mat<2,2> F = DMapQuad2Trig(xi);
+      Mat<2,2> F2;
+
+      Vec<2> verts[] = { Vec<2>(1, 0 ), Vec<2>( 0, 1 ), Vec<2>( 0, 0)  };      
+      F2.Col(0) = verts[minv]-verts[maxlam];
+      F2.Col(1) = verts[maxv]-verts[maxlam];
+
+      Mat<2> trafoxi = Trans(Inv(F2*F));
+
+      int ndGR = GaussRadauIR.Size();
+      int ndt = tangentialIR.Size();
+      ArrayMem<AutoDiff<2>, 20> polxi(ndGR), poleta(ndGR);
+      ArrayMem<AutoDiff<2>, 20> polxitang(ndt), poletatang(ndt);         
+      LagrangePolynomials(AutoDiff<2>(xi(0),0), GaussRadauIR, polxi);
+      LagrangePolynomials(AutoDiff<2>(xi(1),1), GaussRadauIR, poleta);
+
+      LagrangePolynomials(AutoDiff<2>(xi(0),0), tangentialIR, polxitang);
+      LagrangePolynomials(AutoDiff<2>(xi(1),1), tangentialIR, poletatang);
+
+      auto assign_shape = [&](int nr, int ix, int iy,int dir)
+      {
+        Vec<2> xinode(GaussRadauIR[ix](0), GaussRadauIR[iy](0));
+
+        Mat<2,2> F = DMapQuad2Trig(xinode);
+
+        Mat<2> trafo = Trans(Inv(F2*F));
+        Vec<2,AutoDiff<2>> adshape;
+        switch (dir)
+        {
+          case 0:
+            {
+              adshape = trafo*Vec<2,AutoDiff<2>>(polxitang[ix]*poleta[iy], 0);
+              break;
+            }
+          case 1:
+            {
+              adshape = trafo*Vec<2,AutoDiff<2>>(0,polxi[ix]*poletatang[iy]);
+              break;
+            }
+            break;
+        }
+        for (int i = 0; i < 2; i++)
+          {
+            Vec<2> grad;
+            for (int j = 0; j < 2; j++)
+              grad(j) = adshape(i).DValue(j);
+            grad = trafoxi*grad;
+            for (int j = 0; j < 2; j++)            
+              shape.Row(nr)(2*i+j) = grad(j);
+          }
+      };
+
+
+      int ii = 0;
+      for (int i = 0; i < 3; i++)
+      {
+        IVec<2> e = GetVertexOrientedEdge(i);
+        //cout << "edge " << i << endl;
+        for (int j = 0; j < 2; j++)
+        {
+          //cout << "vertex " << e[j] <<endl;
+          if (e[j] == maxlam)
+          {
+            if (e[1-j] == minv)
+            {
+              for (int k = 0; k < ndt; k++)
+                assign_shape(ii+k, k, 0, 0);
+            }
+            else
+            {
+              for (int k = 0; k < ndt; k++)
+                assign_shape(ii+k, 0, k, 1);
+            }
+          }
+          ii+=ndt;
+        }
+      }
+      IVec<4> f = GetVertexOrientedFace(0);
+      for (int i = 0; i < 3; i++)
+      {
+
+        if (f[i] == maxlam)
+        {
+          int v1 = f[(i+1)%3];
+          int kk = ii;
+          for (int l = 1; l < ndGR; l++)
+          {
+            for (int k = 0; k < ndt; k++)
+            {
+              if (v1 == minv)
+              {
+                assign_shape(kk++, k, l,0);
+                assign_shape(kk++, l, k,1);
+              }
+              else 
+              {
+                assign_shape(kk++, l, k,1);
+                assign_shape(kk++, k, l,0);
+              }
+
+            }
+          }
+        }
+        ii += 2*(ndGR-1)*ndt;
+      }
+      //cout << "CalcShape done, shape = " << shape << endl;
+      
+    }
+
+    
+
     virtual void Interpolate (const ElementTransformation & trafo, 
         const class CoefficientFunction & func, SliceMatrix<> coefs,
         LocalHeap & lh) const override
@@ -873,7 +1003,7 @@ namespace ngcomp
 
 
     virtual void CalcAltShape (const IntegrationPoint & ip, 
-        BareSliceMatrix<> shape) const
+        BareSliceMatrix<> shape) const override
     {
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
@@ -1015,7 +1145,7 @@ namespace ngcomp
     }
 
     virtual void CalcPiolaShape (const IntegrationPoint & ip, 
-        BareSliceMatrix<> shape) const
+        BareSliceMatrix<> shape) const override
     {
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
@@ -1158,7 +1288,7 @@ namespace ngcomp
     }
 
     virtual void CalcPiolaAltShape (const IntegrationPoint & ip, 
-        BareSliceMatrix<> shape) const
+        BareSliceMatrix<> shape) const override
     {
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
@@ -1301,7 +1431,7 @@ namespace ngcomp
 
     virtual void Interpolate (const ElementTransformation & trafo, 
         const class CoefficientFunction & func, SliceMatrix<> coefs,
-        LocalHeap & lh) const
+        LocalHeap & lh) const override
     {
       Matrix mat(ndof, ndof);
       Vector rhs(ndof);
@@ -2106,6 +2236,7 @@ namespace ngcomp
         evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdEdge<2>>>();
         flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpCurlEdge<2>>>();
         additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShape<2>>> ());
+        additional_evaluators.Set ("Grad", make_shared<T_DifferentialOperator<DiffOpGradHCurl<2>>> ());        
       }
       else
       {
@@ -2335,12 +2466,12 @@ namespace ngcomp
             auto spmat = SparseMatrix<double>::CreateFromCOO(rowind, colind, values, GetNDof(), GetNDof());
             tsp.Stop();
 
-            return make_shared<MySuperSparseMatrix> (move(*spmat));
+            return make_shared<MySuperSparseMatrix> (std::move(*spmat));
           }
         case 3:
           {
             auto irs = this->GetIntegrationRules();
-            IntegrationRule ir = move(irs[ET_TET]);
+            IntegrationRule ir = std::move(irs[ET_TET]);
             auto & felref = dynamic_cast<const HCurlDualCellTet&> (GetFE(ElementId(VOL,0), lh));
             Matrix shapes(felref.GetNDof(), 3*ir.Size());
             Matrix shapes_trans(3*ir.Size(), felref.GetNDof());
@@ -2458,7 +2589,7 @@ namespace ngcomp
             auto spmat = SparseMatrix<double>::CreateFromCOO(rowind, colind, values, GetNDof(), GetNDof());
             tsp.Stop();
 
-            return make_shared<MySuperSparseMatrix> (move(*spmat));
+            return make_shared<MySuperSparseMatrix> (std::move(*spmat));
           }
         default:
           throw Exception("MassOperator not implemented for dim!=2,3");
@@ -2580,7 +2711,7 @@ namespace ngcomp
       // cout << "inv = " << endl << mat << endl;
 
       auto irs = ngcomp::GetIntegrationRules(8);
-      IntegrationRule irref = move(irs[ET_TET]);
+      IntegrationRule irref = std::move(irs[ET_TET]);
 
       for (auto ip : irref)
       {
@@ -2620,7 +2751,7 @@ namespace ngcomp
 
 
 
-    rules[ET_TET] = move(irtet);
+    rules[ET_TET] = std::move(irtet);
 
 
     IntegrationRule irtrig;
@@ -2680,7 +2811,7 @@ namespace ngcomp
       }
 
       auto irs = ngcomp::GetIntegrationRules(5);
-      IntegrationRule irref = move(irs[ET_TRIG]);
+      IntegrationRule irref = std::move(irs[ET_TRIG]);
       // IntegrationRule irref(ET_TRIG, 5);
       for (auto ip : irref)
       {
@@ -2747,7 +2878,7 @@ namespace ngcomp
       }
 
       auto irs = ngcomp::GetIntegrationRules(5);
-      IntegrationRule irref = move(irs[ET_TRIG]);
+      IntegrationRule irref = std::move(irs[ET_TRIG]);
       // IntegrationRule irref(ET_TRIG, 5);
       for (auto ip : irref)
       {
@@ -2777,7 +2908,7 @@ namespace ngcomp
 
 
 
-    rules[ET_TRIG] = move(irtrig);
+    rules[ET_TRIG] = std::move(irtrig);
 
 
 
@@ -3352,7 +3483,7 @@ namespace ngcomp
       auto irs = fescurl->GetIntegrationRules();
       if (lumping)
         irs = ngcomp::GetIntegrationRules(2*order+4);
-      IntegrationRule ir = move(irs[ET_TET]);            
+      IntegrationRule ir = std::move(irs[ET_TET]);            
 
       Matrix shapes(felc.GetNDof(), ir.Size()*3);
       Matrix Piolashapes(felc.GetNDof(), ir.Size()*3);
@@ -3545,7 +3676,7 @@ namespace ngcomp
       if (lumping)
         irs = fescurl->GetIntegrationRules();
 
-      IntegrationRule ir = move(irs[ET_TRIG]);
+      IntegrationRule ir = std::move(irs[ET_TRIG]);
 
       Matrix shapes(felc.GetNDof(), ir.Size());
       Matrix shapesB(felc.GetNDof(), ir.Size());
@@ -3821,7 +3952,7 @@ namespace ngcomp
       // lumpedmass ...
       auto irs = fescurl->GetIntegrationRules();
       // auto irs = ngcomp::GetIntegrationRules(2*order+6);
-      IntegrationRule ir = move(irs[ET_TRIG]);
+      IntegrationRule ir = std::move(irs[ET_TRIG]);
       Matrix shapes(felc.GetNDof(), ir.Size());
       Matrix rhoi_shapes_trans(ir.Size(), felc.GetNDof());
 

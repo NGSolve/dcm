@@ -883,11 +883,11 @@ namespace ngcomp
       //lumped integration is the same (except order=0 fixup)
       //auto irs = feshcurl->GetIntegrationRules();
       //auto irs = GetIntegrationRules(2*order+6);
-      //IntegrationRule ir = move(irs[ET_TRIG]);
+      //IntegrationRule ir = std::move(irs[ET_TRIG]);
 
       //auto irs = ngcomp::GetIntegrationRules(2*order+6);
       auto irs = feshcurl->GetIntegrationRules();
-      IntegrationRule ir = move(irs[ET_TRIG]);            
+      IntegrationRule ir = std::move(irs[ET_TRIG]);            
 
       Matrix shapes(felhcurl.GetNDof(), ir.Size()*2);
       Matrix Piolashapes(felhcurl.GetNDof(), ir.Size()*2);
@@ -952,7 +952,7 @@ namespace ngcomp
         case 2:
           {
             auto irs = this->GetIntegrationRules();
-            IntegrationRule ir = move(irs[ET_TRIG]);
+            IntegrationRule ir = std::move(irs[ET_TRIG]);
 
             auto & felref = dynamic_cast<const H1PrimalCellTrig&> (GetFE(ElementId(VOL,0), lh));
             Matrix shapes(felref.GetNDof(), ir.Size());
@@ -1053,12 +1053,12 @@ namespace ngcomp
             auto spmat = SparseMatrix<double>::CreateFromCOO(rowind, colind, values, GetNDof(), GetNDof());
             tsp.Stop();
 
-            return make_shared<MySuperSparseMatrix> (move(*spmat));
+            return make_shared<MySuperSparseMatrix> (std::move(*spmat));
           }
         case 3:
           {
             auto irs = this->GetIntegrationRules();
-            IntegrationRule ir = move(irs[ET_TET]);
+            IntegrationRule ir = std::move(irs[ET_TET]);
 
             auto & felref = dynamic_cast<const H1PrimalCellTet&> (GetFE(ElementId(VOL,0), lh));
             Matrix shapes(felref.GetNDof(), ir.Size());
@@ -1159,7 +1159,7 @@ namespace ngcomp
             auto spmat = SparseMatrix<double>::CreateFromCOO(rowind, colind, values, GetNDof(), GetNDof());
             tsp.Stop();
 
-            return make_shared<MySuperSparseMatrix> (move(*spmat));
+            return make_shared<MySuperSparseMatrix> (std::move(*spmat));
           }
         default:
           throw Exception("MassOperator not implemented for dim!=2,3");
@@ -1232,7 +1232,7 @@ namespace ngcomp
       cout << "mat = " << endl << mat << endl;
       cout << "Inv(mat) = " << endl << Inv(mat) << endl;
       auto irs = ngcomp::GetIntegrationRules(5);
-      IntegrationRule irref = move(irs[ET_TRIG]);
+      IntegrationRule irref = std::move(irs[ET_TRIG]);
       // IntegrationRule irref(ET_TRIG, 5);
       for (auto ip : irref)
       {
@@ -1265,7 +1265,7 @@ namespace ngcomp
 
 
 
-    rules[ET_TRIG] = move(irtrig);
+    rules[ET_TRIG] = std::move(irtrig);
 
     IntegrationRule irtet;
     for (int v = 0; v < 4; v++)
@@ -1288,7 +1288,7 @@ namespace ngcomp
 
 
 
-    rules[ET_TET] = move(irtet);
+    rules[ET_TET] = std::move(irtet);
 
     IntegrationRule irseg;
     for (auto & ip : GaussRadauIR)
@@ -1297,7 +1297,7 @@ namespace ngcomp
       irseg.Append ( IntegrationPoint(x/2, 0, 0, 0.5*w));
       irseg.Append ( IntegrationPoint((x+1)/2, 0, 0, 0.5*w));
     }
-    rules[ET_SEGM] = move(irseg);
+    rules[ET_SEGM] = std::move(irseg);
 
     return rules;
   }    

@@ -19,6 +19,8 @@ namespace ngcomp
 
   std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules(int intorder);
 
+  std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRulesInnerFacets(int intorder);  
+
   std::map<ELEMENT_TYPE, IntegrationRule> GetWebGuiPoints(int intorder);
 
 

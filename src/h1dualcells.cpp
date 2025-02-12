@@ -467,11 +467,11 @@ namespace ngcomp
             //lumped integration is the same (except order=0 fixup)
             //auto irs = feshdiv->GetIntegrationRules();
             //auto irs = GetIntegrationRules(2*order+6);
-            //IntegrationRule ir = move(irs[ET_TRIG]);
+            //IntegrationRule ir = std::move(irs[ET_TRIG]);
             
             auto irs = ngcomp::GetIntegrationRules(2*order+6);
             //auto irs = feshdiv->GetIntegrationRules();
-            IntegrationRule ir = move(irs[ET_TRIG]);            
+            IntegrationRule ir = std::move(irs[ET_TRIG]);            
             
             Matrix shapes(felhdiv.GetNDof(), ir.Size()*2);
             Matrix Piolashapes(felhdiv.GetNDof(), ir.Size()*2);
@@ -527,7 +527,7 @@ namespace ngcomp
   {
     HeapReset hr(lh);
     auto irs = GetIntegrationRules(nullopt);
-    IntegrationRule ir = move(irs[ET_TRIG]);
+    IntegrationRule ir = std::move(irs[ET_TRIG]);
 
     auto & felref = dynamic_cast<const H1DualCellTrig&> (GetFE(ElementId(VOL,0), lh));
     Matrix shapes(felref.GetNDof(), ir.Size());
@@ -581,7 +581,7 @@ namespace ngcomp
 
     auto spmat = SparseMatrix<double>::CreateFromCOO(rowind, colind, values, GetNDof(), GetNDof());
     
-    return make_shared<MySuperSparseMatrix> (move(*spmat));
+    return make_shared<MySuperSparseMatrix> (std::move(*spmat));
   }
 
 
@@ -616,7 +616,7 @@ namespace ngcomp
           irseg.Append ( IntegrationPoint(x/2+1e-12, 0, 0, 0.5*w));
           irseg.Append ( IntegrationPoint(1-x/2-1e-12, 0, 0, 0.5*w));
         }
-      rules[ET_SEGM] = move(irseg);
+      rules[ET_SEGM] = std::move(irseg);
       
       return rules;
     }    

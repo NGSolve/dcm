@@ -910,7 +910,7 @@ namespace ngcomp
       
     HeapReset hr(lh);
     auto irs = this->GetIntegrationRules();
-    IntegrationRule ir = move(irs[ET_TET]);
+    IntegrationRule ir = std::move(irs[ET_TET]);
 
     auto & felref = dynamic_cast<const HCurlPrimalCellTet&> (GetFE(ElementId(VOL,0), lh));
     Matrix shapes(felref.GetNDof(), 3*ir.Size());
@@ -1016,7 +1016,7 @@ namespace ngcomp
       
     HeapReset hr(lh);
     auto irs = this->GetIntegrationRules();
-    IntegrationRule ir = move(irs[ET_TET]);
+    IntegrationRule ir = std::move(irs[ET_TET]);
 
     auto & felref = dynamic_cast<const HCurlPrimalCellTet&> (GetFE(ElementId(VOL,0), lh));
     Matrix shapes(felref.GetNDof(), 3*ir.Size());
@@ -1094,7 +1094,7 @@ namespace ngcomp
       auto spmat = SparseMatrix<double>::CreateFromCOO(rowind, colind, values, GetNDof(), GetNDof());
       tsp.Stop();
       
-      return make_shared<MySuperSparseMatrix> (move(*spmat));
+      return make_shared<MySuperSparseMatrix> (std::move(*spmat));
     }
 
 
@@ -1125,7 +1125,7 @@ namespace ngcomp
       for (auto & ip : irtet)
         ip.SetWeight(1.0/24);   // fix consistency for lowest order
     
-    rules[ET_TET] = move(irtet);
+    rules[ET_TET] = std::move(irtet);
 
 
     IntegrationRule irtrig;
@@ -1144,7 +1144,7 @@ namespace ngcomp
       for (auto & ip : irtrig)
         ip.SetWeight(1.0/6);   // fix consistency for lowest order
     
-    rules[ET_TRIG] = move(irtrig);
+    rules[ET_TRIG] = std::move(irtrig);
 
     
 
