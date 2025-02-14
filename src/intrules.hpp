@@ -1,5 +1,5 @@
-#ifndef FILE_IVecRULES
-#define FILE_IVecRULES
+#ifndef FILE_INTRULES
+#define FILE_INTRULES
 #include <comp.hpp>
 namespace ngcomp
 {
