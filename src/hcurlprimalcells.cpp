@@ -153,7 +153,7 @@ namespace ngcomp
 
     
     virtual void CalcCurlShape (const IntegrationPoint & ip, 
-                                SliceMatrix<> curlshape) const
+                                BareSliceMatrix<> curlshape) const override
     {
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);

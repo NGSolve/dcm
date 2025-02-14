@@ -2,8 +2,6 @@
 #define HCURLCELLS_HPP
 
 
-
-
 namespace ngcomp
 {
  

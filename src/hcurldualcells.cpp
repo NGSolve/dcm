@@ -154,12 +154,14 @@ namespace ngcomp
 
 
     virtual void CalcCurlShape (const IntegrationPoint & ip, 
-        SliceMatrix<> curlshape) const
+        BareSliceMatrix<> curlshape) const override
     {
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1)};
       int maxlam = PosMax(lam);
 
       curlshape = 0;
+
+      curlshape.AddSize(ndof, 1) = 0;
 
       int minv = (maxlam+1)%3;
       int maxv = (maxlam+2)%3;
@@ -201,12 +203,12 @@ namespace ngcomp
         {
           case 0:
             {
-              curlshape.Row(nr) = trafo*(-polxitang[ix].Value()*poleta[iy].DValue(0));
+              curlshape.Row(nr) = trafo*Vec<1>(-polxitang[ix].Value()*poleta[iy].DValue(0));
               break;
             }
           case 1:
             {
-              curlshape.Row(nr) = trafo*(polxi[ix].DValue(0)*poletatang[iy].Value());
+              curlshape.Row(nr) = trafo*Vec<1>(polxi[ix].DValue(0)*poletatang[iy].Value());
               break;
             }
             break;
@@ -857,7 +859,7 @@ namespace ngcomp
 
 
     virtual void CalcCurlShape (const IntegrationPoint & ip, 
-        SliceMatrix<> curlshape) const
+        BareSliceMatrix<> curlshape) const
     {
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
