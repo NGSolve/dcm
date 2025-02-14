@@ -1,5 +1,5 @@
 #ifndef HDIVDUALCELLS_HPP
-#define HDIVLDUALCELLS_HPP
+#define HDIVDUALCELLS_HPP
 
 #include "hdivcells.hpp"
 
@@ -9,12 +9,10 @@ namespace ngcomp
 
   class HDivDualCells : public FESpace
   {
-    Array<DofId> first_edge_dofs;
     Array<DofId> first_face_dofs;
     Array<DofId> first_cell_dofs;
-    IntegrationRule GaussRadauIR;
-    IntegrationRule tangentialIR;    // Gauss or Gauss-Radau
-    bool collocated;   // collocated or staggered grid
+    IntegrationRule TransversalIR;
+    IntegrationRule NormalIR;    // Gauss or Gauss-Radau
   public:
     HDivDualCells (shared_ptr<MeshAccess> ama, const Flags & flags);
 

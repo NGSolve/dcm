@@ -18,8 +18,8 @@ namespace ngcomp
     const IntegrationRule & TransversalIR; //transversal to vector
     const IntegrationRule & NormalIR;  // in direction of vector
   public:
-    HDivDualCellTrig (const IntegrationRule & _GaussRadauIR,
-                       const IntegrationRule & _tangentialIR)
+    HDivDualCellTrig (const IntegrationRule & _TransversalIR,
+                       const IntegrationRule & _NormalIR)
       : HDivFiniteElement<2> (3*2*_TransversalIR.Size()*_NormalIR.Size(), _NormalIR.Size()-1),      
       TransversalIR(_TransversalRadauIR), NormalIR(_NormalIR)
     { ; }
@@ -48,11 +48,11 @@ namespace ngcomp
 
   class HDivDualCellTet : public HDivCellFiniteElement<3>, public VertexOrientedFE<ET_TET>
   {
-    const IntegrationRule & GaussRadauIR;
-    const IntegrationRule & tangentialIR;
+    const IntegrationRule & TransversalIR;
+    const IntegrationRule & NormalIR;
   public:
-    HDivDualCellTet (const IntegrationRule & _GaussRadauIR,
-                      const IntegrationRule & _tangentialIR)
+    HDivDualCellTet (const IntegrationRule & _TransversalIR,
+                      const IntegrationRule & _NormalIR)
       : HDivCellFiniteElement<3> (4*3*_TransversalIR.Size()*sqr(_NormalIR.Size()), _NormalIR.Size()-1),
       TransversalIR(_TransversalIR), NormalIR(_normalIR)
     { ; }
@@ -94,16 +94,14 @@ namespace ngcomp
 
     if (ma->GetDimension()==2)
       {
-        evaluator[BND] = make_shared<T_DifferentialOperator<DiffOpIdBoundaryEdge<2>>>();
-        evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdEdge<2>>>();
-        flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpDivEdge<2>>>();
+        evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdHDiv<2>>>();
+        flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpDivHDiv<2>>>();
         additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShapeHDiv<2>>> ());
       }
     else
       {
-        evaluator[BND] = make_shared<T_DifferentialOperator<DiffOpIdBoundaryEdge<3>>>();
-        evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdEdge<3>>>();
-        flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpCurlEdge<3>>>();
+        evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdHDiv<3>>>();
+        flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpDivHDiv<3>>>();
         additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShapeHDiv<3>>> ());
       }
       
@@ -167,7 +165,7 @@ namespace ngcomp
   }
 
 
-  FiniteElement & HCurlDualCells ::
+  FiniteElement & HDivDualCells ::
   GetFE (ElementId ei, Allocator & alloc) const
   {
     auto ngel = ma->GetElement (ei);
@@ -175,13 +173,13 @@ namespace ngcomp
       {
       case ET_TET:
         {
-          auto tet = new (alloc) HDivDualCellTet(GaussRadauIR, GaussRadauIR);
+          auto tet = new (alloc) HDivDualCellTet(TransversalIR, NormalIR);
           tet->SetVertexNumbers (ngel.vertices);
           return *tet;
         }
       case ET_TRIG:
         {
-          auto trig = new (alloc) HDivDualCellTrig(GaussRadauIR, GaussRadauIR);
+          auto trig = new (alloc) HDivDualCellTrig(TransversalIR, NormalIR);
           trig->SetVertexNumbers (ngel.vertices);
           return *trig;
         }

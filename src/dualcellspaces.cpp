@@ -74,7 +74,6 @@ PYBIND11_MODULE(dualcellspaces,m) {
     .def("GetIntegrationRules", &HDivPrimalCells::GetIntegrationRules)
     .def("ConvertGR2GOperator", &HDivPrimalCells::ConvertGR2GOperator)
     ; 
-
   ExportFESpace<HDivDualCells>(m, "HDivDualCells")
     .def("GetIntegrationRules", &HDivDualCells::GetIntegrationRules)
     ; 
