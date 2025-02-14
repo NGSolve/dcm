@@ -8,6 +8,7 @@
 #include "hcurlprimalcells.hpp"
 
 #include "hdivprimalcells.hpp"
+#include "hdivdualcells.hpp"
 
 namespace std {
 template <typename T, size_t S>
@@ -25,16 +26,20 @@ PYBIND11_MODULE(dualcellspaces,m) {
 
   using namespace ngcomp;
 
+
+
+
+  auto h1primalpy = ExportFESpace<H1PrimalCells>(m, "H1PrimalCells"/*, true*/)
+      .def("GetIntegrationRules", &H1PrimalCells::GetIntegrationRules)
+    // .def("Rot", &H1PrimalCells::GetRotOperator, py::arg("dual")=true)
+    ;
+  m.attr("H1PrimalCells3D") = h1primalpy;
+
   ExportFESpace<H1DualCells>(m, "H1DualCells"/*, true*/)
       .def("GetIntegrationRules", &H1DualCells::GetIntegrationRules, py::arg("intorder")=nullopt)
       .def("Gradient", &H1DualCells::GetGradientOperator2D, py::arg("dual")=true)
     ;
-  ExportFESpace<HDivPrimalCells>(m, "HDivPrimalCells"/*, true*/)
-    .def("GetIntegrationRules", &HDivPrimalCells::GetIntegrationRules)
-    .def("ConvertGR2GOperator", &HDivPrimalCells::ConvertGR2GOperator)
-    ; 
 
-  
   auto h1dualpy = 
     ExportFESpace<H1DualCells3D>(m, "H1DualCells3D"/*, true*/)
       .def("GetIntegrationRules", &H1DualCells3D::GetIntegrationRules)
@@ -42,12 +47,14 @@ PYBIND11_MODULE(dualcellspaces,m) {
     ;
   m.attr("H1DualCells3D") = h1dualpy;
   
-  auto h1primalpy = ExportFESpace<H1PrimalCells>(m, "H1PrimalCells"/*, true*/)
-      .def("GetIntegrationRules", &H1PrimalCells::GetIntegrationRules)
-    // .def("Rot", &H1PrimalCells::GetRotOperator, py::arg("dual")=true)
+
+
+  auto hcurlprimalpy = 
+    ExportFESpace<HCurlPrimalCells>(m, "HCurlPrimalCells"/*, true*/)
+    .def("GetIntegrationRules", &HCurlPrimalCells::GetIntegrationRules)
     ;
-  m.attr("H1PrimalCells3D") = h1primalpy;
-  
+  m.attr("HCurlPrimalCells3D") = hcurlprimalpy;  
+
   auto hcurldualpy =
     ExportFESpace<HCurlDualCells>(m, "HCurlDualCells"/*, true*/)
     .def("GetIntegrationRules", &HCurlDualCells::GetIntegrationRules)
@@ -60,12 +67,17 @@ PYBIND11_MODULE(dualcellspaces,m) {
     ;
   m.attr("HCurlDualCells3D") = hcurldualpy;
 
-  auto hcurlprimalpy = 
-    ExportFESpace<HCurlPrimalCells>(m, "HCurlPrimalCells"/*, true*/)
-    .def("GetIntegrationRules", &HCurlPrimalCells::GetIntegrationRules)
-    ;
-  m.attr("HCurlPrimalCells3D") = hcurlprimalpy;  
   
+
+  
+  ExportFESpace<HDivPrimalCells>(m, "HDivPrimalCells"/*, true*/)
+    .def("GetIntegrationRules", &HDivPrimalCells::GetIntegrationRules)
+    .def("ConvertGR2GOperator", &HDivPrimalCells::ConvertGR2GOperator)
+    ; 
+
+  ExportFESpace<HDivDualCells>(m, "HDivDualCells")
+    .def("GetIntegrationRules", &HDivDualCells::GetIntegrationRules)
+    ; 
 
   py::class_<PotentialFESpace, FESpace, shared_ptr<PotentialFESpace>>(m, "PotentialFESpace")
     .def("GetInnerDofs", &PotentialFESpace::GetInnerDofs)

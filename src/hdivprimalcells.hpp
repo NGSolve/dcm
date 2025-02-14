@@ -1,9 +1,16 @@
+#include "hdivcells.hpp"
+
+/*
 #include "smallsparse.hpp"
 #include "intrules.hpp"
 #include "supersparse.hpp"
+*/
+
+
 
 namespace ngcomp
 {
+  // Necessary in header file for some experimental H1 gradients?
   class HDivPrimalCellTrig : public HDivFiniteElement<2>, public VertexOrientedFE<ET_TRIG>
   {
     const IntegrationRule & TransversalIR; //transversal to vector
@@ -72,10 +79,11 @@ namespace ngcomp
     //Mat<3,3> GetPiola(const IntegrationPoint & ip) const;
     //double GetDet(const IntegrationPoint & ip) const;
   };
+
+
   class HDivPrimalCells : public FESpace
   {
     Array<DofId> first_element_dofs;
-
     IntegrationRule TransversalIR;
     IntegrationRule NormalIR;
     //bool uniform_order;
@@ -94,37 +102,21 @@ namespace ngcomp
       docu.long_docu =
         R"raw_string(HDiv conforming space on primal cells which is non-smooth but normal continuous on dual edges.
 )raw_string";      
-      
-      /*docu.Arg("uniform_order") = "bool = False\n"
-        "  Same order of basis functions in every direction";*/
       return docu;
     }
 
-    // organzize the FESpace, called after every mesh update
     void Update() override;
-    
-    
     void GetDofNrs (ElementId ei, Array<DofId> & dnums) const override
     {
       dnums.SetSize0();
       if (ei.VB() != VOL) return;
       dnums += Range(first_element_dofs[ei.Nr()], first_element_dofs[ei.Nr()+1]);
     }
-    
-    // generate FiniteElement for element-id ei
     FiniteElement & GetFE (ElementId ei, Allocator & alloc) const override;
 
     
     virtual shared_ptr<BaseMatrix> GetMassOperator(shared_ptr<CoefficientFunction> rho, shared_ptr<Region> defon, LocalHeap & lh) const override;
-
-
     shared_ptr<BaseMatrix> ConvertGR2GOperator() const;
-    
-
     std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules() const;
-
-
   };
-
-    
 }    

@@ -2,9 +2,12 @@
 #include "hdivprimalcells.hpp"
 #include "intrules.hpp"
 #include "dcs_common.hpp"
+#include "supersparse.hpp"
+#include "smallsparse.hpp"
 
 namespace ngcomp
 {
+
  class ApplyMassHDivPrimalCells : public ApplyMass
   {
     Matrix<> eval; 
@@ -31,304 +34,7 @@ namespace ngcomp
       }
   };
 
-  class DiffOpCovShape2d : public DiffOp<DiffOpCovShape2d>
-  {
-  public:
-    enum { DIM = 1 };
-    enum { DIM_SPACE = 2 };
-    enum { DIM_ELEMENT = 2 };
-    enum { DIM_DMAT = 2 };
-    enum { DIFFORDER = 0 };
-
-    static bool SupportsVB (VorB checkvb) { return true; }
-
-
-    template <typename AFEL, typename MIP, typename MAT,
-              typename std::enable_if<std::is_convertible<MAT,SliceMatrix<double,ColMajor>>::value, int>::type = 0>
-    static void GenerateMatrix (const AFEL & fel, const MIP & mip,
-                                MAT & mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTrig&>(fel).CalcCovShape (mip.IP(), Trans(mat));
-      //cout << mat << endl;
-      Mat<2,2> Finv = mip.GetJacobianInverse();
-      Mat<2,2> trafo = Trans(Finv);
-      for (int i = 0; i < mat.Width(); i++)
-        {
-          Vec<2> shape = mat.Col(i);
-          mat.Col(i) = trafo * shape;
-        }
-      //cout << mat << endl;
-    }
-
-    static int DimRef() { return 2; }
-    
-    template <typename IP, typename MAT>
-    static void GenerateMatrixRef (const FiniteElement & fel, const IP & ip,
-                                   MAT && mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTrig&>(fel).CalcCovShape (ip, Trans(mat));
-    }
-
-    template <typename MIP, typename MAT>
-    static void CalcTransformationMatrix (const MIP & mip,
-                                          MAT & mat, LocalHeap & lh)
-    {
-      //Mat<3,3> F = mip.GetJacobian();
-      Mat<2,2> Finv = static_cast<const MappedIntegrationPoint<2,2>&>(mip).GetJacobianInverse();
-      mat = Trans(Finv);
-    }
-
-  };
   
-  class DiffOpAltCovShape2d : public DiffOp<DiffOpAltCovShape2d>
-  {
-  public:
-    enum { DIM = 1 };
-    enum { DIM_SPACE = 2 };
-    enum { DIM_ELEMENT = 2 };
-    enum { DIM_DMAT = 2 };
-    enum { DIFFORDER = 0 };
-
-    static bool SupportsVB (VorB checkvb) { return true; }
-
-
-    template <typename AFEL, typename MIP, typename MAT,
-              typename std::enable_if<std::is_convertible<MAT,SliceMatrix<double,ColMajor>>::value, int>::type = 0>
-    static void GenerateMatrix (const AFEL & fel, const MIP & mip,
-                                MAT & mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTrig&>(fel).CalcAltCovShape (mip.IP(), Trans(mat));
-      //cout << mat << endl;
-      Mat<2,2> Finv = mip.GetJacobianInverse();
-      Mat<2,2> trafo = Trans(Finv);
-      for (int i = 0; i < mat.Width(); i++)
-        {
-          Vec<2> shape = mat.Col(i);
-          mat.Col(i) = trafo * shape;
-        }
-      //cout << mat << endl;
-    }
-
-    static int DimRef() { return 2; }
-    
-    template <typename IP, typename MAT>
-    static void GenerateMatrixRef (const FiniteElement & fel, const IP & ip,
-                                   MAT && mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTrig&>(fel).CalcAltCovShape (ip, Trans(mat));
-    }
-
-    template <typename MIP, typename MAT>
-    static void CalcTransformationMatrix (const MIP & mip,
-                                          MAT & mat, LocalHeap & lh)
-    {
-      //Mat<3,3> F = mip.GetJacobian();
-      Mat<2,2> Finv = static_cast<const MappedIntegrationPoint<2,2>&>(mip).GetJacobianInverse();
-      mat = Trans(Finv);
-    }
-
-    
-  };
-  class DiffOpAltShape2d : public DiffOp<DiffOpAltShape2d>
-  {
-  public:
-    enum { DIM = 1 };
-    enum { DIM_SPACE = 2 };
-    enum { DIM_ELEMENT = 2 };
-    enum { DIM_DMAT = 2 };
-    enum { DIFFORDER = 0 };
-
-    static bool SupportsVB (VorB checkvb) { return true; }
-
-
-    template <typename AFEL, typename MIP, typename MAT,
-              typename std::enable_if<std::is_convertible<MAT,SliceMatrix<double,ColMajor>>::value, int>::type = 0>
-    static void GenerateMatrix (const AFEL & fel, const MIP & mip,
-                                MAT & mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTrig&>(fel).CalcAltShape (mip.IP(), Trans(mat));
-      //cout << mat << endl;
-      Mat<2,2> F = mip.GetJacobian();
-      Mat<2,2> trafo = 1./Det(F)*F;
-      for (int i = 0; i < mat.Width(); i++)
-        {
-          Vec<2> shape = mat.Col(i);
-          mat.Col(i) = trafo * shape;
-        }
-      //cout << mat << endl;
-    }
-
-    static int DimRef() { return 2; }
-    
-    template <typename IP, typename MAT>
-    static void GenerateMatrixRef (const FiniteElement & fel, const IP & ip,
-                                   MAT && mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTrig&>(fel).CalcAltShape (ip, Trans(mat));
-    }
-
-    template <typename MIP, typename MAT>
-    static void CalcTransformationMatrix (const MIP & mip,
-                                          MAT & mat, LocalHeap & lh)
-    {
-      //Mat<3,3> F = mip.GetJacobian();
-      Mat<2,2> F = static_cast<const MappedIntegrationPoint<2,2>&>(mip).GetJacobian();
-      mat = 1./Det(F)*F;
-    }
-
-    
-  };
-  class DiffOpAltShape3d : public DiffOp<DiffOpAltShape3d>
-  {
-    public:
-    enum { DIM = 1 };
-    enum { DIM_SPACE = 3 };
-    enum { DIM_ELEMENT = 3 };
-    enum { DIM_DMAT = 3 };
-    enum { DIFFORDER = 0 };
-
-    static bool SupportsVB (VorB checkvb) { return true; }
-
-
-    template <typename AFEL, typename MIP, typename MAT,
-              typename std::enable_if<std::is_convertible<MAT,SliceMatrix<double,ColMajor>>::value, int>::type = 0>
-    static void GenerateMatrix (const AFEL & fel, const MIP & mip,
-                                MAT & mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTet&>(fel).CalcAltShape (mip.IP(), Trans(mat));
-      //cout << mat << endl;
-      Mat<3,3> F = mip.GetJacobian();
-      Mat<3,3> trafo = 1./Det(F)*F;
-      for (int i = 0; i < mat.Width(); i++)
-        {
-          Vec<3> shape = mat.Col(i);
-          mat.Col(i) = trafo * shape;
-        }
-      //cout << mat << endl;
-    }
-
-    static int DimRef() { return 3; }
-    
-    template <typename IP, typename MAT>
-    static void GenerateMatrixRef (const FiniteElement & fel, const IP & ip,
-                                   MAT && mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTet&>(fel).CalcAltShape (ip, Trans(mat));
-    }
-
-    template <typename MIP, typename MAT>
-    static void CalcTransformationMatrix (const MIP & mip,
-                                          MAT & mat, LocalHeap & lh)
-    {
-      //Mat<3,3> F = mip.GetJacobian();
-      Mat<3,3> F = static_cast<const MappedIntegrationPoint<3,3>&>(mip).GetJacobian();
-      mat = 1./Det(F)*F;
-    }
-
-    
-  };
-  class DiffOpCovShape3d : public DiffOp<DiffOpCovShape3d>
-  {
-    public:
-    enum { DIM = 1 };
-    enum { DIM_SPACE = 3 };
-    enum { DIM_ELEMENT = 3 };
-    enum { DIM_DMAT = 3 };
-    enum { DIFFORDER = 0 };
-
-    static bool SupportsVB (VorB checkvb) { return true; }
-
-
-    template <typename AFEL, typename MIP, typename MAT,
-              typename std::enable_if<std::is_convertible<MAT,SliceMatrix<double,ColMajor>>::value, int>::type = 0>
-    static void GenerateMatrix (const AFEL & fel, const MIP & mip,
-                                MAT & mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTet&>(fel).CalcCovShape (mip.IP(), Trans(mat));
-      //cout << mat << endl;
-      Mat<3,3> Finv = mip.GetJacobianInverse();
-      Mat<3,3> trafo = Trans(Finv);
-      for (int i = 0; i < mat.Width(); i++)
-        {
-          Vec<3> shape = mat.Col(i);
-          mat.Col(i) = trafo * shape;
-        }
-      //cout << mat << endl;
-    }
-
-    static int DimRef() { return 3; }
-    
-    template <typename IP, typename MAT>
-    static void GenerateMatrixRef (const FiniteElement & fel, const IP & ip,
-                                   MAT && mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTet&>(fel).CalcCovShape (ip, Trans(mat));
-    }
-
-    template <typename MIP, typename MAT>
-    static void CalcTransformationMatrix (const MIP & mip,
-                                          MAT & mat, LocalHeap & lh)
-    {
-      //Mat<3,3> F = mip.GetJacobian();
-      Mat<3,3> Finv = static_cast<const MappedIntegrationPoint<3,3>&>(mip).GetJacobianInverse();
-      mat = Trans(Finv);
-    }
-
-    
-  };
-
-  class DiffOpAltDiv3d : public DiffOp<DiffOpAltDiv3d>
-  {
-  public:
-    enum { DIM = 1 };
-    enum { DIM_SPACE = 3 };
-    enum { DIM_ELEMENT = 3 };
-    enum { DIM_DMAT = 1 };
-    enum { DIFFORDER = 1 };
-
-    static bool SupportsVB (VorB checkvb) { return true; }
-
-
-    template <typename AFEL, typename MIP, typename MAT,
-              typename std::enable_if<std::is_convertible<MAT,SliceMatrix<double,ColMajor>>::value, int>::type = 0>
-    static void GenerateMatrix (const AFEL & fel, const MIP & mip,
-                                MAT & mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTet&>(fel).CalcAltDivShape (mip.IP(), Trans(mat));
-      Mat<3,3> F = mip.GetJacobian();
-      //Mat<3,3> F = static_cast<const MappedIntegrationPoint<3,3>&>(mip).GetJacobian();
-      //cout << mat << endl;
-      double trafo = 1./Det(F);
-      /*for (int i = 0; i < mat.Width(); i++)
-        {
-          Vec<3> shape = mat.Col(i);
-          mat.Col(i) = trafo * shape;
-        }*/
-      mat *= trafo;
-      //cout << mat << endl;
-    }
-
-    static int DimRef() { return 3; }
-    
-    template <typename IP, typename MAT>
-    static void GenerateMatrixRef (const FiniteElement & fel, const IP & ip,
-                                   MAT && mat, LocalHeap & lh)
-    {
-     
-      static_cast<const HDivPrimalCellTet&>(fel).CalcAltDivShape (ip, Trans(mat));
-    }
-
-    template <typename MIP, typename MAT>
-    static void CalcTransformationMatrix (const MIP & mip,
-                                          MAT & mat, LocalHeap & lh)
-    {
-      //Mat<3,3> F = mip.GetJacobian();
-      Mat<3,3> F = static_cast<const MappedIntegrationPoint<3,3>&>(mip).GetJacobian();
-      mat = 1./Det(F);
-    }
-
-    
-  };
   ApplyMassHDivPrimalCells::
       ApplyMassHDivPrimalCells (shared_ptr<FESpace> afes,
           shared_ptr<CoefficientFunction> arho,
@@ -443,17 +149,10 @@ namespace ngcomp
       //cout << "rho_vals: " << rho_eval << endl;
       
     }
-
     ApplyMassHDivPrimalCells::~ApplyMassHDivPrimalCells() { ; }
 
     void ApplyMassHDivPrimalCells::Mult(const BaseVector & vec, BaseVector &prod) const
     {
-      //cout << "Mult called" << endl;
-      /*
-      auto ma = fes->GetMeshAccess(); 
-      auto prodmat = prod.FV<double>().AsMatrix(ma->GetNE(), eval.Width()); 
-      prodmat = 0.;
-      */
       prod = 0;
       MultAdd(1.,vec,prod);
       }
@@ -513,7 +212,6 @@ namespace ngcomp
          },
          TasksPerThread(4));
     }
-        
   
   Mat<2,2> HDivPrimalCellTrig:: GetPiola (const IntegrationPoint & ip) const
   {
@@ -1648,37 +1346,26 @@ namespace ngcomp
       {
         evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdHDiv<2>>>();
         flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpDivHDiv<2>>>();
-        additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShape2d>> ());
-        additional_evaluators.Set ("altcov", make_shared<T_DifferentialOperator<DiffOpAltCovShape2d>> ());
-        additional_evaluators.Set ("hodge", make_shared<T_DifferentialOperator<DiffOpCovShape2d>> ());
+        additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShapeHDiv<2>>> ());
       }
       if (ma->GetDimension()==3)
       {
         evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdHDiv<3>>>();
         flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpDivHDiv<3>>>();
-        additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShape3d>> ());
-        additional_evaluators.Set ("altdiv", make_shared<T_DifferentialOperator<DiffOpAltDiv3d>> ());
-        additional_evaluators.Set ("hodge", make_shared<T_DifferentialOperator<DiffOpCovShape3d>> ());
+        additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShapeHDiv<3>>> ());
       }
 
       NormalIR = IntegrationRule();
       Array<double> xi, wi;
       ComputeGaussRadauRule (order+1, xi, wi);
-      //xi[0] += 1e-12;
       for (auto i : Range(xi))
         NormalIR.Append (IntegrationPoint (1-xi[i]-1e-10, 0, 0, wi[i]));
-      //uniform_order = true;
-      /*if (!flags.GetDefineFlag("uniform_order"))
-      {
-          ComputeGaussRule (order+1, xi, wi);
-          uniform_order = false;
-      }*/
       for (auto i : Range(xi))
         TransversalIR.Append (IntegrationPoint (1-xi[i]-1e-10, 0, 0, wi[i]));
     }
 
 
-    // organzize the FESpace, called after every mesh update
+    // organize the FESpace, called after every mesh update
     void HDivPrimalCells::Update() 
     {
       FESpace::Update();

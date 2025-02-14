@@ -1,3 +1,9 @@
+#ifndef HDIVDUALCELLS_HPP
+#define HDIVLDUALCELLS_HPP
+
+#include "hdivcells.hpp"
+
+
 namespace ngcomp
 {
 
@@ -12,12 +18,12 @@ namespace ngcomp
   public:
     HDivDualCells (shared_ptr<MeshAccess> ama, const Flags & flags);
 
-    string GetClassName () const override { return "hcurldualcells3d"; }
+    string GetClassName () const override { return "hdivdualcells"; }
 
     static DocInfo GetDocu()
     {
       auto docu = FESpace::GetDocu();
-      docu.short_docu = "HDivDualCells3D.";
+      docu.short_docu = "HDivDualCells.";
       docu.long_docu =
         R"raw_string(normal continuous on dual cells.
 )raw_string";
@@ -37,3 +43,5 @@ namespace ngcomp
     
   };
 }
+
+#endif

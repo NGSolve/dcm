@@ -2429,7 +2429,7 @@ namespace ngcomp
         evaluator[BND] = make_shared<T_DifferentialOperator<DiffOpIdBoundaryEdge<2>>>();
         evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdEdge<2>>>();
         flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpCurlEdge<2>>>();
-        additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShape<2>>> ());
+        additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShapeHCurl<2>>> ());
         additional_evaluators.Set ("Grad", make_shared<T_DifferentialOperator<DiffOpGradHCurl<2>>> ());
         additional_evaluators.Set ("jumpninner", make_shared<T_DifferentialOperator<DiffOpJumpNInnerHCurl<2>>> ());                
       }
@@ -2438,9 +2438,9 @@ namespace ngcomp
         evaluator[BND] = make_shared<T_DifferentialOperator<DiffOpIdBoundaryEdge<3>>>();
         evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdEdge<3>>>();
         flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpCurlEdge<3>>>();
-        additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShape<3>>> ());
-        additional_evaluators.Set ("Piolashape", make_shared<T_DifferentialOperator<DiffOpPiolaShape<3>>> ());
-        additional_evaluators.Set ("Hodge", make_shared<T_DifferentialOperator<DiffOpHodge<3>>> ());        
+        additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShapeHCurl<3>>> ());
+        additional_evaluators.Set ("Piolashape", make_shared<T_DifferentialOperator<DiffOpPiolaShapeHCurl<3>>> ());
+        additional_evaluators.Set ("Hodge", make_shared<T_DifferentialOperator<DiffOpHodgeHCurl<3>>> ());        
       }
 
 

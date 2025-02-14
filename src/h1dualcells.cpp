@@ -4,7 +4,6 @@
 #include "intrules.hpp"
 #include "supersparse.hpp"
 
-
 namespace ngcomp
 {
 

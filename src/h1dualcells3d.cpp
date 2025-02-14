@@ -2,6 +2,7 @@
 #include "h1dualcells3d.hpp"
 #include "dcs_common.hpp"
 #include "hdivprimalcells.hpp"
+#include "supersparse.hpp"
 
 namespace ngcomp
 {
