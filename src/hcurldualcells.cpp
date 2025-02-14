@@ -3600,11 +3600,10 @@ namespace ngcomp
     IntegrationRule irquad(ET_QUAD, 2*order+4);
     IntegrationRule irsegm(ET_SEGM, 2*order+4);
 
-    // bool altshapesH = false;
-    auto mappingtypeB = POLYNOMIAL;
-    auto mappingtypeH = PIOLA;
+    auto mappingtypeH = POLYNOMIAL;
+    auto mappingtypeB = PIOLA;
     if (altshapes)
-      mappingtypeH = POLYNOMIAL;        
+      mappingtypeB = POLYNOMIAL;        
 
     for (auto elclass_inds : table)
     {
@@ -3686,7 +3685,7 @@ namespace ngcomp
       // IntegrationRule ir = move(irs[ET_TET]);
 
       auto irs = fescurl->GetIntegrationRules();
-      if (lumping)
+      if (!lumping)
         irs = ngcomp::GetIntegrationRules(2*order+4);
       IntegrationRule ir = std::move(irs[ET_TET]);            
 
