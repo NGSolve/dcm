@@ -110,7 +110,6 @@ namespace ngcomp
                               const class CoefficientFunction & func, SliceMatrix<> coefs,
                               LocalHeap & lh) const
     {
-      cout << "Interpolate called, ndof = " << ndof << endl;
       Matrix mat(ndof, ndof);
       Vector rhs(ndof);
 
@@ -118,8 +117,6 @@ namespace ngcomp
       rhs = 0.0;
       
       auto [pnts, inds, nump] = GetNanoPoints<ET_TRIG> (order+1, true);
-      cout << pnts.Size() << nump << endl;
-
       Vector shape(ndof);
 
       
