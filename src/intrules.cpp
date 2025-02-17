@@ -101,14 +101,16 @@ namespace ngcomp
     return ir;
   }
 
-  IntegrationRule PrimalSegmIR(const IntegrationRule & irseg)
+  IntegrationRule PrimalSegmIR(const IntegrationRule & IR, bool mirroredIR)
   {
         IntegrationRule ir;
-        for (auto & ip : irseg)
+        for (auto & ip : IR)
           {
             double x = ip(0), w = ip.Weight();
-            ir.Append ( IntegrationPoint(x/2, 0, 0, 0.5*w));
-            ir.Append ( IntegrationPoint((x+1)/2, 0, 0, 0.5*w));
+            if(mirroredIR)
+              x = 1-x;
+            ir.Append ( IntegrationPoint(x/2., 0, 0, 0.5*w));
+            ir.Append ( IntegrationPoint(1-x/2., 0, 0, 0.5*w));
           }
         return ir;
 

@@ -14,7 +14,7 @@ namespace ngcomp
   
   IntegrationRule PrimalCellIR(const IntegrationRule & IR, bool mirroredIR = false);
 
-  IntegrationRule PrimalSegmIR(const IntegrationRule & irseg);
+  IntegrationRule PrimalSegmIR(const IntegrationRule & irseg, bool mirroredIR = false);
 
 
   std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules(int intorder);
