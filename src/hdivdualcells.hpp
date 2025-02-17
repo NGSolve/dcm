@@ -12,8 +12,7 @@ namespace ngcomp
     Array<DofId> first_edge_dofs;
     Array<DofId> first_face_dofs;
     Array<DofId> first_cell_dofs;
-    IntegrationRule TransversalIR;
-    IntegrationRule NormalIR;    // Gauss or Gauss-Radau
+    IntegrationRule IR;    // Gauss or Gauss-Radau
   public:
     HDivDualCells (shared_ptr<MeshAccess> ama, const Flags & flags);
 

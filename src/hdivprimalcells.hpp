@@ -13,14 +13,11 @@ namespace ngcomp
   // Necessary in header file for some experimental H1 gradients?
   class HDivPrimalCellTrig : public HDivCellFiniteElement<2>, public VertexOrientedFE<ET_TRIG>
   {
-    const IntegrationRule & TransversalIR; //transversal to vector
-    const IntegrationRule & NormalIR;  // in direction of vector
+    const IntegrationRule & IR;
   public:
-    HDivPrimalCellTrig (int order,
-                        const IntegrationRule & _TransversalIR,
-                        const IntegrationRule & _NormalIR)
-      : HDivCellFiniteElement<2> (3*_TransversalIR.Size()*(2*_NormalIR.Size()-1), order+1),      
-      TransversalIR(_TransversalIR), NormalIR(_NormalIR)
+    HDivPrimalCellTrig (const IntegrationRule & _IR)
+      : HDivCellFiniteElement<2> (3*_IR.Size()*(2*_IR.Size()-1), _IR.Size()-1),      
+      IR(_IR)
     { ; }
     
     using VertexOrientedFE<ET_TRIG>::SetVertexNumbers;
@@ -48,14 +45,11 @@ namespace ngcomp
 
   class HDivPrimalCellTet : public HDivCellFiniteElement<3>, public VertexOrientedFE<ET_TET>
   {
-    const IntegrationRule & TransversalIR; //transversal to vector
-    const IntegrationRule & NormalIR;  // in direction of vector
+    const IntegrationRule & IR;
   public:
-    HDivPrimalCellTet (int order,
-                        const IntegrationRule & _TransversalIR,
-                        const IntegrationRule & _NormalIR)
-      : HDivCellFiniteElement<3> (6*_TransversalIR.Size()*_TransversalIR.Size()*(2*_NormalIR.Size()-1), order+1),      
-      TransversalIR(_TransversalIR), NormalIR(_NormalIR)
+    HDivPrimalCellTet (const IntegrationRule & _IR)
+      : HDivCellFiniteElement<3> (6*_IR.Size()*_IR.Size()*(2*_IR.Size()-1), _IR.Size()-1),      
+      IR(_IR)
     { ; }
     
     using VertexOrientedFE<ET_TET>::SetVertexNumbers;
@@ -84,8 +78,7 @@ namespace ngcomp
   class HDivPrimalCells : public FESpace
   {
     Array<DofId> first_element_dofs;
-    IntegrationRule TransversalIR;
-    IntegrationRule NormalIR;
+    IntegrationRule IR;
     //bool uniform_order;
     
   public:
@@ -116,7 +109,7 @@ namespace ngcomp
 
     
     virtual shared_ptr<BaseMatrix> GetMassOperator(shared_ptr<CoefficientFunction> rho, shared_ptr<Region> defon, LocalHeap & lh) const override;
-    shared_ptr<BaseMatrix> ConvertGR2GOperator() const;
+    //shared_ptr<BaseMatrix> ConvertGR2GOperator() const;
     std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules() const;
   };
 }    
