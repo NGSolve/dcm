@@ -381,18 +381,345 @@ namespace ngcomp
     
     virtual void CalcShape (const IntegrationPoint & ip, 
                             BareSliceMatrix<> shape) const override
-    { ; }
+    {
+      double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
+      int maxlam = PosMax(lam);
+
+      //shape.AddSize(ndof, 3) = 0;
+      shape = 0;
+
+      int minvi = (maxlam+1)%4;
+      int maxvi = minvi;
+      for (int i = 0; i < 4; i++)
+        if (i != maxlam)
+        {
+          if (vnums[i] < vnums[minvi]) minvi = i;
+          if (vnums[i] > vnums[maxvi]) maxvi = i;
+        }
+      int midvi = 6-maxlam-minvi-maxvi;
+
+      int vdir[4];
+      vdir[maxlam] = -1;
+      vdir[minvi] = 0;
+      vdir[midvi] = 1;
+      vdir[maxvi] = 2;
+
+      Vec<3> x(lam[minvi], lam[midvi], lam[maxvi]);
+      Vec<3> xi = MapTet2Hex (x);
+
+      Mat<3,3> F = DMapHex2Tet(xi);
+      Mat<3,3> F2;    // trafo from vertex permutation
+      Vec<3> verts[] = { Vec<3>(1,0,0), Vec<3>(0,1,0), Vec<3> (0,0,1), Vec<3> (0,0,0) };
+      F2.Col(0) = verts[minvi]-verts[maxlam];
+      F2.Col(1) = verts[midvi]-verts[maxlam];
+      F2.Col(2) = verts[maxvi]-verts[maxlam];
+
+      Mat<3> trafo = 1./Det(F2*F)*(F2*F);
+
+      int nd = IR.Size();
+
+
+      ArrayMem<double, 20> polxi(nd), poleta(nd), polzeta(nd);
+      LagrangePolynomials(xi(0), IR, polxi);
+      LagrangePolynomials(xi(1), IR, poleta);
+      LagrangePolynomials(xi(2), IR, polzeta);
+
+
+      auto assign =  [&](int nr, IVec<3> i, int dir, bool flipsign = false)
+      {
+        double sig = 1;
+        if (flipsign)
+          sig = -1;
+        switch (dir)
+        {
+          case 0:
+            {
+              shape.Row(nr) = sig*trafo*Vec<3>(polxi[i[0]]*poleta[i[1]]*polzeta[i[2]], 0, 0);
+              break;
+            }
+          case 1:
+            {
+              shape.Row(nr) = sig*trafo*Vec<3>(0, polxi[i[0]]*poleta[i[1]]*polzeta[i[2]], 0);
+              break;
+            }
+          case 2:
+            {
+              shape.Row(nr) = sig*trafo*Vec<3>(0, 0, polxi[i[0]]*poleta[i[1]]*polzeta[i[2]]);
+              break;
+            }
+            break;
+        }
+      };
+
+
+
+
+      int ii = 0;
+      for (int i = 0; i < 4; i++)
+      {
+        IVec<4> f = GetVertexOrientedFace(i);
+        for (int j = 0; j < 3; j++)
+        {
+          if (f[j] == maxlam)
+          {
+            int v1 = f[(j+1)%3];
+            int v2 = f[(j+2)%3];
+
+            IVec<3> ind = { 0, 0, 0 };
+            int dirv1 = vdir[v1];
+            int dirv2 = vdir[v2];
+            int kk = ii;
+            for (int l = 0; l < nd; l++)
+              for (int k = 0; k < nd; k++)
+              {
+                ind[dirv1] = k;
+                ind[dirv2] = l;
+                assign(kk++, ind, 3-dirv1-dirv2,6-v1-v2-maxlam<maxlam);
+              }
+          }
+          ii += nd*nd;
+        }
+      }
+
+      ii += maxlam*3*sqr(nd)*(nd-1);
+      for (int i = 0; i < nd; i++)
+        for (int j = 0; j < nd; j++)
+          for (int k = 1; k < nd; k++)
+          {
+            assign(ii++, { k, i, j }, 0);
+            assign(ii++, { i, k, j }, 1);
+            assign(ii++, { i, j, k }, 2);
+          }
+    }
 
     
     virtual void CalcDivShape (const IntegrationPoint & ip, 
-                                BareSliceMatrix<> curlshape) const override
-    { ; } 
+                                BareSliceMatrix<> divshape) const override
+    {
+      double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
+      int maxlam = PosMax(lam);
 
+      divshape = 0;
+      //divshape.AddSize(ndof, 3) = 0;
+
+      int minvi = (maxlam+1)%4;
+      int maxvi = minvi;
+      for (int i = 0; i < 4; i++)
+        if (i != maxlam)
+          {
+            if (vnums[i] < vnums[minvi]) minvi = i;
+            if (vnums[i] > vnums[maxvi]) maxvi = i;
+          }
+      int midvi = 6-maxlam-minvi-maxvi;
+
+      int vdir[4];
+      vdir[maxlam] = -1;
+      vdir[minvi] = 0;
+      vdir[midvi] = 1;
+      vdir[maxvi] = 2;
+      
+      Vec<3> x(lam[minvi], lam[midvi], lam[maxvi]);
+      Vec<3> xi = MapTet2Hex (x);
+
+      Mat<3,3> F = DMapHex2Tet(xi);
+      Mat<3,3> F2;    // trafo from vertex permutation
+      Vec<3> verts[] = { Vec<3>(1,0,0), Vec<3>(0,1,0), Vec<3> (0,0,1), Vec<3> (0,0,0) };
+      F2.Col(0) = verts[minvi]-verts[maxlam];
+      F2.Col(1) = verts[midvi]-verts[maxlam];
+      F2.Col(2) = verts[maxvi]-verts[maxlam];
+      
+      double trafo = 1.0/fabs(Det(F2*F));
+
+      int nd = IR.Size();
+
+      ArrayMem<AutoDiff<1>, 20> Dpolxi(nd), Dpoleta(nd), Dpolzeta(nd);
+      ArrayMem<double, 20> polxi(nd), poleta(nd), polzeta(nd);         
+      LagrangePolynomials(AutoDiff<1>(xi(0),0), IR, Dpolxi);
+      LagrangePolynomials(AutoDiff<1>(xi(1),0), IR, Dpoleta);
+      LagrangePolynomials(AutoDiff<1>(xi(2),0), IR, Dpolzeta);
+
+      LagrangePolynomials(xi(0), IR, polxi);
+      LagrangePolynomials(xi(1), IR, poleta);
+      LagrangePolynomials(xi(2), IR, polzeta);
+
+      auto assign =  [&](int nr, IVec<3> i, int dir,bool flipsign = false)
+        {
+          switch (dir)
+            {
+            case 0:
+            {
+              divshape(nr) = trafo*Dpolxi[i[0]].DValue(0)*poleta[i[1]]*polzeta[i[2]];
+              break;
+            }
+            case 1:
+            {
+              divshape(nr) = trafo*polxi[i[0]]*Dpoleta[i[1]].DValue(0)*polzeta[i[2]];
+              break;
+            }
+            case 2:
+            {
+              divshape(nr) = trafo*polxi[i[0]]*poleta[i[1]]*Dpolzeta[i[2]].DValue(0);
+              break;
+            }
+            break;
+            }
+          if (flipsign)
+            divshape(nr)*=-1.;
+        };
+
+      int ii = 0;
+      for (int i = 0; i < 4; i++)
+      {
+        IVec<4> f = GetVertexOrientedFace(i);
+        for (int j = 0; j < 3; j++)
+        {
+          if (f[j] == maxlam)
+          {
+            int v1 = f[(j+1)%3];
+            int v2 = f[(j+2)%3];
+
+            IVec<3> ind = { 0, 0, 0 };
+            int dirv1 = vdir[v1];
+            int dirv2 = vdir[v2];
+            int kk = ii;
+            for (int l = 0; l < nd; l++)
+              for (int k = 0; k < nd; k++)
+              {
+                ind[dirv1] = k;
+                ind[dirv2] = l;
+                assign(kk++, ind, 3-dirv1-dirv2,6-v1-v2-maxlam<maxlam);
+              }
+          }
+          ii += nd*nd;
+        }
+      }
+
+      ii += maxlam*3*sqr(nd)*(nd-1);
+      for (int i = 0; i < nd; i++)
+        for (int j = 0; j < nd; j++)
+          for (int k = 1; k < nd; k++)
+          {
+            assign(ii++, { k, i, j }, 0);
+            assign(ii++, { i, k, j }, 1);
+            assign(ii++, { i, j, k }, 2);
+          }
+    }
 
 
     virtual void CalcAltShape (const IntegrationPoint & ip, 
                                BareSliceMatrix<> shape) const override
-    { ; }
+    { 
+      double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
+      int maxlam = PosMax(lam);
+
+      //shape.AddSize(ndof, 3) = 0;
+      shape = 0;
+
+      int minvi = (maxlam+1)%4;
+      int maxvi = minvi;
+      for (int i = 0; i < 4; i++)
+        if (i != maxlam)
+        {
+          if (vnums[i] < vnums[minvi]) minvi = i;
+          if (vnums[i] > vnums[maxvi]) maxvi = i;
+        }
+      int midvi = 6-maxlam-minvi-maxvi;
+
+      int vdir[4];
+      vdir[maxlam] = -1;
+      vdir[minvi] = 0;
+      vdir[midvi] = 1;
+      vdir[maxvi] = 2;
+
+      Vec<3> x(lam[minvi], lam[midvi], lam[maxvi]);
+      Vec<3> xi = MapTet2Hex (x);
+
+      Mat<3,3> F = DMapHex2Tet(xi);
+      Mat<3,3> F2;    // trafo from vertex permutation
+      Vec<3> verts[] = { Vec<3>(1,0,0), Vec<3>(0,1,0), Vec<3> (0,0,1), Vec<3> (0,0,0) };
+      F2.Col(0) = verts[minvi]-verts[maxlam];
+      F2.Col(1) = verts[midvi]-verts[maxlam];
+      F2.Col(2) = verts[maxvi]-verts[maxlam];
+
+      Mat<3> trafo = 1./Det(F2*F)*(F2*F);
+
+      int nd = IR.Size();
+
+
+      ArrayMem<double, 20> polxi(nd), poleta(nd), polzeta(nd);
+      LagrangePolynomials(xi(0), IR, polxi);
+      LagrangePolynomials(xi(1), IR, poleta);
+      LagrangePolynomials(xi(2), IR, polzeta);
+
+
+      auto assign =  [&](int nr, IVec<3> i, int dir, bool flipsign = false)
+      {
+        Vec<3> xinode(IR[i[0]](0), IR[i[1]](0), IR[i[2]](0));
+        Mat<3,3> Fnode = DMapHex2Tet(xinode);          
+        Mat<3> trafonode = 1.0/fabs(Det(F2*Fnode))*(F2*Fnode);
+        if (flipsign)
+          trafonode *= -1;
+        switch (dir)
+        {
+          case 0:
+            {
+              shape.Row(nr) = trafonode*Vec<3>(polxi[i[0]]*poleta[i[1]]*polzeta[i[2]], 0, 0);
+              break;
+            }
+          case 1:
+            {
+              shape.Row(nr) = trafonode*Vec<3>(0, polxi[i[0]]*poleta[i[1]]*polzeta[i[2]], 0);
+              break;
+            }
+          case 2:
+            {
+              shape.Row(nr) = trafonode*Vec<3>(0, 0, polxi[i[0]]*poleta[i[1]]*polzeta[i[2]]);
+              break;
+            }
+            break;
+        }
+      };
+
+
+
+
+      int ii = 0;
+      for (int i = 0; i < 4; i++)
+      {
+        IVec<4> f = GetVertexOrientedFace(i);
+        for (int j = 0; j < 3; j++)
+        {
+          if (f[j] == maxlam)
+          {
+            int v1 = f[(j+1)%3];
+            int v2 = f[(j+2)%3];
+
+            IVec<3> ind = { 0, 0, 0 };
+            int dirv1 = vdir[v1];
+            int dirv2 = vdir[v2];
+            int kk = ii;
+            for (int l = 0; l < nd; l++)
+              for (int k = 0; k < nd; k++)
+              {
+                ind[dirv1] = k;
+                ind[dirv2] = l;
+                assign(kk++, ind, 3-dirv1-dirv2,6-v1-v2-maxlam<maxlam);
+              }
+          }
+          ii += nd*nd;
+        }
+      }
+
+      ii += maxlam*3*sqr(nd)*(nd-1);
+      for (int i = 0; i < nd; i++)
+        for (int j = 0; j < nd; j++)
+          for (int k = 1; k < nd; k++)
+          {
+            assign(ii++, { k, i, j }, 0);
+            assign(ii++, { i, k, j }, 1);
+            assign(ii++, { i, j, k }, 2);
+          }
+    }
 
 
 
