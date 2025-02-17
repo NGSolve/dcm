@@ -372,7 +372,7 @@ namespace ngcomp
     const IntegrationRule & IR;
   public:
     HDivDualCellTet (const IntegrationRule & _IR)
-      : HDivCellFiniteElement<3> (4*3*_IR.Size()*sqr(_IR.Size()), _IR.Size()-1),
+      : HDivCellFiniteElement<3> (4*3*_IR.Size()*_IR.Size()*_IR.Size(), _IR.Size()-1),
       IR(_IR)
     { ; }
     using VertexOrientedFE<ET_TET>::SetVertexNumbers;
@@ -793,7 +793,7 @@ namespace ngcomp
       first_cell_dofs.SetSize(ma->GetNE(VOL)+1);
       first_cell_dofs[0] = ndof;
       for (auto i : Range(ma->GetNE(VOL)))
-        first_cell_dofs[i+1] = ndof += 4*3*nd*nd*(nd-1);
+        first_cell_dofs[i+1] = ndof += 4*3*nd*(nd-1)*(nd-1);
     }
     SetNDof(ndof);
     //cout << "HDivDualCells.Update done" << endl;
