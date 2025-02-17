@@ -20,8 +20,8 @@ namespace ngcomp
   public:
     HDivDualCellTrig (const IntegrationRule & _TransversalIR,
                        const IntegrationRule & _NormalIR)
-      : HDivFiniteElement<2> (3*2*_TransversalIR.Size()*_NormalIR.Size(), _NormalIR.Size()-1),      
-      TransversalIR(_TransversalRadauIR), NormalIR(_NormalIR)
+      : HDivCellFiniteElement<2> (3*2*_TransversalIR.Size()*_NormalIR.Size(), _NormalIR.Size()-1),      
+      TransversalIR(_TransversalIR), NormalIR(_NormalIR)
     { ; }
     using VertexOrientedFE<ET_TRIG>::SetVertexNumbers;
     virtual ELEMENT_TYPE ElementType() const { return ET_TRIG; }
@@ -54,7 +54,7 @@ namespace ngcomp
     HDivDualCellTet (const IntegrationRule & _TransversalIR,
                       const IntegrationRule & _NormalIR)
       : HDivCellFiniteElement<3> (4*3*_TransversalIR.Size()*sqr(_NormalIR.Size()), _NormalIR.Size()-1),
-      TransversalIR(_TransversalIR), NormalIR(_normalIR)
+      TransversalIR(_TransversalIR), NormalIR(_NormalIR)
     { ; }
     using VertexOrientedFE<ET_TET>::SetVertexNumbers;
     virtual ELEMENT_TYPE ElementType() const { return ET_TET; }
@@ -193,9 +193,6 @@ namespace ngcomp
   shared_ptr<BaseMatrix> HDivDualCells ::
   GetMassOperator(shared_ptr<CoefficientFunction> rho, shared_ptr<Region> defon, LocalHeap & lh) const
   {
-    if (!collocated)
-      throw Exception("only for collocated spaces");
-
     static Timer t("GetMassOperator"); RegionTimer reg(t);
     static Timer tint("integrate");
     static Timer tsp("MakeSparse");
@@ -422,7 +419,7 @@ namespace ngcomp
                                             }
                       
                                           Mat<3,3> F = mir[i].GetJacobian();
-                                          rhoi = TransF * rhoi * F;
+                                          rhoi = Trans(F) * rhoi * F;
                                           rhoi *= ir[i].Weight() / mir[i].GetJacobiDet();
                                           rhoi_shapes_trans.Rows(3*i, 3*i+3) = rhoi * shapes_trans.Rows(3*i, 3*i+3);
                                         }

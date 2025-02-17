@@ -11,7 +11,7 @@
 namespace ngcomp
 {
   // Necessary in header file for some experimental H1 gradients?
-  class HDivPrimalCellTrig : public HDivFiniteElement<2>, public VertexOrientedFE<ET_TRIG>
+  class HDivPrimalCellTrig : public HDivCellFiniteElement<2>, public VertexOrientedFE<ET_TRIG>
   {
     const IntegrationRule & TransversalIR; //transversal to vector
     const IntegrationRule & NormalIR;  // in direction of vector
@@ -19,7 +19,7 @@ namespace ngcomp
     HDivPrimalCellTrig (int order,
                         const IntegrationRule & _TransversalIR,
                         const IntegrationRule & _NormalIR)
-      : HDivFiniteElement<2> (3*_TransversalIR.Size()*(2*_NormalIR.Size()-1), order+1),      
+      : HDivCellFiniteElement<2> (3*_TransversalIR.Size()*(2*_NormalIR.Size()-1), order+1),      
       TransversalIR(_TransversalIR), NormalIR(_NormalIR)
     { ; }
     
@@ -46,7 +46,7 @@ namespace ngcomp
     double GetDet(const IntegrationPoint & ip) const;
   };
 
-  class HDivPrimalCellTet : public HDivFiniteElement<3>, public VertexOrientedFE<ET_TET>
+  class HDivPrimalCellTet : public HDivCellFiniteElement<3>, public VertexOrientedFE<ET_TET>
   {
     const IntegrationRule & TransversalIR; //transversal to vector
     const IntegrationRule & NormalIR;  // in direction of vector
@@ -54,7 +54,7 @@ namespace ngcomp
     HDivPrimalCellTet (int order,
                         const IntegrationRule & _TransversalIR,
                         const IntegrationRule & _NormalIR)
-      : HDivFiniteElement<3> (6*_TransversalIR.Size()*_TransversalIR.Size()*(2*_NormalIR.Size()-1), order+1),      
+      : HDivCellFiniteElement<3> (6*_TransversalIR.Size()*_TransversalIR.Size()*(2*_NormalIR.Size()-1), order+1),      
       TransversalIR(_TransversalIR), NormalIR(_NormalIR)
     { ; }
     

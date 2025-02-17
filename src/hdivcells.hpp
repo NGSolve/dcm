@@ -20,6 +20,10 @@ namespace ngcomp
                                BareSliceMatrix<> shape) const
     { throw Exception ("CalcAltShape not overloaded"); }
 
+    virtual void CalcDivShape (const IntegrationPoint & ip, 
+                               BareSliceMatrix<> shape) const
+    { throw Exception ("CalcAltShape not overloaded"); }
+
     virtual void CalcPiolaShape (const IntegrationPoint & ip, 
                                  BareSliceMatrix<> shape) const
     { throw Exception ("CalcPiolaShape not overloaded"); }

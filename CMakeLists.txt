@@ -16,6 +16,7 @@ add_ngsolve_addon(${addon_name}
    src/hcurldualcells.cpp    
    src/hcurlprimalcells.cpp    
    src/hdivprimalcells.cpp
+   src/hdivdualcells.cpp
    src/intrules.cpp
    src/supersparse.cpp
   )

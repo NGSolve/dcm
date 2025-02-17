@@ -9,6 +9,7 @@ namespace ngcomp
 
   class HDivDualCells : public FESpace
   {
+    Array<DofId> first_edge_dofs;
     Array<DofId> first_face_dofs;
     Array<DofId> first_cell_dofs;
     IntegrationRule TransversalIR;
