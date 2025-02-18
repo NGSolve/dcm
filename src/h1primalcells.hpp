@@ -110,7 +110,7 @@ namespace ngcomp
     enum { DIM = 1 };
     enum { DIM_SPACE = 2 };
     enum { DIM_ELEMENT = 2 };
-    enum { DIM_DMAT = 2 };
+    enum { DIM_DMAT = 1 };
     enum { DIFFORDER = 0 };
 
     static bool SupportsVB (VorB checkvb) { return true; }
@@ -126,7 +126,7 @@ namespace ngcomp
       double trafo = 1./fabs(Det(F));
       for (int i = 0; i < mat.Width(); i++)
         {
-          Vec<2> shape = mat.Col(i);
+          Vec<1> shape = mat.Col(i);
           mat.Col(i) = trafo * shape;
         }
     }

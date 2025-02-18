@@ -9,6 +9,7 @@
 
 #include "hdivprimalcells.hpp"
 #include "hdivdualcells.hpp"
+#include "l2cells.hpp"
 
 namespace std {
 template <typename T, size_t S>
@@ -84,6 +85,11 @@ PYBIND11_MODULE(dualcellspaces,m) {
 
   py::class_<HCurlDualCellsPotential3D, PotentialFESpace, shared_ptr<HCurlDualCellsPotential3D>> (m, "HCurlDualCellsPotential3D")
     ;
+
+  ExportFESpace<L2Cells> (m, "L2Cells")
+    ;
+
+  
   
   m.def("GetIntegrationRules", [](int order, bool innerfacets)
   {

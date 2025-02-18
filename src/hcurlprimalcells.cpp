@@ -21,11 +21,11 @@ namespace ngcomp
       GaussRadauIR(_GaussRadauIR), GaussRadauIRinv(_GaussRadauIRinv), tangentialIR(_tangentialIR)
     { ; }
     using VertexOrientedFE<ET_TET>::SetVertexNumbers;
-    virtual ELEMENT_TYPE ElementType() const { return ET_TET; }
+    virtual ELEMENT_TYPE ElementType() const override { return ET_TET; }
 
     
     virtual void CalcShape (const IntegrationPoint & ip, 
-                            BareSliceMatrix<> shape) const
+                            BareSliceMatrix<> shape) const override
     {
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
@@ -292,7 +292,7 @@ namespace ngcomp
 
     
     virtual void CalcAltCurlShape (const IntegrationPoint & ip, 
-                                BareSliceMatrix<> curlshape) const
+                                BareSliceMatrix<> curlshape) const override
     {
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
@@ -438,7 +438,7 @@ namespace ngcomp
 
 
     virtual void CalcAltShape (const IntegrationPoint & ip, 
-                            BareSliceMatrix<> shape) const
+                            BareSliceMatrix<> shape) const override
     {
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
@@ -574,7 +574,7 @@ namespace ngcomp
 
 
     virtual void CalcPiolaShape (const IntegrationPoint & ip, 
-                                 BareSliceMatrix<> shape) const
+                                 BareSliceMatrix<> shape) const override
     {
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
