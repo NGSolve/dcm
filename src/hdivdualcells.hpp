@@ -1,3 +1,9 @@
+#ifndef HDIVDUALCELLS_HPP
+#define HDIVDUALCELLS_HPP
+
+#include "hdivcells.hpp"
+
+
 namespace ngcomp
 {
 
@@ -6,18 +12,16 @@ namespace ngcomp
     Array<DofId> first_edge_dofs;
     Array<DofId> first_face_dofs;
     Array<DofId> first_cell_dofs;
-    IntegrationRule GaussRadauIR;
-    IntegrationRule tangentialIR;    // Gauss or Gauss-Radau
-    bool collocated;   // collocated or staggered grid
+    IntegrationRule IR;    // Gauss or Gauss-Radau
   public:
     HDivDualCells (shared_ptr<MeshAccess> ama, const Flags & flags);
 
-    string GetClassName () const override { return "hcurldualcells3d"; }
+    string GetClassName () const override { return "hdivdualcells"; }
 
     static DocInfo GetDocu()
     {
       auto docu = FESpace::GetDocu();
-      docu.short_docu = "HDivDualCells3D.";
+      docu.short_docu = "HDivDualCells.";
       docu.long_docu =
         R"raw_string(normal continuous on dual cells.
 )raw_string";
@@ -37,3 +41,5 @@ namespace ngcomp
     
   };
 }
+
+#endif

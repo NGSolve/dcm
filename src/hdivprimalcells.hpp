@@ -1,19 +1,23 @@
+#include "hdivcells.hpp"
+
+/*
 #include "smallsparse.hpp"
 #include "intrules.hpp"
 #include "supersparse.hpp"
+*/
+
+
 
 namespace ngcomp
 {
-  class HDivPrimalCellTrig : public HDivFiniteElement<2>, public VertexOrientedFE<ET_TRIG>
+  // Necessary in header file for some experimental H1 gradients?
+  class HDivPrimalCellTrig : public HDivCellFiniteElement<2>, public VertexOrientedFE<ET_TRIG>
   {
-    const IntegrationRule & TransversalIR; //transversal to vector
-    const IntegrationRule & NormalIR;  // in direction of vector
+    const IntegrationRule & IR;
   public:
-    HDivPrimalCellTrig (int order,
-                        const IntegrationRule & _TransversalIR,
-                        const IntegrationRule & _NormalIR)
-      : HDivFiniteElement<2> (3*_TransversalIR.Size()*(2*_NormalIR.Size()-1), order+1),      
-      TransversalIR(_TransversalIR), NormalIR(_NormalIR)
+    HDivPrimalCellTrig (const IntegrationRule & _IR)
+      : HDivCellFiniteElement<2> (3*_IR.Size()*(2*_IR.Size()-1), _IR.Size()-1),      
+      IR(_IR)
     { ; }
     
     using VertexOrientedFE<ET_TRIG>::SetVertexNumbers;
@@ -39,16 +43,13 @@ namespace ngcomp
     double GetDet(const IntegrationPoint & ip) const;
   };
 
-  class HDivPrimalCellTet : public HDivFiniteElement<3>, public VertexOrientedFE<ET_TET>
+  class HDivPrimalCellTet : public HDivCellFiniteElement<3>, public VertexOrientedFE<ET_TET>
   {
-    const IntegrationRule & TransversalIR; //transversal to vector
-    const IntegrationRule & NormalIR;  // in direction of vector
+    const IntegrationRule & IR;
   public:
-    HDivPrimalCellTet (int order,
-                        const IntegrationRule & _TransversalIR,
-                        const IntegrationRule & _NormalIR)
-      : HDivFiniteElement<3> (6*_TransversalIR.Size()*_TransversalIR.Size()*(2*_NormalIR.Size()-1), order+1),      
-      TransversalIR(_TransversalIR), NormalIR(_NormalIR)
+    HDivPrimalCellTet (const IntegrationRule & _IR)
+      : HDivCellFiniteElement<3> (6*_IR.Size()*_IR.Size()*(2*_IR.Size()-1), _IR.Size()-1),      
+      IR(_IR)
     { ; }
     
     using VertexOrientedFE<ET_TET>::SetVertexNumbers;
@@ -72,12 +73,12 @@ namespace ngcomp
     //Mat<3,3> GetPiola(const IntegrationPoint & ip) const;
     //double GetDet(const IntegrationPoint & ip) const;
   };
+
+
   class HDivPrimalCells : public FESpace
   {
     Array<DofId> first_element_dofs;
-
-    IntegrationRule TransversalIR;
-    IntegrationRule NormalIR;
+    IntegrationRule IR;
     //bool uniform_order;
     
   public:
@@ -94,37 +95,21 @@ namespace ngcomp
       docu.long_docu =
         R"raw_string(HDiv conforming space on primal cells which is non-smooth but normal continuous on dual edges.
 )raw_string";      
-      
-      /*docu.Arg("uniform_order") = "bool = False\n"
-        "  Same order of basis functions in every direction";*/
       return docu;
     }
 
-    // organzize the FESpace, called after every mesh update
     void Update() override;
-    
-    
     void GetDofNrs (ElementId ei, Array<DofId> & dnums) const override
     {
       dnums.SetSize0();
       if (ei.VB() != VOL) return;
       dnums += Range(first_element_dofs[ei.Nr()], first_element_dofs[ei.Nr()+1]);
     }
-    
-    // generate FiniteElement for element-id ei
     FiniteElement & GetFE (ElementId ei, Allocator & alloc) const override;
 
     
     virtual shared_ptr<BaseMatrix> GetMassOperator(shared_ptr<CoefficientFunction> rho, shared_ptr<Region> defon, LocalHeap & lh) const override;
-
-
-    shared_ptr<BaseMatrix> ConvertGR2GOperator() const;
-    
-
+    //shared_ptr<BaseMatrix> ConvertGR2GOperator() const;
     std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules() const;
-
-
   };
-
-    
 }    

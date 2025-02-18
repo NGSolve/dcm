@@ -747,6 +747,7 @@ namespace ngcomp
     
   };
 
+#define GONETOHEADER
 #ifdef GONETOHEADER
   class DiffOpAltShape : public DiffOp<DiffOpAltShape>
   {
@@ -837,10 +838,10 @@ namespace ngcomp
     
     evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdEdge<3>>>();
     flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpCurlEdge<3>>>();
-    additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShape<3>>> ());    
-    additional_evaluators.Set ("Hodge", make_shared<T_DifferentialOperator<DiffOpHodge<3>>> ());        
-    additional_evaluators.Set ("Piolashape", make_shared<T_DifferentialOperator<DiffOpPiolaShape<3>>> ());        
-    additional_evaluators.Set ("altcurl", make_shared<T_DifferentialOperator<DiffOpAltCurl<3>>> ());        
+    additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShapeHCurl<3>>> ());    
+    additional_evaluators.Set ("Hodge", make_shared<T_DifferentialOperator<DiffOpHodgeHCurl<3>>> ());        
+    additional_evaluators.Set ("Piolashape", make_shared<T_DifferentialOperator<DiffOpPiolaShapeHCurl<3>>> ());        
+    additional_evaluators.Set ("altcurl", make_shared<T_DifferentialOperator<DiffOpAltCurlHCurl<3>>> ());        
     
     
     Array<double> xi, wi;

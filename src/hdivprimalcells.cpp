@@ -2,9 +2,12 @@
 #include "hdivprimalcells.hpp"
 #include "intrules.hpp"
 #include "dcs_common.hpp"
+#include "supersparse.hpp"
+#include "smallsparse.hpp"
 
 namespace ngcomp
 {
+
  class ApplyMassHDivPrimalCells : public ApplyMass
   {
     Matrix<> eval; 
@@ -31,304 +34,7 @@ namespace ngcomp
       }
   };
 
-  class DiffOpCovShape2d : public DiffOp<DiffOpCovShape2d>
-  {
-  public:
-    enum { DIM = 1 };
-    enum { DIM_SPACE = 2 };
-    enum { DIM_ELEMENT = 2 };
-    enum { DIM_DMAT = 2 };
-    enum { DIFFORDER = 0 };
-
-    static bool SupportsVB (VorB checkvb) { return true; }
-
-
-    template <typename AFEL, typename MIP, typename MAT,
-              typename std::enable_if<std::is_convertible<MAT,SliceMatrix<double,ColMajor>>::value, int>::type = 0>
-    static void GenerateMatrix (const AFEL & fel, const MIP & mip,
-                                MAT & mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTrig&>(fel).CalcCovShape (mip.IP(), Trans(mat));
-      //cout << mat << endl;
-      Mat<2,2> Finv = mip.GetJacobianInverse();
-      Mat<2,2> trafo = Trans(Finv);
-      for (int i = 0; i < mat.Width(); i++)
-        {
-          Vec<2> shape = mat.Col(i);
-          mat.Col(i) = trafo * shape;
-        }
-      //cout << mat << endl;
-    }
-
-    static int DimRef() { return 2; }
-    
-    template <typename IP, typename MAT>
-    static void GenerateMatrixRef (const FiniteElement & fel, const IP & ip,
-                                   MAT && mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTrig&>(fel).CalcCovShape (ip, Trans(mat));
-    }
-
-    template <typename MIP, typename MAT>
-    static void CalcTransformationMatrix (const MIP & mip,
-                                          MAT & mat, LocalHeap & lh)
-    {
-      //Mat<3,3> F = mip.GetJacobian();
-      Mat<2,2> Finv = static_cast<const MappedIntegrationPoint<2,2>&>(mip).GetJacobianInverse();
-      mat = Trans(Finv);
-    }
-
-  };
   
-  class DiffOpAltCovShape2d : public DiffOp<DiffOpAltCovShape2d>
-  {
-  public:
-    enum { DIM = 1 };
-    enum { DIM_SPACE = 2 };
-    enum { DIM_ELEMENT = 2 };
-    enum { DIM_DMAT = 2 };
-    enum { DIFFORDER = 0 };
-
-    static bool SupportsVB (VorB checkvb) { return true; }
-
-
-    template <typename AFEL, typename MIP, typename MAT,
-              typename std::enable_if<std::is_convertible<MAT,SliceMatrix<double,ColMajor>>::value, int>::type = 0>
-    static void GenerateMatrix (const AFEL & fel, const MIP & mip,
-                                MAT & mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTrig&>(fel).CalcAltCovShape (mip.IP(), Trans(mat));
-      //cout << mat << endl;
-      Mat<2,2> Finv = mip.GetJacobianInverse();
-      Mat<2,2> trafo = Trans(Finv);
-      for (int i = 0; i < mat.Width(); i++)
-        {
-          Vec<2> shape = mat.Col(i);
-          mat.Col(i) = trafo * shape;
-        }
-      //cout << mat << endl;
-    }
-
-    static int DimRef() { return 2; }
-    
-    template <typename IP, typename MAT>
-    static void GenerateMatrixRef (const FiniteElement & fel, const IP & ip,
-                                   MAT && mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTrig&>(fel).CalcAltCovShape (ip, Trans(mat));
-    }
-
-    template <typename MIP, typename MAT>
-    static void CalcTransformationMatrix (const MIP & mip,
-                                          MAT & mat, LocalHeap & lh)
-    {
-      //Mat<3,3> F = mip.GetJacobian();
-      Mat<2,2> Finv = static_cast<const MappedIntegrationPoint<2,2>&>(mip).GetJacobianInverse();
-      mat = Trans(Finv);
-    }
-
-    
-  };
-  class DiffOpAltShape2d : public DiffOp<DiffOpAltShape2d>
-  {
-  public:
-    enum { DIM = 1 };
-    enum { DIM_SPACE = 2 };
-    enum { DIM_ELEMENT = 2 };
-    enum { DIM_DMAT = 2 };
-    enum { DIFFORDER = 0 };
-
-    static bool SupportsVB (VorB checkvb) { return true; }
-
-
-    template <typename AFEL, typename MIP, typename MAT,
-              typename std::enable_if<std::is_convertible<MAT,SliceMatrix<double,ColMajor>>::value, int>::type = 0>
-    static void GenerateMatrix (const AFEL & fel, const MIP & mip,
-                                MAT & mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTrig&>(fel).CalcAltShape (mip.IP(), Trans(mat));
-      //cout << mat << endl;
-      Mat<2,2> F = mip.GetJacobian();
-      Mat<2,2> trafo = 1./Det(F)*F;
-      for (int i = 0; i < mat.Width(); i++)
-        {
-          Vec<2> shape = mat.Col(i);
-          mat.Col(i) = trafo * shape;
-        }
-      //cout << mat << endl;
-    }
-
-    static int DimRef() { return 2; }
-    
-    template <typename IP, typename MAT>
-    static void GenerateMatrixRef (const FiniteElement & fel, const IP & ip,
-                                   MAT && mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTrig&>(fel).CalcAltShape (ip, Trans(mat));
-    }
-
-    template <typename MIP, typename MAT>
-    static void CalcTransformationMatrix (const MIP & mip,
-                                          MAT & mat, LocalHeap & lh)
-    {
-      //Mat<3,3> F = mip.GetJacobian();
-      Mat<2,2> F = static_cast<const MappedIntegrationPoint<2,2>&>(mip).GetJacobian();
-      mat = 1./Det(F)*F;
-    }
-
-    
-  };
-  class DiffOpAltShape3d : public DiffOp<DiffOpAltShape3d>
-  {
-    public:
-    enum { DIM = 1 };
-    enum { DIM_SPACE = 3 };
-    enum { DIM_ELEMENT = 3 };
-    enum { DIM_DMAT = 3 };
-    enum { DIFFORDER = 0 };
-
-    static bool SupportsVB (VorB checkvb) { return true; }
-
-
-    template <typename AFEL, typename MIP, typename MAT,
-              typename std::enable_if<std::is_convertible<MAT,SliceMatrix<double,ColMajor>>::value, int>::type = 0>
-    static void GenerateMatrix (const AFEL & fel, const MIP & mip,
-                                MAT & mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTet&>(fel).CalcAltShape (mip.IP(), Trans(mat));
-      //cout << mat << endl;
-      Mat<3,3> F = mip.GetJacobian();
-      Mat<3,3> trafo = 1./Det(F)*F;
-      for (int i = 0; i < mat.Width(); i++)
-        {
-          Vec<3> shape = mat.Col(i);
-          mat.Col(i) = trafo * shape;
-        }
-      //cout << mat << endl;
-    }
-
-    static int DimRef() { return 3; }
-    
-    template <typename IP, typename MAT>
-    static void GenerateMatrixRef (const FiniteElement & fel, const IP & ip,
-                                   MAT && mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTet&>(fel).CalcAltShape (ip, Trans(mat));
-    }
-
-    template <typename MIP, typename MAT>
-    static void CalcTransformationMatrix (const MIP & mip,
-                                          MAT & mat, LocalHeap & lh)
-    {
-      //Mat<3,3> F = mip.GetJacobian();
-      Mat<3,3> F = static_cast<const MappedIntegrationPoint<3,3>&>(mip).GetJacobian();
-      mat = 1./Det(F)*F;
-    }
-
-    
-  };
-  class DiffOpCovShape3d : public DiffOp<DiffOpCovShape3d>
-  {
-    public:
-    enum { DIM = 1 };
-    enum { DIM_SPACE = 3 };
-    enum { DIM_ELEMENT = 3 };
-    enum { DIM_DMAT = 3 };
-    enum { DIFFORDER = 0 };
-
-    static bool SupportsVB (VorB checkvb) { return true; }
-
-
-    template <typename AFEL, typename MIP, typename MAT,
-              typename std::enable_if<std::is_convertible<MAT,SliceMatrix<double,ColMajor>>::value, int>::type = 0>
-    static void GenerateMatrix (const AFEL & fel, const MIP & mip,
-                                MAT & mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTet&>(fel).CalcCovShape (mip.IP(), Trans(mat));
-      //cout << mat << endl;
-      Mat<3,3> Finv = mip.GetJacobianInverse();
-      Mat<3,3> trafo = Trans(Finv);
-      for (int i = 0; i < mat.Width(); i++)
-        {
-          Vec<3> shape = mat.Col(i);
-          mat.Col(i) = trafo * shape;
-        }
-      //cout << mat << endl;
-    }
-
-    static int DimRef() { return 3; }
-    
-    template <typename IP, typename MAT>
-    static void GenerateMatrixRef (const FiniteElement & fel, const IP & ip,
-                                   MAT && mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTet&>(fel).CalcCovShape (ip, Trans(mat));
-    }
-
-    template <typename MIP, typename MAT>
-    static void CalcTransformationMatrix (const MIP & mip,
-                                          MAT & mat, LocalHeap & lh)
-    {
-      //Mat<3,3> F = mip.GetJacobian();
-      Mat<3,3> Finv = static_cast<const MappedIntegrationPoint<3,3>&>(mip).GetJacobianInverse();
-      mat = Trans(Finv);
-    }
-
-    
-  };
-
-  class DiffOpAltDiv3d : public DiffOp<DiffOpAltDiv3d>
-  {
-  public:
-    enum { DIM = 1 };
-    enum { DIM_SPACE = 3 };
-    enum { DIM_ELEMENT = 3 };
-    enum { DIM_DMAT = 1 };
-    enum { DIFFORDER = 1 };
-
-    static bool SupportsVB (VorB checkvb) { return true; }
-
-
-    template <typename AFEL, typename MIP, typename MAT,
-              typename std::enable_if<std::is_convertible<MAT,SliceMatrix<double,ColMajor>>::value, int>::type = 0>
-    static void GenerateMatrix (const AFEL & fel, const MIP & mip,
-                                MAT & mat, LocalHeap & lh)
-    {
-      static_cast<const HDivPrimalCellTet&>(fel).CalcAltDivShape (mip.IP(), Trans(mat));
-      Mat<3,3> F = mip.GetJacobian();
-      //Mat<3,3> F = static_cast<const MappedIntegrationPoint<3,3>&>(mip).GetJacobian();
-      //cout << mat << endl;
-      double trafo = 1./Det(F);
-      /*for (int i = 0; i < mat.Width(); i++)
-        {
-          Vec<3> shape = mat.Col(i);
-          mat.Col(i) = trafo * shape;
-        }*/
-      mat *= trafo;
-      //cout << mat << endl;
-    }
-
-    static int DimRef() { return 3; }
-    
-    template <typename IP, typename MAT>
-    static void GenerateMatrixRef (const FiniteElement & fel, const IP & ip,
-                                   MAT && mat, LocalHeap & lh)
-    {
-     
-      static_cast<const HDivPrimalCellTet&>(fel).CalcAltDivShape (ip, Trans(mat));
-    }
-
-    template <typename MIP, typename MAT>
-    static void CalcTransformationMatrix (const MIP & mip,
-                                          MAT & mat, LocalHeap & lh)
-    {
-      //Mat<3,3> F = mip.GetJacobian();
-      Mat<3,3> F = static_cast<const MappedIntegrationPoint<3,3>&>(mip).GetJacobian();
-      mat = 1./Det(F);
-    }
-
-    
-  };
   ApplyMassHDivPrimalCells::
       ApplyMassHDivPrimalCells (shared_ptr<FESpace> afes,
           shared_ptr<CoefficientFunction> arho,
@@ -443,17 +149,10 @@ namespace ngcomp
       //cout << "rho_vals: " << rho_eval << endl;
       
     }
-
     ApplyMassHDivPrimalCells::~ApplyMassHDivPrimalCells() { ; }
 
     void ApplyMassHDivPrimalCells::Mult(const BaseVector & vec, BaseVector &prod) const
     {
-      //cout << "Mult called" << endl;
-      /*
-      auto ma = fes->GetMeshAccess(); 
-      auto prodmat = prod.FV<double>().AsMatrix(ma->GetNE(), eval.Width()); 
-      prodmat = 0.;
-      */
       prod = 0;
       MultAdd(1.,vec,prod);
       }
@@ -513,12 +212,11 @@ namespace ngcomp
          },
          TasksPerThread(4));
     }
-        
   
   Mat<2,2> HDivPrimalCellTrig:: GetPiola (const IntegrationPoint & ip) const
   {
-    int ndof_edge = TransversalIR.Size();
-    int ndof_quad = 2*TransversalIR.Size()*(NormalIR.Size()-1);
+    int ndof_edge = IR.Size();
+    int ndof_quad = 2*IR.Size()*(IR.Size()-1);
     
     double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
     int maxlam = 0;
@@ -551,8 +249,8 @@ namespace ngcomp
   
   double HDivPrimalCellTrig:: GetDet (const IntegrationPoint & ip) const
   {
-    int ndof_edge = TransversalIR.Size();
-    int ndof_quad = 2*TransversalIR.Size()*(NormalIR.Size()-1);
+    int ndof_edge = IR.Size();
+    int ndof_quad = 2*IR.Size()*(IR.Size()-1);
     
     double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
     int maxlam = 0;
@@ -586,11 +284,10 @@ namespace ngcomp
     {
       // int ndof_edge = order+1;
       // int ndof_quad = 2*sqr(order+1);
-      int ndof_edge = TransversalIR.Size();
-      int ndof_quad = 2*TransversalIR.Size()*(NormalIR.Size()-1);
+      int ndof_edge = IR.Size();
+      int ndof_quad = 2*IR.Size()*(IR.Size()-1);
       
-      ArrayMem<double, 20> polxGR(NormalIR.Size()), polyGR(NormalIR.Size());      
-      ArrayMem<double, 20> polxG(TransversalIR.Size()), polyG(TransversalIR.Size());      
+      ArrayMem<double, 20> polx(IR.Size()), poly(IR.Size());      
       
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = 0;
@@ -606,10 +303,8 @@ namespace ngcomp
       double xi  = (3+2*lx-2*ly)/2 - sqrt( sqr( (2*ly-2*lx-3)/2 ) - 6*lx );      
       double eta = (3+2*ly-2*lx)/2 - sqrt( sqr( (2*lx-2*ly-3)/2 ) - 6*ly );
 
-      LagrangePolynomials(xi, NormalIR, polxGR);
-      LagrangePolynomials(eta, NormalIR, polyGR);
-      LagrangePolynomials(xi, TransversalIR, polxG);
-      LagrangePolynomials(eta, TransversalIR, polyG);
+      LagrangePolynomials(xi, IR, polx);
+      LagrangePolynomials(eta, IR, poly);
 
       Vec<2> verts[3] = { { 1, 0 }, { 0, 1 }, { 0, 0 } };      
       Vec<2> p0 = verts[maxlam];
@@ -625,32 +320,32 @@ namespace ngcomp
       dxy_dxieta.Col(1) = dpdeta;
       Mat<2,2> trafo = 1.0/Det(dxy_dxieta)*dxy_dxieta; // Piola
       
-      auto assign_shapex = [trafo, shape, &polxGR, &polyG](int nr, int ix, int iy)
+      auto assign_shapex = [trafo, shape, &polx, &poly](int nr, int ix, int iy)
         {
-          shape.Row(nr) = trafo*Vec<2>(polxGR[ix]*polyG[iy], 0);
+          shape.Row(nr) = trafo*Vec<2>(polx[ix]*poly[iy], 0);
         };
-      auto assign_shapey = [trafo, shape, &polxG, &polyGR](int nr, int ix, int iy)
+      auto assign_shapey = [trafo, shape, &polx, &poly](int nr, int ix, int iy)
         {
-          shape.Row(nr) = trafo*Vec<2>(0, -polxG[ix]*polyGR[iy]);
+          shape.Row(nr) = trafo*Vec<2>(0, -polx[ix]*poly[iy]);
         };
 
       int ii = 0;
 
       // x-edge
       ii = (maxlam+2)%3 * ndof_edge;
-      for (int i = 0; i < polyG.Size(); i++)      
+      for (int i = 0; i < poly.Size(); i++)      
         assign_shapex(ii++, 0, i);
       
       ii = (maxlam+1)%3 * ndof_edge;
-      for (int i = 0; i < polxG.Size(); i++)
+      for (int i = 0; i < polx.Size(); i++)
         assign_shapey(ii++, i, 0);
       
       ii = 3*ndof_edge + maxlam*ndof_quad;
-      for (int i = 1; i < polxGR.Size(); i++)
-        for (int j = 0; j < polyG.Size(); j++)
+      for (int i = 1; i < polx.Size(); i++)
+        for (int j = 0; j < poly.Size(); j++)
           assign_shapex(ii++, i, j);
-      for (int j = 1; j < polyGR.Size(); j++)
-        for (int i = 0; i < polxG.Size(); i++)
+      for (int j = 1; j < poly.Size(); j++)
+        for (int i = 0; i < polx.Size(); i++)
           assign_shapey(ii++, i, j);
     }
     void HDivPrimalCellTrig:: CalcAltShape (const IntegrationPoint & ip, 
@@ -660,11 +355,10 @@ namespace ngcomp
       //
       // int ndof_edge = order+1;
       // int ndof_quad = 2*sqr(order+1);
-      int ndof_edge = TransversalIR.Size();
-      int ndof_quad = 2*TransversalIR.Size()*(NormalIR.Size()-1);
+      int ndof_edge = IR.Size();
+      int ndof_quad = 2*IR.Size()*(IR.Size()-1);
       
-      ArrayMem<double, 20> polxGR(NormalIR.Size()), polyGR(NormalIR.Size());      
-      ArrayMem<double, 20> polxG(TransversalIR.Size()), polyG(TransversalIR.Size());      
+      ArrayMem<double, 20> polx(IR.Size()), poly(IR.Size());      
       
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = 0;
@@ -680,10 +374,8 @@ namespace ngcomp
       double xi  = (3+2*lx-2*ly)/2 - sqrt( sqr( (2*ly-2*lx-3)/2 ) - 6*lx );      
       double eta = (3+2*ly-2*lx)/2 - sqrt( sqr( (2*lx-2*ly-3)/2 ) - 6*ly );
 
-      LagrangePolynomials(xi, NormalIR, polxGR);
-      LagrangePolynomials(eta, NormalIR, polyGR);
-      LagrangePolynomials(xi, TransversalIR, polxG);
-      LagrangePolynomials(eta, TransversalIR, polyG);
+      LagrangePolynomials(xi, IR, polx);
+      LagrangePolynomials(eta, IR, poly);
 
       Vec<2> verts[3] = { { 1, 0 }, { 0, 1 }, { 0, 0 } };      
       Vec<2> p0 = verts[maxlam];
@@ -701,8 +393,8 @@ namespace ngcomp
       
       auto assign_shapex = [&](int nr, int ix, int iy)
         {
-          double xi = NormalIR[ix](0);
-          double eta = NormalIR[iy](0);
+          double xi = IR[ix](0);
+          double eta = IR[iy](0);
           Vec<2> dpdxi = eta*(p2-p3)+(1-eta)*(p1-p0);
           Vec<2> dpdeta = xi*(p2-p1)+(1-xi)*(p3-p0);
 
@@ -710,12 +402,12 @@ namespace ngcomp
           dxy_dxieta.Col(0) = dpdxi;
           dxy_dxieta.Col(1) = dpdeta;
           Mat<2,2> trafonode = 1.0/Det(dxy_dxieta)*dxy_dxieta; // Piola
-          shape.Row(nr) = trafonode*Vec<2>(polxGR[ix]*polyG[iy], 0);
+          shape.Row(nr) = trafonode*Vec<2>(polx[ix]*poly[iy], 0);
         };
       auto assign_shapey = [&](int nr, int ix, int iy)
         {
-          double xi = NormalIR[ix](0);
-          double eta = NormalIR[iy](0);
+          double xi = IR[ix](0);
+          double eta = IR[iy](0);
           Vec<2> dpdxi = eta*(p2-p3)+(1-eta)*(p1-p0);
           Vec<2> dpdeta = xi*(p2-p1)+(1-xi)*(p3-p0);
 
@@ -723,26 +415,26 @@ namespace ngcomp
           dxy_dxieta.Col(0) = dpdxi;
           dxy_dxieta.Col(1) = dpdeta;
           Mat<2,2> trafonode = 1.0/Det(dxy_dxieta)*dxy_dxieta; // Piola
-          shape.Row(nr) = trafonode*Vec<2>(0, -polxG[ix]*polyGR[iy]);
+          shape.Row(nr) = trafonode*Vec<2>(0, -polx[ix]*poly[iy]);
         };
 
       int ii = 0;
 
       // x-edge
       ii = (maxlam+2)%3 * ndof_edge;
-      for (int i = 0; i < polyG.Size(); i++)      
+      for (int i = 0; i < poly.Size(); i++)      
         assign_shapex(ii++, 0, i);
       
       ii = (maxlam+1)%3 * ndof_edge;
-      for (int i = 0; i < polxG.Size(); i++)
+      for (int i = 0; i < polx.Size(); i++)
         assign_shapey(ii++, i, 0);
       
       ii = 3*ndof_edge + maxlam*ndof_quad;
-      for (int i = 1; i < polxGR.Size(); i++)
-        for (int j = 0; j < polyG.Size(); j++)
+      for (int i = 1; i < polx.Size(); i++)
+        for (int j = 0; j < poly.Size(); j++)
           assign_shapex(ii++, i, j);
-      for (int j = 1; j < polyGR.Size(); j++)
-        for (int i = 0; i < polxG.Size(); i++)
+      for (int j = 1; j < poly.Size(); j++)
+        for (int i = 0; i < polx.Size(); i++)
           assign_shapey(ii++, i, j);
     }
     void HDivPrimalCellTrig:: CalcCovShape (const IntegrationPoint & ip, 
@@ -752,11 +444,10 @@ namespace ngcomp
       //
       // int ndof_edge = order+1;
       // int ndof_quad = 2*sqr(order+1);
-      int ndof_edge = TransversalIR.Size();
-      int ndof_quad = 2*TransversalIR.Size()*(NormalIR.Size()-1);
+      int ndof_edge = IR.Size();
+      int ndof_quad = 2*IR.Size()*(IR.Size()-1);
       
-      ArrayMem<double, 20> polxGR(NormalIR.Size()), polyGR(NormalIR.Size());      
-      ArrayMem<double, 20> polxG(TransversalIR.Size()), polyG(TransversalIR.Size());      
+      ArrayMem<double, 20> polx(IR.Size()), poly(IR.Size());      
       
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = 0;
@@ -772,10 +463,8 @@ namespace ngcomp
       double xi  = (3+2*lx-2*ly)/2 - sqrt( sqr( (2*ly-2*lx-3)/2 ) - 6*lx );      
       double eta = (3+2*ly-2*lx)/2 - sqrt( sqr( (2*lx-2*ly-3)/2 ) - 6*ly );
 
-      LagrangePolynomials(xi, NormalIR, polxGR);
-      LagrangePolynomials(eta, NormalIR, polyGR);
-      LagrangePolynomials(xi, TransversalIR, polxG);
-      LagrangePolynomials(eta, TransversalIR, polyG);
+      LagrangePolynomials(xi, IR, polx);
+      LagrangePolynomials(eta, IR, poly);
 
       Vec<2> verts[3] = { { 1, 0 }, { 0, 1 }, { 0, 0 } };      
       Vec<2> p0 = verts[maxlam];
@@ -793,8 +482,8 @@ namespace ngcomp
       
       auto assign_shapex = [&](int nr, int ix, int iy)
         {
-          double xi = NormalIR[ix](0);
-          double eta = NormalIR[iy](0);
+          double xi = IR[ix](0);
+          double eta = IR[iy](0);
           Vec<2> dpdxi = eta*(p2-p3)+(1-eta)*(p1-p0);
           Vec<2> dpdeta = xi*(p2-p1)+(1-xi)*(p3-p0);
 
@@ -803,12 +492,12 @@ namespace ngcomp
           dxy_dxieta.Col(1) = dpdeta;
           //Mat<2,2> trafonode = Trans(Inv(dxy_dxieta)); // Cov 
           Mat<2,2> trafonode = 1.0/Det(dxy_dxieta)*dxy_dxieta; // Piola
-          shape.Row(nr) = trafonode*Vec<2>(polxGR[ix]*polyG[iy], 0);
+          shape.Row(nr) = trafonode*Vec<2>(polx[ix]*poly[iy], 0);
         };
       auto assign_shapey = [&](int nr, int ix, int iy)
         {
-          double xi = NormalIR[ix](0);
-          double eta = NormalIR[iy](0);
+          double xi = IR[ix](0);
+          double eta = IR[iy](0);
           Vec<2> dpdxi = eta*(p2-p3)+(1-eta)*(p1-p0);
           Vec<2> dpdeta = xi*(p2-p1)+(1-xi)*(p3-p0);
 
@@ -817,26 +506,26 @@ namespace ngcomp
           dxy_dxieta.Col(1) = dpdeta;
           //Mat<2,2> trafonode = Trans(Inv(dxy_dxieta)); // Cov 
           Mat<2,2> trafonode = 1.0/Det(dxy_dxieta)*dxy_dxieta; // Piola
-          shape.Row(nr) = trafonode*Vec<2>(0, -polxG[ix]*polyGR[iy]);
+          shape.Row(nr) = trafonode*Vec<2>(0, -polx[ix]*poly[iy]);
         };
 
       int ii = 0;
 
       // x-edge
       ii = (maxlam+2)%3 * ndof_edge;
-      for (int i = 0; i < polyG.Size(); i++)      
+      for (int i = 0; i < poly.Size(); i++)      
         assign_shapex(ii++, 0, i);
       
       ii = (maxlam+1)%3 * ndof_edge;
-      for (int i = 0; i < polxG.Size(); i++)
+      for (int i = 0; i < polx.Size(); i++)
         assign_shapey(ii++, i, 0);
       
       ii = 3*ndof_edge + maxlam*ndof_quad;
-      for (int i = 1; i < polxGR.Size(); i++)
-        for (int j = 0; j < polyG.Size(); j++)
+      for (int i = 1; i < polx.Size(); i++)
+        for (int j = 0; j < poly.Size(); j++)
           assign_shapex(ii++, i, j);
-      for (int j = 1; j < polyGR.Size(); j++)
-        for (int i = 0; i < polxG.Size(); i++)
+      for (int j = 1; j < poly.Size(); j++)
+        for (int i = 0; i < polx.Size(); i++)
           assign_shapey(ii++, i, j);
     }
 
@@ -847,11 +536,10 @@ namespace ngcomp
       //
       // int ndof_edge = order+1;
       // int ndof_quad = 2*sqr(order+1);
-      int ndof_edge = TransversalIR.Size();
-      int ndof_quad = 2*TransversalIR.Size()*(NormalIR.Size()-1);
+      int ndof_edge = IR.Size();
+      int ndof_quad = 2*IR.Size()*(IR.Size()-1);
       
-      ArrayMem<double, 20> polxGR(NormalIR.Size()), polyGR(NormalIR.Size());      
-      ArrayMem<double, 20> polxG(TransversalIR.Size()), polyG(TransversalIR.Size());      
+      ArrayMem<double, 20> polx(IR.Size()), poly(IR.Size());      
       
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = 0;
@@ -867,10 +555,8 @@ namespace ngcomp
       double xi  = (3+2*lx-2*ly)/2 - sqrt( sqr( (2*ly-2*lx-3)/2 ) - 6*lx );      
       double eta = (3+2*ly-2*lx)/2 - sqrt( sqr( (2*lx-2*ly-3)/2 ) - 6*ly );
 
-      LagrangePolynomials(xi, NormalIR, polxGR);
-      LagrangePolynomials(eta, NormalIR, polyGR);
-      LagrangePolynomials(xi, TransversalIR, polxG);
-      LagrangePolynomials(eta, TransversalIR, polyG);
+      LagrangePolynomials(xi, IR, polx);
+      LagrangePolynomials(eta, IR, poly);
 
       Vec<2> verts[3] = { { 1, 0 }, { 0, 1 }, { 0, 0 } };      
       Vec<2> p0 = verts[maxlam];
@@ -888,8 +574,8 @@ namespace ngcomp
       
       auto assign_shapex = [&](int nr, int ix, int iy)
         {
-          double xi = NormalIR[ix](0);
-          double eta = NormalIR[iy](0);
+          double xi = IR[ix](0);
+          double eta = IR[iy](0);
           Vec<2> dpdxi = eta*(p2-p3)+(1-eta)*(p1-p0);
           Vec<2> dpdeta = xi*(p2-p1)+(1-xi)*(p3-p0);
 
@@ -897,12 +583,12 @@ namespace ngcomp
           dxy_dxieta.Col(0) = dpdxi;
           dxy_dxieta.Col(1) = dpdeta;
           Mat<2,2> trafonode = Trans(Inv(dxy_dxieta)); // Cov 
-          shape.Row(nr) = trafonode*Vec<2>(polxGR[ix]*polyG[iy], 0);
+          shape.Row(nr) = trafonode*Vec<2>(polx[ix]*poly[iy], 0);
         };
       auto assign_shapey = [&](int nr, int ix, int iy)
         {
-          double xi = NormalIR[ix](0);
-          double eta = NormalIR[iy](0);
+          double xi = IR[ix](0);
+          double eta = IR[iy](0);
           Vec<2> dpdxi = eta*(p2-p3)+(1-eta)*(p1-p0);
           Vec<2> dpdeta = xi*(p2-p1)+(1-xi)*(p3-p0);
 
@@ -910,26 +596,26 @@ namespace ngcomp
           dxy_dxieta.Col(0) = dpdxi;
           dxy_dxieta.Col(1) = dpdeta;
           Mat<2,2> trafonode = Trans(Inv(dxy_dxieta)); // Cov 
-          shape.Row(nr) = trafonode*Vec<2>(0, -polxG[ix]*polyGR[iy]);
+          shape.Row(nr) = trafonode*Vec<2>(0, -polx[ix]*poly[iy]);
         };
 
       int ii = 0;
 
       // x-edge
       ii = (maxlam+2)%3 * ndof_edge;
-      for (int i = 0; i < polyG.Size(); i++)      
+      for (int i = 0; i < poly.Size(); i++)      
         assign_shapex(ii++, 0, i);
       
       ii = (maxlam+1)%3 * ndof_edge;
-      for (int i = 0; i < polxG.Size(); i++)
+      for (int i = 0; i < polx.Size(); i++)
         assign_shapey(ii++, i, 0);
       
       ii = 3*ndof_edge + maxlam*ndof_quad;
-      for (int i = 1; i < polxGR.Size(); i++)
-        for (int j = 0; j < polyG.Size(); j++)
+      for (int i = 1; i < polx.Size(); i++)
+        for (int j = 0; j < poly.Size(); j++)
           assign_shapex(ii++, i, j);
-      for (int j = 1; j < polyGR.Size(); j++)
-        for (int i = 0; i < polxG.Size(); i++)
+      for (int j = 1; j < poly.Size(); j++)
+        for (int i = 0; i < polx.Size(); i++)
           assign_shapey(ii++, i, j);
     }
 
@@ -940,11 +626,11 @@ namespace ngcomp
     {
       // int ndof_edge = order+1;
       // int ndof_quad = 2*sqr(order+1);
-      int ndof_edge = TransversalIR.Size();
-      int ndof_quad = 2*TransversalIR.Size()*(NormalIR.Size()-1);
+      int ndof_edge = IR.Size();
+      int ndof_quad = 2*IR.Size()*(IR.Size()-1);
       
-      ArrayMem<AutoDiff<1>, 20> polxGR(NormalIR.Size()), polyGR(NormalIR.Size());
-      ArrayMem<double, 20> polxG(TransversalIR.Size()), polyG(TransversalIR.Size());      
+      ArrayMem<AutoDiff<1>, 20> Dpolx(IR.Size()), Dpoly(IR.Size());
+      ArrayMem<double, 20> polx(IR.Size()), poly(IR.Size());      
       
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = 0;
@@ -963,10 +649,10 @@ namespace ngcomp
       AutoDiff<1> adxi(xi, 0);
       AutoDiff<1> adeta(eta, 0);
       
-      LagrangePolynomials(adxi, NormalIR, polxGR);
-      LagrangePolynomials(adeta, NormalIR, polyGR);
-      LagrangePolynomials(xi, TransversalIR, polxG);
-      LagrangePolynomials(eta, TransversalIR, polyG);
+      LagrangePolynomials(adxi, IR, Dpolx);
+      LagrangePolynomials(adeta, IR, Dpoly);
+      LagrangePolynomials(xi, IR, polx);
+      LagrangePolynomials(eta, IR, poly);
 
       Vec<2> verts[3] = { { 1, 0 }, { 0, 1 }, { 0, 0 } };      
       Vec<2> p0 = verts[maxlam];
@@ -982,32 +668,32 @@ namespace ngcomp
       dxy_dxieta.Col(1) = dpdeta;
       double trafo = 1.0/Det(dxy_dxieta);
       
-      auto assign_shapex = [trafo, divshape, &polxGR, &polyG](int nr, int ix, int iy)
+      auto assign_shapex = [trafo, divshape, &Dpolx, &poly](int nr, int ix, int iy)
         {
-          divshape(nr) = trafo*polxGR[ix].DValue(0)*polyG[iy];
+          divshape(nr) = trafo*Dpolx[ix].DValue(0)*poly[iy];
         };
-      auto assign_shapey = [trafo, divshape, &polxG, &polyGR](int nr, int ix, int iy)
+      auto assign_shapey = [trafo, divshape, &polx, &Dpoly](int nr, int ix, int iy)
         {
-          divshape(nr) = trafo*(-polxG[ix]*polyGR[iy].DValue(0));
+          divshape(nr) = trafo*(-polx[ix]*Dpoly[iy].DValue(0));
         };
 
       int ii = 0;
 
       // x-edge
       ii = (maxlam+2)%3 * ndof_edge;
-      for (int i = 0; i < polyG.Size(); i++)              
+      for (int i = 0; i < poly.Size(); i++)              
         assign_shapex(ii++, 0, i);
       
       ii = (maxlam+1)%3 * ndof_edge;
-      for (int i = 0; i < polxG.Size(); i++)      
+      for (int i = 0; i < polx.Size(); i++)      
         assign_shapey(ii++, i, 0);
       
       ii = 3*ndof_edge + maxlam*ndof_quad;
-      for (int i = 1; i < polxGR.Size(); i++)
-        for (int j = 0; j < polyG.Size(); j++)
+      for (int i = 1; i < Dpolx.Size(); i++)
+        for (int j = 0; j < Dpoly.Size(); j++)
           assign_shapex(ii++, i, j);
-      for (int j = 1; j < polyGR.Size(); j++)
-        for (int i = 0; i < polxG.Size(); i++)
+      for (int j = 1; j < Dpoly.Size(); j++)
+        for (int i = 0; i < polx.Size(); i++)
           assign_shapey(ii++, i, j);
     }
   
@@ -1048,19 +734,13 @@ namespace ngcomp
       
       Mat<3> trafo = 1.0/fabs(Det(F2*F))*(F2*F);
 
-      int ndT = TransversalIR.Size();
-      int ndN = NormalIR.Size();
+      int nd = IR.Size();
 
       
-      ArrayMem<double, 20> polxinorm(ndN), poletanorm(ndN), polzetanorm(ndN);
-      ArrayMem<double, 20> polxitang(ndT), poletatang(ndT), polzetatang(ndT);         
-      LagrangePolynomials(xi(0), NormalIR, polxinorm);
-      LagrangePolynomials(xi(1), NormalIR, poletanorm);
-      LagrangePolynomials(xi(2), NormalIR, polzetanorm);
-
-      LagrangePolynomials(xi(0), TransversalIR, polxitang);
-      LagrangePolynomials(xi(1), TransversalIR, poletatang);
-      LagrangePolynomials(xi(2), TransversalIR, polzetatang);
+      ArrayMem<double, 20> polxi(nd), poleta(nd), polzeta(nd);
+      LagrangePolynomials(xi(0), IR, polxi);
+      LagrangePolynomials(xi(1), IR, poleta);
+      LagrangePolynomials(xi(2), IR, polzeta);
 
       auto assign =  [&](int nr, IVec<3> i, int dir,bool flipsign = false)
         {
@@ -1071,17 +751,17 @@ namespace ngcomp
             {
             case 0:
             {
-              shape.Row(nr) = sig*trafo*Vec<3>(polxinorm[i[0]]*poletatang[i[1]]*polzetatang[i[2]], 0, 0);
+              shape.Row(nr) = sig*trafo*Vec<3>(polxi[i[0]]*poleta[i[1]]*polzeta[i[2]], 0, 0);
               break;
             }
             case 1:
             {
-              shape.Row(nr) = sig*trafo*Vec<3>(0, polxitang[i[0]]*poletanorm[i[1]]*polzetatang[i[2]], 0);
+              shape.Row(nr) = sig*trafo*Vec<3>(0, polxi[i[0]]*poleta[i[1]]*polzeta[i[2]], 0);
               break;
             }
             case 2:
             {
-              shape.Row(nr) = sig*trafo*Vec<3>(0, 0, polxitang[i[0]]*poletatang[i[1]]*polzetanorm[i[2]]);
+              shape.Row(nr) = sig*trafo*Vec<3>(0, 0, polxi[i[0]]*poleta[i[1]]*polzeta[i[2]]);
               break;
             }
             break;
@@ -1101,8 +781,8 @@ namespace ngcomp
                 int dirv1 = vdir[v1];
                 int dirv2 = vdir[v2];
                 int kk = ii;
-                for (int l = 0; l < ndT; l++)
-                  for (int k = 0; k < ndT; k++)
+                for (int l = 0; l < nd; l++)
+                  for (int k = 0; k < nd; k++)
                     {
                       ind[dirv1] = l; 
                       ind[dirv2] = k;
@@ -1110,15 +790,15 @@ namespace ngcomp
                       //assign(kk++, ind, 3-dirv1-dirv2);
                     }
               }
-            ii += ndT*ndT;
+            ii += nd*nd;
           }
-      ii += maxlam*3*sqr(ndT)*(ndN-1);
+      ii += maxlam*3*sqr(nd)*(nd-1);
 
 
       // remaining dofs
-      for (int i = 0; i < ndT; i++)
-        for (int j = 0; j < ndT; j++)
-          for (int k = 1; k < ndN; k++)
+      for (int i = 0; i < nd; i++)
+        for (int j = 0; j < nd; j++)
+          for (int k = 1; k < nd; k++)
             {
               assign(ii++, { k, i, j }, 0);
               assign(ii++, { i, k, j }, 1);
@@ -1172,24 +852,19 @@ namespace ngcomp
       
       Mat<3> trafo = 1.0/fabs(Det(F2*F))*(F2*F);
 
-      int ndT = TransversalIR.Size();
-      int ndN = NormalIR.Size();
+      int nd = IR.Size();
 
       
-      ArrayMem<double, 20> polxinorm(ndN), poletanorm(ndN), polzetanorm(ndN);
-      ArrayMem<double, 20> polxitang(ndT), poletatang(ndT), polzetatang(ndT);         
-      LagrangePolynomials(xi(0), NormalIR, polxinorm);
-      LagrangePolynomials(xi(1), NormalIR, poletanorm);
-      LagrangePolynomials(xi(2), NormalIR, polzetanorm);
+      ArrayMem<double, 20> polxi(nd), poleta(nd), polzeta(nd);
+      LagrangePolynomials(xi(0), IR, polxi);
+      LagrangePolynomials(xi(1), IR, poleta);
+      LagrangePolynomials(xi(2), IR, polzeta);
 
-      LagrangePolynomials(xi(0), TransversalIR, polxitang);
-      LagrangePolynomials(xi(1), TransversalIR, poletatang);
-      LagrangePolynomials(xi(2), TransversalIR, polzetatang);
 
       auto assign =  [&](int nr, IVec<3> i, int dir,bool flipsign = false)
         {
           //cout << "assigning nr " << nr << " i= " << i << " dir = " << dir << " flip " << flipsign << endl;
-          Vec<3> xinode(NormalIR[i[0]](0), NormalIR[i[1]](0), NormalIR[i[2]](0));
+          Vec<3> xinode(IR[i[0]](0), IR[i[1]](0), IR[i[2]](0));
           Mat<3,3> Fnode = DMapHex2Tet(xinode);          
           Mat<3> trafonode = 1.0/fabs(Det(F2*Fnode))*(F2*Fnode);
 
@@ -1201,17 +876,17 @@ namespace ngcomp
             {
             case 0:
             {
-              shape.Row(nr) = trafonode*Vec<3>(polxinorm[i[0]]*poletatang[i[1]]*polzetatang[i[2]], 0, 0);
+              shape.Row(nr) = trafonode*Vec<3>(polxi[i[0]]*poleta[i[1]]*polzeta[i[2]], 0, 0);
               break;
             }
             case 1:
             {
-              shape.Row(nr) = trafonode*Vec<3>(0, polxitang[i[0]]*poletanorm[i[1]]*polzetatang[i[2]], 0);
+              shape.Row(nr) = trafonode*Vec<3>(0, polxi[i[0]]*poleta[i[1]]*polzeta[i[2]], 0);
               break;
             }
             case 2:
             {
-              shape.Row(nr) = trafonode*Vec<3>(0, 0, polxitang[i[0]]*poletatang[i[1]]*polzetanorm[i[2]]);
+              shape.Row(nr) = trafonode*Vec<3>(0, 0, polxi[i[0]]*poleta[i[1]]*polzeta[i[2]]);
               break;
             }
             //break;
@@ -1235,8 +910,8 @@ namespace ngcomp
                 int dirv1 = vdir[v1];
                 int dirv2 = vdir[v2];
                 int kk = ii;
-                for (int l = 0; l < ndT; l++)
-                  for (int k = 0; k < ndT; k++)
+                for (int l = 0; l < nd; l++)
+                  for (int k = 0; k < nd; k++)
                     {
                       ind[dirv1] = l; 
                       ind[dirv2] = k;
@@ -1244,15 +919,15 @@ namespace ngcomp
                       //assign(kk++, ind, 3-dirv1-dirv2);
                     }
               }
-            ii += ndT*ndT;
+            ii += nd*nd;
           }
-      ii += maxlam*3*sqr(ndT)*(ndN-1);
+      ii += maxlam*3*sqr(nd)*(nd-1);
 
 
       // remaining dofs
-      for (int i = 0; i < ndT; i++)
-        for (int j = 0; j < ndT; j++)
-          for (int k = 1; k < ndN; k++)
+      for (int i = 0; i < nd; i++)
+        for (int j = 0; j < nd; j++)
+          for (int k = 1; k < nd; k++)
             {
               assign(ii++, { k, i, j }, 0);
               assign(ii++, { i, k, j }, 1);
@@ -1304,24 +979,18 @@ namespace ngcomp
       
       Mat<3> trafo = 1.0/fabs(Det(F2*F))*(F2*F);
 
-      int ndT = TransversalIR.Size();
-      int ndN = NormalIR.Size();
+      int nd = IR.Size();
 
       
-      ArrayMem<double, 20> polxinorm(ndN), poletanorm(ndN), polzetanorm(ndN);
-      ArrayMem<double, 20> polxitang(ndT), poletatang(ndT), polzetatang(ndT);         
-      LagrangePolynomials(xi(0), NormalIR, polxinorm);
-      LagrangePolynomials(xi(1), NormalIR, poletanorm);
-      LagrangePolynomials(xi(2), NormalIR, polzetanorm);
-
-      LagrangePolynomials(xi(0), TransversalIR, polxitang);
-      LagrangePolynomials(xi(1), TransversalIR, poletatang);
-      LagrangePolynomials(xi(2), TransversalIR, polzetatang);
+      ArrayMem<double, 20> polxi(nd), poleta(nd), polzeta(nd);
+      LagrangePolynomials(xi(0), IR, polxi);
+      LagrangePolynomials(xi(1), IR, poleta);
+      LagrangePolynomials(xi(2), IR, polzeta);
 
       auto assign =  [&](int nr, IVec<3> i, int dir,bool flipsign = false)
         {
           //cout << "assigning nr " << nr << " i= " << i << " dir = " << dir << " flip " << flipsign << endl;
-          Vec<3> xinode(NormalIR[i[0]](0), NormalIR[i[1]](0), NormalIR[i[2]](0));
+          Vec<3> xinode(IR[i[0]](0), IR[i[1]](0), IR[i[2]](0));
           Mat<3,3> Fnode = DMapHex2Tet(xinode);          
           Mat<3> trafonode = 1.0/fabs(Det(F2*Fnode))*(F2*Fnode);
 
@@ -1333,17 +1002,17 @@ namespace ngcomp
             {
             case 0:
             {
-              shape.Row(nr) = trafonode*Vec<3>(polxinorm[i[0]]*poletatang[i[1]]*polzetatang[i[2]], 0, 0);
+              shape.Row(nr) = trafonode*Vec<3>(polxi[i[0]]*poleta[i[1]]*polzeta[i[2]], 0, 0);
               break;
             }
             case 1:
             {
-              shape.Row(nr) = trafonode*Vec<3>(0, polxitang[i[0]]*poletanorm[i[1]]*polzetatang[i[2]], 0);
+              shape.Row(nr) = trafonode*Vec<3>(0, polxi[i[0]]*poleta[i[1]]*polzeta[i[2]], 0);
               break;
             }
             case 2:
             {
-              shape.Row(nr) = trafonode*Vec<3>(0, 0, polxitang[i[0]]*poletatang[i[1]]*polzetanorm[i[2]]);
+              shape.Row(nr) = trafonode*Vec<3>(0, 0, polxi[i[0]]*poleta[i[1]]*polzeta[i[2]]);
               break;
             }
             //break;
@@ -1367,8 +1036,8 @@ namespace ngcomp
                 int dirv1 = vdir[v1];
                 int dirv2 = vdir[v2];
                 int kk = ii;
-                for (int l = 0; l < ndT; l++)
-                  for (int k = 0; k < ndT; k++)
+                for (int l = 0; l < nd; l++)
+                  for (int k = 0; k < nd; k++)
                     {
                       ind[dirv1] = l; 
                       ind[dirv2] = k;
@@ -1376,15 +1045,15 @@ namespace ngcomp
                       //assign(kk++, ind, 3-dirv1-dirv2);
                     }
               }
-            ii += ndT*ndT;
+            ii += nd*nd;
           }
-      ii += maxlam*3*sqr(ndT)*(ndN-1);
+      ii += maxlam*3*sqr(nd)*(nd-1);
 
 
       // remaining dofs
-      for (int i = 0; i < ndT; i++)
-        for (int j = 0; j < ndT; j++)
-          for (int k = 1; k < ndN; k++)
+      for (int i = 0; i < nd; i++)
+        for (int j = 0; j < nd; j++)
+          for (int k = 1; k < nd; k++)
             {
               assign(ii++, { k, i, j }, 0);
               assign(ii++, { i, k, j }, 1);
@@ -1431,18 +1100,17 @@ namespace ngcomp
       
       double trafo = 1.0/fabs(Det(F2*F));
 
-      int ndT = TransversalIR.Size();
-      int ndN = NormalIR.Size();
+      int nd = IR.Size();
 
-      ArrayMem<AutoDiff<1>, 20> polxinorm(ndN), poletanorm(ndN), polzetanorm(ndN);
-      ArrayMem<double, 20> polxitang(ndT), poletatang(ndT), polzetatang(ndT);         
-      LagrangePolynomials(AutoDiff<1>(xi(0),0), NormalIR, polxinorm);
-      LagrangePolynomials(AutoDiff<1>(xi(1),0), NormalIR, poletanorm);
-      LagrangePolynomials(AutoDiff<1>(xi(2),0), NormalIR, polzetanorm);
+      ArrayMem<AutoDiff<1>, 20> Dpolxi(nd), Dpoleta(nd), Dpolzeta(nd);
+      ArrayMem<double, 20> polxi(nd), poleta(nd), polzeta(nd);         
+      LagrangePolynomials(AutoDiff<1>(xi(0),0), IR, Dpolxi);
+      LagrangePolynomials(AutoDiff<1>(xi(1),0), IR, Dpoleta);
+      LagrangePolynomials(AutoDiff<1>(xi(2),0), IR, Dpolzeta);
 
-      LagrangePolynomials(xi(0), TransversalIR, polxitang);
-      LagrangePolynomials(xi(1), TransversalIR, poletatang);
-      LagrangePolynomials(xi(2), TransversalIR, polzetatang);
+      LagrangePolynomials(xi(0), IR, polxi);
+      LagrangePolynomials(xi(1), IR, poleta);
+      LagrangePolynomials(xi(2), IR, polzeta);
 
       auto assign =  [&](int nr, IVec<3> i, int dir,bool flipsign = false)
         {
@@ -1450,17 +1118,17 @@ namespace ngcomp
             {
             case 0:
             {
-              divshape(nr) = trafo*polxinorm[i[0]].DValue(0)*poletatang[i[1]]*polzetatang[i[2]];
+              divshape(nr) = trafo*Dpolxi[i[0]].DValue(0)*poleta[i[1]]*polzeta[i[2]];
               break;
             }
             case 1:
             {
-              divshape(nr) = trafo*polxitang[i[0]]*poletanorm[i[1]].DValue(0)*polzetatang[i[2]];
+              divshape(nr) = trafo*polxi[i[0]]*Dpoleta[i[1]].DValue(0)*polzeta[i[2]];
               break;
             }
             case 2:
             {
-              divshape(nr) = trafo*polxitang[i[0]]*poletatang[i[1]]*polzetanorm[i[2]].DValue(0);
+              divshape(nr) = trafo*polxi[i[0]]*poleta[i[1]]*Dpolzeta[i[2]].DValue(0);
               break;
             }
             break;
@@ -1482,8 +1150,8 @@ namespace ngcomp
                 int dirv1 = vdir[v1];
                 int dirv2 = vdir[v2];
                 int kk = ii;
-                for (int l = 0; l < ndT; l++)
-                  for (int k = 0; k < ndT; k++)
+                for (int l = 0; l < nd; l++)
+                  for (int k = 0; k < nd; k++)
                     {
                       ind[dirv1] = l; 
                       ind[dirv2] = k;
@@ -1491,15 +1159,15 @@ namespace ngcomp
                       //assign(kk++, ind, 3-dirv1-dirv2);
                     }
               }
-            ii += ndT*ndT;
+            ii += nd*nd;
           }
-      ii += maxlam*3*sqr(ndT)*(ndN-1);
+      ii += maxlam*3*sqr(nd)*(nd-1);
 
 
       // remaining dofs
-      for (int i = 0; i < ndT; i++)
-        for (int j = 0; j < ndT; j++)
-          for (int k = 1; k < ndN; k++)
+      for (int i = 0; i < nd; i++)
+        for (int j = 0; j < nd; j++)
+          for (int k = 1; k < nd; k++)
             {
               assign(ii++, { k, i, j }, 0);
               assign(ii++, { i, k, j }, 1);
@@ -1546,22 +1214,16 @@ namespace ngcomp
       
       Mat<3,3> trafo = Inv(F2*F);
 
-      int ndT = TransversalIR.Size();
-      int ndN = NormalIR.Size();
+      int nd = IR.Size();
 
-      ArrayMem<AutoDiff<1>, 20> polxinorm(ndN), poletanorm(ndN), polzetanorm(ndN);
-      ArrayMem<AutoDiff<1>, 20> polxitang(ndT), poletatang(ndT), polzetatang(ndT);         
-      LagrangePolynomials(AutoDiff<1>(xi(0),0), NormalIR, polxinorm);
-      LagrangePolynomials(AutoDiff<1>(xi(1),0), NormalIR, poletanorm);
-      LagrangePolynomials(AutoDiff<1>(xi(2),0), NormalIR, polzetanorm);
-
-      LagrangePolynomials(AutoDiff<1>(xi(0),0), TransversalIR, polxitang);
-      LagrangePolynomials(AutoDiff<1>(xi(1),0), TransversalIR, poletatang);
-      LagrangePolynomials(AutoDiff<1>(xi(2),0), TransversalIR, polzetatang);
+      ArrayMem<AutoDiff<1>, 20> Dpolxi(nd), Dpoleta(nd), Dpolzeta(nd);         
+      LagrangePolynomials(AutoDiff<1>(xi(0),0), IR, Dpolxi);
+      LagrangePolynomials(AutoDiff<1>(xi(1),0), IR, Dpoleta);
+      LagrangePolynomials(AutoDiff<1>(xi(2),0), IR, Dpolzeta);
 
       auto assign =  [&](int nr, IVec<3> i, int dir,bool flipsign = false)
         {
-          Vec<3> xinode(NormalIR[i[0]](0), NormalIR[i[1]](0), NormalIR[i[2]](0));
+          Vec<3> xinode(IR[i[0]](0), IR[i[1]](0), IR[i[2]](0));
           Mat<3,3> Fnode = DMapHex2Tet(xinode);          
           Mat<3,3> trafonode = 1.0/fabs(Det(F2*Fnode))*(F2*Fnode);
           //trafonode = 1.0/fabs(Det(F2*F))*(F2*F); //correct piola
@@ -1571,23 +1233,23 @@ namespace ngcomp
             {
             case 0:
             {
-            Dshapeorig.Col(0) = Trans(trafo)*Vec<3>(polxinorm[i[0]].DValue(0)*poletatang[i[1]].Value()*polzetatang[i[2]].Value(),
-              polxinorm[i[0]].Value()*poletatang[i[1]].DValue(0)*polzetatang[i[2]].Value(),
-              polxinorm[i[0]].Value()*poletatang[i[1]].Value()*polzetatang[i[2]].DValue(0));
+            Dshapeorig.Col(0) = Trans(trafo)*Vec<3>(Dpolxi[i[0]].DValue(0)*Dpoleta[i[1]].Value()*Dpolzeta[i[2]].Value(),
+              Dpolxi[i[0]].Value()*Dpoleta[i[1]].DValue(0)*Dpolzeta[i[2]].Value(),
+              Dpolxi[i[0]].Value()*Dpoleta[i[1]].Value()*Dpolzeta[i[2]].DValue(0));
               break;
             }
             case 1:
             {
-            Dshapeorig.Col(1) = Trans(trafo)*Vec<3>(polxitang[i[0]].DValue(0)*poletanorm[i[1]].Value()*polzetatang[i[2]].Value(),
-              polxitang[i[0]].Value()*poletanorm[i[1]].DValue(0)*polzetatang[i[2]].Value(),
-              polxitang[i[0]].Value()*poletanorm[i[1]].Value()*polzetatang[i[2]].DValue(0));
+            Dshapeorig.Col(1) = Trans(trafo)*Vec<3>(Dpolxi[i[0]].DValue(0)*Dpoleta[i[1]].Value()*Dpolzeta[i[2]].Value(),
+              Dpolxi[i[0]].Value()*Dpoleta[i[1]].DValue(0)*Dpolzeta[i[2]].Value(),
+              Dpolxi[i[0]].Value()*Dpoleta[i[1]].Value()*Dpolzeta[i[2]].DValue(0));
               break;
             }
             case 2:
             {
-            Dshapeorig.Col(2) = Trans(trafo)*Vec<3>(polxitang[i[0]].DValue(0)*poletatang[i[1]].Value()*polzetanorm[i[2]].Value(),
-              polxitang[i[0]].Value()*poletatang[i[1]].DValue(0)*polzetanorm[i[2]].Value(),
-              polxitang[i[0]].Value()*poletatang[i[1]].Value()*polzetanorm[i[2]].DValue(0));
+            Dshapeorig.Col(2) = Trans(trafo)*Vec<3>(Dpolxi[i[0]].DValue(0)*Dpoleta[i[1]].Value()*Dpolzeta[i[2]].Value(),
+              Dpolxi[i[0]].Value()*Dpoleta[i[1]].DValue(0)*Dpolzeta[i[2]].Value(),
+              Dpolxi[i[0]].Value()*Dpoleta[i[1]].Value()*Dpolzeta[i[2]].DValue(0));
               break;
             }
             }
@@ -1611,8 +1273,8 @@ namespace ngcomp
                 int dirv1 = vdir[v1];
                 int dirv2 = vdir[v2];
                 int kk = ii;
-                for (int l = 0; l < ndT; l++)
-                  for (int k = 0; k < ndT; k++)
+                for (int l = 0; l < nd; l++)
+                  for (int k = 0; k < nd; k++)
                     {
                       ind[dirv1] = l; 
                       ind[dirv2] = k;
@@ -1620,15 +1282,15 @@ namespace ngcomp
                       //assign(kk++, ind, 3-dirv1-dirv2);
                     }
               }
-            ii += ndT*ndT;
+            ii += nd*nd;
           }
-      ii += maxlam*3*sqr(ndT)*(ndN-1);
+      ii += maxlam*3*sqr(nd)*(nd-1);
 
 
       // remaining dofs
-      for (int i = 0; i < ndT; i++)
-        for (int j = 0; j < ndT; j++)
-          for (int k = 1; k < ndN; k++)
+      for (int i = 0; i < nd; i++)
+        for (int j = 0; j < nd; j++)
+          for (int k = 1; k < nd; k++)
             {
               assign(ii++, { k, i, j }, 0);
               assign(ii++, { i, k, j }, 1);
@@ -1648,37 +1310,24 @@ namespace ngcomp
       {
         evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdHDiv<2>>>();
         flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpDivHDiv<2>>>();
-        additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShape2d>> ());
-        additional_evaluators.Set ("altcov", make_shared<T_DifferentialOperator<DiffOpAltCovShape2d>> ());
-        additional_evaluators.Set ("hodge", make_shared<T_DifferentialOperator<DiffOpCovShape2d>> ());
+        additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShapeHDiv<2>>> ());
       }
       if (ma->GetDimension()==3)
       {
         evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpIdHDiv<3>>>();
         flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpDivHDiv<3>>>();
-        additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShape3d>> ());
-        additional_evaluators.Set ("altdiv", make_shared<T_DifferentialOperator<DiffOpAltDiv3d>> ());
-        additional_evaluators.Set ("hodge", make_shared<T_DifferentialOperator<DiffOpCovShape3d>> ());
+        additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShapeHDiv<3>>> ());
       }
 
-      NormalIR = IntegrationRule();
+      IR = IntegrationRule();
       Array<double> xi, wi;
       ComputeGaussRadauRule (order+1, xi, wi);
-      //xi[0] += 1e-12;
       for (auto i : Range(xi))
-        NormalIR.Append (IntegrationPoint (1-xi[i]-1e-10, 0, 0, wi[i]));
-      //uniform_order = true;
-      /*if (!flags.GetDefineFlag("uniform_order"))
-      {
-          ComputeGaussRule (order+1, xi, wi);
-          uniform_order = false;
-      }*/
-      for (auto i : Range(xi))
-        TransversalIR.Append (IntegrationPoint (1-xi[i]-1e-10, 0, 0, wi[i]));
+        IR.Append (IntegrationPoint (1-xi[i]-1e-12, 0, 0, wi[i]));
     }
 
 
-    // organzize the FESpace, called after every mesh update
+    // organize the FESpace, called after every mesh update
     void HDivPrimalCells::Update() 
     {
       FESpace::Update();
@@ -1691,13 +1340,13 @@ namespace ngcomp
         case 2:
         {
           for (auto i : Range(ma->GetNE()))
-            first_element_dofs[i+1] = ndof += 3*TransversalIR.Size()*(2*NormalIR.Size()-1);
+            first_element_dofs[i+1] = ndof += 3*IR.Size()*(2*IR.Size()-1);
           break;
         }
         case 3:
         {
           for (auto i : Range(ma->GetNE()))
-            first_element_dofs[i+1] = ndof += 6*TransversalIR.Size()*TransversalIR.Size()*(2*NormalIR.Size()-1);
+            first_element_dofs[i+1] = ndof += 6*IR.Size()*IR.Size()*(2*IR.Size()-1);
           break;
         }
         default:
@@ -1718,13 +1367,13 @@ namespace ngcomp
         {
         case ET_TRIG:
           {
-            auto trig = new (alloc) HDivPrimalCellTrig(order, TransversalIR, NormalIR);
+            auto trig = new (alloc) HDivPrimalCellTrig(IR);
             trig->SetVertexNumbers (ngel.vertices);
             return *trig;
           }
         case ET_TET:
           {
-            auto tet = new (alloc) HDivPrimalCellTet(order, TransversalIR, NormalIR);
+            auto tet = new (alloc) HDivPrimalCellTet(IR);
             tet->SetVertexNumbers (ngel.vertices);
             return *tet;
           }
@@ -1949,19 +1598,6 @@ namespace ngcomp
       throw Exception("only 2d and 3d implemented");
     }
 
-    shared_ptr<BaseMatrix> HDivPrimalCells::
-      ConvertGR2GOperator() const
-    {
-      Matrix mat(TransversalIR.Size(), NormalIR.Size());
-      cout << "NormalIR (GR) = " << endl << NormalIR << endl;
-      cout << "TransveralIR (G) = " << endl << TransversalIR << endl;
-      for (size_t i = 0; i < mat.Height(); i++)
-        LagrangePolynomials (TransversalIR[i](0), NormalIR, FlatArray<double> (mat.Width(), &mat(i,0)));
-      cout << "GR2G matrix: " << endl << mat << endl;
-      size_t ndofel = first_element_dofs[1] - first_element_dofs[0];
-      return make_shared<StructuredElementByElementMatrix> (ma->GetNE() * ndofel/mat.Height(), std::move(mat));
-    }
-
 
     
     std::map<ELEMENT_TYPE, IntegrationRule> 
@@ -1970,12 +1606,12 @@ namespace ngcomp
       GetIntegrationRules() const
     {
       std::map<ELEMENT_TYPE, IntegrationRule> rules;
-      rules[ET_TRIG] = PrimalCellIR(NormalIR,true);
+      rules[ET_TRIG] = PrimalCellIR(IR,false);
 
-      rules[ET_TET] = PrimalVolIR(NormalIR,true);
+      rules[ET_TET] = PrimalVolIR(IR,false);
 
-      auto irseg = SelectIntegrationRule(ET_SEGM, 2*order+2);
-      rules[ET_SEGM] = PrimalSegmIR(irseg);
+      //auto irseg = SelectIntegrationRule(ET_SEGM, 2*order+2);
+      rules[ET_SEGM] = PrimalSegmIR(IR, false);
 
 
 

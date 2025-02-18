@@ -1,11 +1,12 @@
 #ifndef HCURLCELLS_HPP
 #define HCURLCELLS_HPP
+#include "dcs_common.hpp"
+
 
 
 namespace ngcomp
 {
  
-  enum MAPPINGTYPE { POLYNOMIAL, COVARIANT, PIOLA, PIOLAPOLYNOMIAL };
   
   template <int DIM>
   class HCurlCellFiniteElement : public HCurlFiniteElement<DIM>
@@ -69,7 +70,7 @@ namespace ngcomp
 
 
   template <int D>
-  class DiffOpAltShape : public DiffOp<DiffOpAltShape<D>>
+  class DiffOpAltShapeHCurl : public DiffOp<DiffOpAltShapeHCurl<D>>
   {
   public:
     enum { DIM = 1 };
@@ -116,7 +117,7 @@ namespace ngcomp
   };
 
   template <int D>
-  class DiffOpAltCurl : public DiffOp<DiffOpAltCurl<D>>
+  class DiffOpAltCurlHCurl : public DiffOp<DiffOpAltCurlHCurl<D>>
   {
   public:
     enum { DIM = 1 };
@@ -165,7 +166,7 @@ namespace ngcomp
   };
 
   template <int D>
-  class DiffOpPiolaShape : public DiffOp<DiffOpPiolaShape<D>>
+  class DiffOpPiolaShapeHCurl : public DiffOp<DiffOpPiolaShapeHCurl<D>>
   {
   public:
     enum { DIM = 1 };
@@ -215,7 +216,7 @@ namespace ngcomp
 
 
   template <int D>
-  class DiffOpHodge : public DiffOp<DiffOpHodge<D>>
+  class DiffOpHodgeHCurl : public DiffOp<DiffOpHodgeHCurl<D>>
   {
   public:
     enum { DIM = 1 };
