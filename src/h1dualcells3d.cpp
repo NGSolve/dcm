@@ -527,24 +527,21 @@ namespace ngcomp
 
 
 
-  std::map<ELEMENT_TYPE, IntegrationRule> H1DualCells3D::GetIntegrationRules() const
+  std::map<ELEMENT_TYPE, IntegrationRule> H1DualCells3D::GetIntegrationRules(bool fix_lo) const
   {
     std::map<ELEMENT_TYPE, IntegrationRule> rules;
     
-    IntegrationRule irtet;
-    for (int v = 0; v < 4; v++)
-      for (auto ipx : GaussRadauIR)
-        for (auto ipy : GaussRadauIR)
-          for (auto ipz : GaussRadauIR)
-            {
-              Vec<3> xi(ipx(0), ipy(0), ipz(0));
-              Vec<3> x = MapHex2Tet (xi, v);
-              Mat<3,3> jac = DMapHex2Tet(xi, v);
-              double w = ipx.Weight()*ipy.Weight()*ipz.Weight()*fabs(Det(jac));
-              irtet += IntegrationPoint(x(0), x(1), x(2), w);
-            }
-    
-    rules[ET_TET] = std::move(irtet);
+      rules[ET_TRIG] = PrimalCellIR(GaussRadauIR);
+      rules[ET_TET] = PrimalVolIR(GaussRadauIR);
+      rules[ET_SEGM] = PrimalSegmIR(GaussRadauIR);
+
+      if (GaussRadauIR.Size() == 1 && fix_lo)
+      {
+        for (auto & ip : rules[ET_TRIG])
+          ip.SetWeight(1.0/6);
+        for (auto & ip : rules[ET_TET])
+          ip.SetWeight(1.0/24);
+      }
     return rules;
   }    
 }

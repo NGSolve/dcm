@@ -37,6 +37,6 @@ namespace ngcomp
     GetMassOperator(shared_ptr<CoefficientFunction> rho, shared_ptr<Region> defon, LocalHeap & lh) const override;
 
     virtual shared_ptr<BaseMatrix> GetGradientOperator2D(bool dual = true) const;
-    std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules(optional<int> intorder) const;
+    std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules(bool fix_lo = true) const;
   };
 }

@@ -1117,15 +1117,21 @@ namespace ngcomp
   
 
   
-  std::map<ELEMENT_TYPE, IntegrationRule> HDivDualCells::GetIntegrationRules() const
+  std::map<ELEMENT_TYPE, IntegrationRule> HDivDualCells::GetIntegrationRules(bool fix_lo) const
   {
       std::map<ELEMENT_TYPE, IntegrationRule> rules;
+
       rules[ET_TRIG] = PrimalCellIR(IR);
-
       rules[ET_TET] = PrimalVolIR(IR);
-
-      //auto irseg = SelectIntegrationRule(ET_SEGM, 2*order+2);
       rules[ET_SEGM] = PrimalSegmIR(IR);
+      if (IR.Size()==1 && fix_lo)
+      {
+        for (auto & ip : rules[ET_TRIG])
+          ip.SetWeight(1.0/6);
+        for (auto & ip : rules[ET_TET])
+          ip.SetWeight(1.0/24);
+      }
+
       return rules;
   }
 

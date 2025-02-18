@@ -2836,7 +2836,7 @@ namespace ngcomp
 
 
 
-  std::map<ELEMENT_TYPE, IntegrationRule> HCurlDualCells::GetIntegrationRules() const
+  std::map<ELEMENT_TYPE, IntegrationRule> HCurlDualCells::GetIntegrationRules(bool fix_lo) const
   {
     std::map<ELEMENT_TYPE, IntegrationRule> rules;
 
@@ -2858,7 +2858,7 @@ namespace ngcomp
             i++;
           }
 
-    if (GaussRadauIR.Size()==1)
+    if (GaussRadauIR.Size()==1 && fix_lo)
       for (auto & ip : irtet)
         ip.SetWeight(1.0/24);   // fix consistency for lowest order
 
@@ -2962,7 +2962,7 @@ namespace ngcomp
           irtrig += IntegrationPoint(x(0), x(1), 0, w);
         }
 
-    if (GaussRadauIR.Size()==1)
+    if (GaussRadauIR.Size()==1 && fix_lo)
       for (auto & ip : irtrig)
         ip.SetWeight(1.0/6);   // fix consistency for lowest order
 
