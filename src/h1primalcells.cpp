@@ -1169,7 +1169,7 @@ namespace ngcomp
 
 
 
-  std::map<ELEMENT_TYPE, IntegrationRule> H1PrimalCells::GetIntegrationRules() const
+  std::map<ELEMENT_TYPE, IntegrationRule> H1PrimalCells::GetIntegrationRules(bool fix_lo) const
   {
     std::map<ELEMENT_TYPE, IntegrationRule> rules;
 
@@ -1185,7 +1185,7 @@ namespace ngcomp
           irtrig += IntegrationPoint(x(0), x(1), 0, w);
         }
 
-    if (GaussRadauIR.Size()==1)
+    if (GaussRadauIR.Size()==1 && fix_lo)
       for (auto & ip : irtrig)
         ip.SetWeight(1.0/6);   // fix consistency for lowest order
 
@@ -1280,7 +1280,7 @@ namespace ngcomp
             irtet += IntegrationPoint(x(0), x(1), x(2), w);
           }
 
-    if (GaussRadauIR.Size()==1)
+    if (GaussRadauIR.Size()==1 && fix_lo)
       for (auto & ip : irtet)
         ip.SetWeight(1.0/24);   // fix consistency for lowest order
 

@@ -8,8 +8,8 @@
 #include "hcurlprimalcells.hpp"
 
 #include "hdivprimalcells.hpp"
-#include "l2cells.hpp"
 #include "hdivdualcells.hpp"
+#include "l2cells.hpp"
 
 namespace std {
 template <typename T, size_t S>
@@ -31,19 +31,19 @@ PYBIND11_MODULE(dualcellspaces,m) {
 
 
   auto h1primalpy = ExportFESpace<H1PrimalCells>(m, "H1PrimalCells"/*, true*/)
-      .def("GetIntegrationRules", &H1PrimalCells::GetIntegrationRules)
+      .def("GetIntegrationRules", &H1PrimalCells::GetIntegrationRules, py::arg("fix_lo")=true)
     // .def("Rot", &H1PrimalCells::GetRotOperator, py::arg("dual")=true)
     ;
   m.attr("H1PrimalCells3D") = h1primalpy;
 
   ExportFESpace<H1DualCells>(m, "H1DualCells"/*, true*/)
-      .def("GetIntegrationRules", &H1DualCells::GetIntegrationRules, py::arg("intorder")=nullopt)
+      .def("GetIntegrationRules", &H1DualCells::GetIntegrationRules, py::arg("fix_lo")=true)
       .def("Gradient", &H1DualCells::GetGradientOperator2D, py::arg("dual")=true)
     ;
 
   auto h1dualpy = 
     ExportFESpace<H1DualCells3D>(m, "H1DualCells3D"/*, true*/)
-      .def("GetIntegrationRules", &H1DualCells3D::GetIntegrationRules)
+      .def("GetIntegrationRules", &H1DualCells3D::GetIntegrationRules, py::arg("fix_lo")=true)
       .def("Gradient", &H1DualCells3D::GetGradientOperator3D,py::arg("dual")=true)
     ;
   m.attr("H1DualCells3D") = h1dualpy;
@@ -52,13 +52,13 @@ PYBIND11_MODULE(dualcellspaces,m) {
 
   auto hcurlprimalpy = 
     ExportFESpace<HCurlPrimalCells>(m, "HCurlPrimalCells"/*, true*/)
-    .def("GetIntegrationRules", &HCurlPrimalCells::GetIntegrationRules)
+    .def("GetIntegrationRules", &HCurlPrimalCells::GetIntegrationRules, py::arg("fix_lo")=true)
     ;
   m.attr("HCurlPrimalCells3D") = hcurlprimalpy;  
 
   auto hcurldualpy =
     ExportFESpace<HCurlDualCells>(m, "HCurlDualCells"/*, true*/)
-    .def("GetIntegrationRules", &HCurlDualCells::GetIntegrationRules)
+    .def("GetIntegrationRules", &HCurlDualCells::GetIntegrationRules, py::arg("fix_lo")=true)
     .def("GetPotentialSpace", &HCurlDualCells::GetPotentialSpace,
          py::arg("include_central")=false, py::arg("distributional")=false)
     .def("Curl", &HCurlDualCells::GetCurlOperator, py::arg("dual")=true, py::arg("altshapes")=true, py::arg("lumping")=true,
@@ -72,11 +72,11 @@ PYBIND11_MODULE(dualcellspaces,m) {
 
   
   ExportFESpace<HDivPrimalCells>(m, "HDivPrimalCells"/*, true*/)
-    .def("GetIntegrationRules", &HDivPrimalCells::GetIntegrationRules)
+    .def("GetIntegrationRules", &HDivPrimalCells::GetIntegrationRules, py::arg("fix_lo")=true)
     //.def("ConvertGR2GOperator", &HDivPrimalCells::ConvertGR2GOperator)
     ; 
   ExportFESpace<HDivDualCells>(m, "HDivDualCells")
-    .def("GetIntegrationRules", &HDivDualCells::GetIntegrationRules)
+    .def("GetIntegrationRules", &HDivDualCells::GetIntegrationRules, py::arg("fix_lo")=true)
     ; 
 
   py::class_<PotentialFESpace, FESpace, shared_ptr<PotentialFESpace>>(m, "PotentialFESpace")

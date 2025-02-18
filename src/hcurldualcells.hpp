@@ -41,7 +41,7 @@ for staggered: polynomial order is between order and order+1
     FiniteElement & GetFE (ElementId ei, Allocator & alloc) const override;
 
     virtual shared_ptr<BaseMatrix> GetMassOperator(shared_ptr<CoefficientFunction> rho, shared_ptr<Region> defon, LocalHeap & lh) const override;
-    std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules() const;
+    std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules(bool fix_lo = true) const;
     
     shared_ptr<FESpace> GetPotentialSpace(bool include_central, bool distributional=false) const;
     shared_ptr<BaseMatrix> GetGradientOperator(bool nanocell = false) const;

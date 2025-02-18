@@ -522,7 +522,7 @@ namespace ngcomp
   GetMassOperator(shared_ptr<CoefficientFunction> rho, shared_ptr<Region> defon, LocalHeap & lh) const
   {
     HeapReset hr(lh);
-    auto irs = GetIntegrationRules(nullopt);
+    auto irs = GetIntegrationRules();
     IntegrationRule ir = std::move(irs[ET_TRIG]);
 
     auto & felref = dynamic_cast<const H1DualCellTrig&> (GetFE(ElementId(VOL,0), lh));
@@ -584,36 +584,21 @@ namespace ngcomp
 
   
     std::map<ELEMENT_TYPE, IntegrationRule> H1DualCells::
-      GetIntegrationRules(optional<int> intorder) const
+      GetIntegrationRules(bool fix_lo) const
     {
       std::map<ELEMENT_TYPE, IntegrationRule> rules;
 
-      IntegrationRule IR(GaussRadauIR);
-      if (intorder.has_value())
+      rules[ET_TRIG] = PrimalCellIR(GaussRadauIR);
+      rules[ET_TET] = PrimalVolIR(GaussRadauIR);
+      rules[ET_SEGM] = PrimalSegmIR(GaussRadauIR);
+
+      if (GaussRadauIR.Size() == 1 && fix_lo)
       {
-        IR = IntegrationRule();
-        Array<double> xi, wi;
-        ComputeGaussRadauRule (intorder.value(), xi, wi);
-        xi[0] += 1e-12;
-        for (auto i : Range(xi))
-          IR.Append (IntegrationPoint (xi[i], 0, 0, wi[i]));
+        for (auto & ip : rules[ET_TRIG])
+          ip.SetWeight(1.0/6);
+        for (auto & ip : rules[ET_TET])
+          ip.SetWeight(1.0/24);
       }
-      rules[ET_TRIG] = PrimalCellIR(IR);
-
-      // auto irseg = SelectIntegrationRule(ET_SEGM, 2*order);
-      //auto irseg = SelectIntegrationRule(ET_SEGM, intorder.value_or(2*order+2));
-      
-      //rules[ET_SEGM] = PrimalSegmIR(irseg);
-
-      IntegrationRule irseg;
-      for (auto & ip : GaussRadauIR)
-        {
-          double x = ip(0), w = ip.Weight();
-          irseg.Append ( IntegrationPoint(x/2+1e-12, 0, 0, 0.5*w));
-          irseg.Append ( IntegrationPoint(1-x/2-1e-12, 0, 0, 0.5*w));
-        }
-      rules[ET_SEGM] = std::move(irseg);
-      
       return rules;
     }    
     

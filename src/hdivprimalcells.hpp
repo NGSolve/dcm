@@ -110,6 +110,6 @@ namespace ngcomp
     
     virtual shared_ptr<BaseMatrix> GetMassOperator(shared_ptr<CoefficientFunction> rho, shared_ptr<Region> defon, LocalHeap & lh) const override;
     //shared_ptr<BaseMatrix> ConvertGR2GOperator() const;
-    std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules() const;
+    std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules(bool fix_lo = true) const;
   };
 }    

@@ -1603,7 +1603,7 @@ namespace ngcomp
     std::map<ELEMENT_TYPE, IntegrationRule> 
       
       HDivPrimalCells::
-      GetIntegrationRules() const
+      GetIntegrationRules(bool fix_lo) const
     {
       std::map<ELEMENT_TYPE, IntegrationRule> rules;
       rules[ET_TRIG] = PrimalCellIR(IR,false);
@@ -1613,6 +1613,13 @@ namespace ngcomp
       //auto irseg = SelectIntegrationRule(ET_SEGM, 2*order+2);
       rules[ET_SEGM] = PrimalSegmIR(IR, false);
 
+      if (IR.Size()==1 && fix_lo)
+      {
+        for (auto & ip : rules[ET_TRIG])
+          ip.SetWeight(1.0/6);
+        for (auto & ip : rules[ET_TET])
+          ip.SetWeight(1.0/24);
+      }
 
 
       return rules;

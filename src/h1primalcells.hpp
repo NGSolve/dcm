@@ -97,7 +97,7 @@ namespace ngcomp
         shared_ptr<Region> defon, 
         LocalHeap & lh) const override;
 
-    std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules() const;
+    std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules(bool fix_lo = true) const;
   protected:
     shared_ptr<BaseMatrix> GetRotOperator2DNano(bool dual) const;
   };
