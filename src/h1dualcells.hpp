@@ -1,11 +1,16 @@
+#ifndef H1DUALCELLS_HPP
+#define H1DUALCELLS_HPP
+
+#include "h1cells.hpp"
+
 namespace ngcomp
 {
-  
 
   class H1DualCells : public FESpace
   {
     Array<DofId> first_edge_dofs;
     Array<DofId> first_face_dofs;
+    Array<DofId> first_cell_dofs;
     IntegrationRule GaussRadauIR;
   public:
 
@@ -40,3 +45,6 @@ namespace ngcomp
     std::map<ELEMENT_TYPE, IntegrationRule> GetIntegrationRules(bool fix_lo = true) const;
   };
 }
+
+
+#endif

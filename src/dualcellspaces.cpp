@@ -1,7 +1,8 @@
 #include <python_comp.hpp>
 #include "dcs_common.hpp"
+
 #include "h1dualcells.hpp"
-#include "h1dualcells3d.hpp"
+//#include "h1dualcells3d.hpp"
 #include "h1primalcells.hpp"
 
 #include "hcurldualcells.hpp"
@@ -36,17 +37,13 @@ PYBIND11_MODULE(dualcellspaces,m) {
     ;
   m.attr("H1PrimalCells3D") = h1primalpy;
 
+auto h1dualpy = 
   ExportFESpace<H1DualCells>(m, "H1DualCells"/*, true*/)
       .def("GetIntegrationRules", &H1DualCells::GetIntegrationRules, py::arg("fix_lo")=true)
-      .def("Gradient", &H1DualCells::GetGradientOperator2D, py::arg("dual")=true)
-    ;
-
-  auto h1dualpy = 
-    ExportFESpace<H1DualCells3D>(m, "H1DualCells3D"/*, true*/)
-      .def("GetIntegrationRules", &H1DualCells3D::GetIntegrationRules, py::arg("fix_lo")=true)
-      .def("Gradient", &H1DualCells3D::GetGradientOperator3D,py::arg("dual")=true)
+    // .def("Gradient", &H1DualCells::GetGradientOperator2D, py::arg("dual")=true)
     ;
   m.attr("H1DualCells3D") = h1dualpy;
+
   
 
 

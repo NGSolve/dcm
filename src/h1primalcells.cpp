@@ -15,7 +15,7 @@ namespace ngcomp
                                                   declval<Table<int>>(), declval<Table<int>>())) T_ConstEBE;
 
   H1PrimalCellSegm :: H1PrimalCellSegm (int order, const IntegrationRule & _GaussRadauIR)
-    : ScalarFiniteElement<1> (2*order+1, order), GaussRadauIR(_GaussRadauIR)
+    : H1CellFiniteElement<1> (2*order+1, order), GaussRadauIR(_GaussRadauIR)
   { ; }
 
   void H1PrimalCellSegm :: CalcShape (const IntegrationPoint & ip, 
@@ -245,91 +245,6 @@ namespace ngcomp
         }
     }
 
-  void H1PrimalCellTrig ::
-    CalcL2AltShape (const IntegrationPoint & ip, 
-        BareSliceVector<> shape) const 
-    {
-      //just L2 mapping for now!!
-      double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
-      int maxlam = PosMax(lam);
-
-      shape.Range(GetNDof()) = 0;
-
-      int minvi = (maxlam+1)%3;
-      int maxvi = minvi;
-      for (int i = 0; i < 3; i++)
-        if (i != maxlam)
-        {
-          if (vnums[i] < vnums[minvi]) minvi = i;
-          if (vnums[i] > vnums[maxvi]) maxvi = i;
-        }
-
-      int vdir[3];
-      vdir[maxlam] = -1;
-      vdir[minvi] = 0;
-      vdir[maxvi] = 1;
-
-      Vec<2> x(lam[minvi], lam[maxvi]);
-      Vec<2> xi = MapTrig2Quad (x);
-
-      Mat<2,2> F2;    // trafo from vertex permutation
-      Vec<2> verts[] = { Vec<2>(1,0), Vec<2>(0,1), Vec<2> (0,0) };
-      F2.Col(0) = verts[minvi]-verts[maxlam];
-      F2.Col(1) = verts[maxvi]-verts[maxlam];
-
-
-      ArrayMem<double, 20> polxi(order+1), poleta(order+1);
-      LagrangePolynomials(xi(0), GaussRadauIR, polxi);
-      LagrangePolynomials(xi(1), GaussRadauIR, poleta);
-
-      auto assign =  [&](int nr, IVec<2> ind)
-      {
-        Vec<2> xinode(GaussRadauIR[ind[0]](0), GaussRadauIR[ind[1]](0));
-        Mat<2,2> F = DMapQuad2Trig(xinode);
-        double trafo = 1/fabs(Det(F2*F));
-        shape(nr) = trafo*polxi[ind[0]]*poleta[ind[1]];
-      };
-
-      assign(0, { 0, 0 });
-
-      int ii = 1;
-
-      // internal edges into direction of vertex v
-      for (int v = 0; v < 3; v++)
-      {
-        if (v != maxlam)
-        {
-          IVec<3> ind = { 0, 0, 0 };
-          int dirv2 = vdir[v];
-          for (int k = 0; k < order; k++)
-          {
-            ind[dirv2] = k+1;
-            assign(ii+k, ind);
-          }
-        }
-        ii += order;
-      }
-
-      // internal faces into direction of vertices v1, v2
-      for (int v1 = 0; v1 < 3; v1++)
-        for (int v2 = 0; v2 < v1; v2++)
-        {
-          if (v1 != maxlam && v2 != maxlam)
-          {
-            IVec<2> ind = { 0, 0 };
-            int dirv1 = vdir[v1];
-            int dirv2 = vdir[v2];
-            for (int k = 0, kk=ii; k < order; k++)
-              for (int l = 0; l < order; l++, kk++)
-              {
-                ind[dirv1] = k+1;
-                ind[dirv2] = l+1;
-                assign(kk, ind);
-              }
-          }
-          ii += sqr(order);
-        }
-    }
 
   void H1PrimalCellTrig ::
     CalcDShape (const IntegrationPoint & ip, 
@@ -458,12 +373,12 @@ namespace ngcomp
 
 
 
-  class H1PrimalCellTet : public ScalarFiniteElement<3>, public VertexOrientedFE<ET_TET>
+  class H1PrimalCellTet : public H1CellFiniteElement<3>, public VertexOrientedFE<ET_TET>
   {
     const IntegrationRule & GaussRadauIR;
     public:
     H1PrimalCellTet (int order, const IntegrationRule & _GaussRadauIR)
-      : ScalarFiniteElement<3> (1+4*order+6*sqr(order)+4*sqr(order)*order, order),
+      : H1CellFiniteElement<3> (1+4*order+6*sqr(order)+4*sqr(order)*order, order),
       GaussRadauIR(_GaussRadauIR)
     { ; }
     using VertexOrientedFE<ET_TET>::SetVertexNumbers;
@@ -677,7 +592,7 @@ namespace ngcomp
             flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpGradient<2>>>();
 
             additional_evaluators.Set ("dual_mapping", make_shared<T_DifferentialOperator<DiffOpIdDual<2,2>>> ());
-            additional_evaluators.Set ("l2shape", make_shared<T_DifferentialOperator<DiffOpL2Shape2D>> ());
+            additional_evaluators.Set ("l2shape", make_shared<T_DifferentialOperator<DiffOpL2ShapeH1<2>>> ());
             break;
           }
         case 3:
@@ -685,6 +600,7 @@ namespace ngcomp
             evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpId<3>>>();
             flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpGradient<3>>>();
             additional_evaluators.Set ("dual_mapping", make_shared<T_DifferentialOperator<DiffOpIdDual<3,3>>> ());        
+            additional_evaluators.Set ("l2shape", make_shared<T_DifferentialOperator<DiffOpL2ShapeH1<3>>> ());
             break;
           }
       }
@@ -813,7 +729,7 @@ namespace ngcomp
 
       ElementId ei(VOL,elclass_inds[0]);
 
-      auto & felh1 = dynamic_cast<const ScalarFiniteElement<2>&> (GetFE (ei, lh));
+      auto & felh1 = dynamic_cast<const H1CellFiniteElement<2>&> (GetFE (ei, lh));
       auto & felhcurl = dynamic_cast<const HCurlCellFiniteElement<2>&> (feshcurl->GetFE (ei, lh));
       auto & trafo = ma->GetTrafo(ei, lh);
 

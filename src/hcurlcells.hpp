@@ -185,7 +185,7 @@ namespace ngcomp
     {
       static_cast<const HCurlCellFiniteElement<D>&>(fel).CalcPiolaShape (mip.IP(), Trans(mat));
       Mat<D,D> F = mip.GetJacobian();
-      Mat<D,D> trafo = Trans(Inv(F));
+      Mat<D,D> trafo = 1/Det(F) * F; // Trans(Inv(F));
       for (int i = 0; i < mat.Width(); i++)
         {
           Vec<D> shape = mat.Col(i);
@@ -207,7 +207,9 @@ namespace ngcomp
     static void CalcTransformationMatrix (const MIP & mip,
                                           MAT & mat, LocalHeap & lh)
     {
-      mat = Trans(static_cast<const MappedIntegrationPoint<D,D>&>(mip).GetJacobianInverse());
+      //mat = Trans(static_cast<const MappedIntegrationPoint<D,D>&>(mip).GetJacobianInverse());
+      Mat<D,D> F = static_cast<const MappedIntegrationPoint<D,D>&>(mip).GetJacobian();
+      mat = 1/Det(F) * F;   
     }
 
     

@@ -270,6 +270,139 @@ namespace ngcomp
       }
 
     }
+
+    virtual void CalcPiolaShape (const IntegrationPoint & ip, 
+        BareSliceMatrix<> shape) const override
+    {
+      //cout << "HCurlDualCellTrig.HCurlDualCellTrig called" <<endl;
+
+      double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
+      int maxlam = PosMax(lam);
+
+      shape = 0;
+      //
+      //shape.AddSize(ndof, 2) = 0;
+      int minv = (maxlam+1)%3;
+      int maxv = (maxlam+2)%3;
+
+      if (vnums[minv]>vnums[maxv])
+      {
+        minv = (maxlam+2)%3;
+        maxv = (maxlam+1)%3;
+      }
+
+      //cout << "maxlam: local: " << maxlam <<  ", global " << vnums[maxlam] << endl;
+      //cout << "minv: local: " << minv <<  ", global " << vnums[minv] << endl;
+      //cout << "maxv: local: " << maxv <<  ", global " << vnums[maxv] << endl;
+      Vec<2> x(lam[minv],lam[maxv]);
+      Vec<2> xi = MapTrig2Quad(x);
+
+      Mat<2,2> F = DMapQuad2Trig(xi);
+      Mat<2,2> F2;
+
+      Vec<2> verts[] = { Vec<2>(1, 0 ), Vec<2>( 0, 1 ), Vec<2>( 0, 0)  };      
+      F2.Col(0) = verts[minv]-verts[maxlam];
+      F2.Col(1) = verts[maxv]-verts[maxlam];
+
+      //Mat<2> trafo = Trans(Inv(F2*F));
+
+      Mat<2> trafox = 1/Det(F2*F)* (F2*F);
+
+      int ndGR = GaussRadauIR.Size();
+      int ndt = tangentialIR.Size();
+      ArrayMem<double, 20> polxi(ndGR), poleta(ndGR);
+      ArrayMem<double, 20> polxitang(ndt), poletatang(ndt);         
+      LagrangePolynomials(xi(0), GaussRadauIR, polxi);
+      LagrangePolynomials(xi(1), GaussRadauIR, poleta);
+
+      LagrangePolynomials(xi(0), tangentialIR, polxitang);
+      LagrangePolynomials(xi(1), tangentialIR, poletatang);
+
+      auto assign_shape = [&](int nr, int ix, int iy,int dir)
+      {
+        Vec<2> xinode(GaussRadauIR[ix](0), GaussRadauIR[iy](0));
+        Mat<2,2> F = DMapQuad2Trig(xinode);          
+        Mat<2> trafo1 = Det(F2*F) *Inv(F2*F) * Trans(Inv(F2*F));
+        Mat<2> trafo = trafox * trafo1;
+        //Mat<2> trafo = trafox;
+        switch (dir)
+        {
+          case 0:
+            {
+              shape.Row(nr) = trafo*Vec<2>(polxitang[ix]*poleta[iy],
+                  0);
+              //shape.Row(nr) = Vec<2>(polxitang[ix]*poleta[iy],0);
+              break;
+            }
+          case 1:
+            {
+              shape.Row(nr) = trafo*Vec<2>(0,
+                  polxi[ix]*poletatang[iy]);
+              //shape.Row(nr) = Vec<2>(0,polxi[ix]*poletatang[iy]);
+              break;
+            }
+            break;
+        }
+      };
+
+
+      int ii = 0;
+      for (int i = 0; i < 3; i++)
+      {
+        IVec<2> e = GetVertexOrientedEdge(i);
+        //cout << "edge " << i << endl;
+        for (int j = 0; j < 2; j++)
+        {
+          //cout << "vertex " << e[j] <<endl;
+          if (e[j] == maxlam)
+          {
+            if (e[1-j] == minv)
+            {
+              for (int k = 0; k < ndt; k++)
+                assign_shape(ii+k, k, 0, 0);
+            }
+            else
+            {
+              for (int k = 0; k < ndt; k++)
+                assign_shape(ii+k, 0, k, 1);
+            }
+          }
+          ii+=ndt;
+        }
+      }
+      IVec<4> f = GetVertexOrientedFace(0);
+      for (int i = 0; i < 3; i++)
+      {
+
+        if (f[i] == maxlam)
+        {
+          int v1 = f[(i+1)%3];
+          int kk = ii;
+          for (int l = 1; l < ndGR; l++)
+          {
+            for (int k = 0; k < ndt; k++)
+            {
+              if (v1 == minv)
+              {
+                assign_shape(kk++, k, l,0);
+                assign_shape(kk++, l, k,1);
+              }
+              else 
+              {
+                assign_shape(kk++, l, k,1);
+                assign_shape(kk++, k, l,0);
+              }
+
+            }
+          }
+        }
+        ii += 2*(ndGR-1)*ndt;
+      }
+      //cout << "CalcShape done, shape = " << shape << endl;
+
+    }
+
+
     virtual void CalcPiolaAltShape (const IntegrationPoint & ip, 
         BareSliceMatrix<> shape) const override
     {
@@ -2431,7 +2564,9 @@ namespace ngcomp
         flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpCurlEdge<2>>>();
         additional_evaluators.Set ("altshape", make_shared<T_DifferentialOperator<DiffOpAltShapeHCurl<2>>> ());
         additional_evaluators.Set ("Grad", make_shared<T_DifferentialOperator<DiffOpGradHCurl<2>>> ());
-        additional_evaluators.Set ("jumpninner", make_shared<T_DifferentialOperator<DiffOpJumpNInnerHCurl<2>>> ());                
+        additional_evaluators.Set ("jumpninner", make_shared<T_DifferentialOperator<DiffOpJumpNInnerHCurl<2>>> ());
+        additional_evaluators.Set ("Piolashape", make_shared<T_DifferentialOperator<DiffOpPiolaShapeHCurl<2>>> ());
+        additional_evaluators.Set ("Hodge", make_shared<T_DifferentialOperator<DiffOpHodgeHCurl<2>>> ());        
       }
       else
       {
@@ -3787,9 +3922,9 @@ namespace ngcomp
     //MAPPINGTYPEH1 mappingB = L2; // L2
     //
     
-    MAPPINGTYPEH1 mappingB = L2; // 
+    MAPPINGTYPE mappingB = L2; // 
     if (altshapes)
-      mappingB = NONE;
+      mappingB = POLYNOMIAL;
 
     for (auto elclass_inds : table)
     {
@@ -3799,7 +3934,7 @@ namespace ngcomp
       ElementId ei(VOL,elclass_inds[0]);
 
       auto & fel = dynamic_cast<const HCurlCellFiniteElement<2>&> (GetFE (ei, lh));
-      auto & felc = dynamic_cast<const H1PrimalCellTrig&> (fescurl->GetFE (ei, lh));
+      auto & felc = dynamic_cast<const H1CellFiniteElement<2>&> (fescurl->GetFE (ei, lh));
       auto & trafo = ma->GetTrafo(ei, lh);
 
       //cout << "fel.ndof = " << fel.GetNDof() << endl;

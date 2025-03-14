@@ -7,6 +7,245 @@
 
 namespace ngcomp
 {
+  class HCurlPrimalCellTrig : public HCurlCellFiniteElement<2>, public VertexOrientedFE<ET_TRIG>
+  {
+    const IntegrationRule & IR;
+    public:
+    HCurlPrimalCellTrig (const IntegrationRule & _IR)
+      : HCurlCellFiniteElement<2> (3*2*_IR.Size()*_IR.Size()*IR.Size() -3*_IR.Size(), _IR.Size()-1),
+      IR(_IR)
+    { ; }
+    using VertexOrientedFE<ET_TRIG>::SetVertexNumbers;
+    virtual ELEMENT_TYPE ElementType() const override { return ET_TRIG; }
+
+
+    virtual void CalcShape (const IntegrationPoint & ip, 
+        BareSliceMatrix<> shape) const override
+    {
+      int ndof_edge = IR.Size();
+      int ndof_quad = 2*IR.Size()*(IR.Size()-1);
+
+      double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
+      int maxlam = PosMax(lam);
+
+      //shape.AddSize(ndof, 2) = 0;
+      shape = 0;
+      int minv = (maxlam+1)%3;
+      int maxv = (maxlam+2)%3;
+
+      if (vnums[minv]>vnums[maxv])
+      {
+        minv = (maxlam+2)%3;
+        maxv = (maxlam+1)%3;
+      }
+      Vec<2> x(lam[minv],lam[maxv]);
+      Vec<2> xi = MapTrig2Quad(x);
+
+      Mat<2,2> F = DMapQuad2Trig(xi);
+      Mat<2,2> F2;
+
+      Vec<2> verts[] = { Vec<2>(1, 0 ), Vec<2>( 0, 1 ), Vec<2>( 0, 0)  };      
+      F2.Col(0) = verts[minv]-verts[maxlam];
+      F2.Col(1) = verts[maxv]-verts[maxlam];
+
+      Mat<2> trafo = Trans(Inv(F2*F));
+
+
+      int nd = IR.Size();
+      ArrayMem<double, 20> polx(nd), poly(nd);
+      LagrangePolynomials(xi(0), IR, polx);
+      LagrangePolynomials(xi(1), IR, poly);
+
+      auto assign_shape = [&](int nr, int ix, int iy,int dir)
+      {
+        switch (dir)
+        {
+          case 0:
+            {
+              shape.Row(nr) = trafo*Vec<2>(polx[ix]*poly[iy],
+                  0);
+              break;
+            }
+          case 1:
+            {
+              shape.Row(nr) = trafo*Vec<2>(0,
+                  polx[ix]*poly[iy]);
+              break;
+            }
+            break;
+        }
+      };
+
+
+      int ii = 0;
+      ii = (maxlam+2)%3 * ndof_edge;
+      for (int i = 0; i < poly.Size(); i++)      
+        assign_shape(ii++, i, 0,0);
+      
+      ii = (maxlam+1)%3 * ndof_edge;
+      for (int i = 0; i < polx.Size(); i++)
+        assign_shape(ii++, 0, i,1);
+      
+      ii = 3*ndof_edge + maxlam*ndof_quad;
+      for (int i = 0; i < polx.Size(); i++)
+        for (int j = 1; j < poly.Size(); j++)
+          assign_shape(ii++, i, j,0);
+      for (int j = 0; j < poly.Size(); j++)
+        for (int i = 1; i < polx.Size(); i++)
+          assign_shape(ii++, i, j,1);
+
+    }
+
+
+
+    virtual void CalcCurlShape (const IntegrationPoint & ip, 
+        BareSliceMatrix<> curlshape) const override
+    {
+      int ndof_edge = IR.Size();
+      int ndof_quad = 2*IR.Size()*(IR.Size()-1);
+      double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1)};
+      int maxlam = PosMax(lam);
+
+      curlshape = 0;
+
+      curlshape.AddSize(ndof, 1) = 0;
+
+      int minv = (maxlam+1)%3;
+      int maxv = (maxlam+2)%3;
+      if (vnums[minv] > vnums[maxv]) {
+        minv = (maxlam+2)%3;
+        maxv = (maxlam+1)%3;
+      }
+
+
+      Vec<2> x(lam[minv],lam[maxv]);
+      Vec<2> xi = MapTrig2Quad(x);
+
+      Mat<2,2> F = DMapQuad2Trig(xi);
+      Mat<2,2> F2;
+
+      Vec<2> verts[] = { Vec<2>(1, 0 ), Vec<2>( 0, 1 ), Vec<2>( 0, 0)  };      
+      F2.Col(0) = verts[minv]-verts[maxlam];
+      F2.Col(1) = verts[maxv]-verts[maxlam];
+
+      //Mat<2> trafo = Trans(Inv(F2*F));
+      double trafo = 1.0/Det(F2*F); 
+
+      int nd = IR.Size();
+
+
+      ArrayMem<AutoDiff<1>, 20> polxi(nd), poleta(nd);
+
+      LagrangePolynomials(AutoDiff<1>(xi(0), 0), IR, polxi);
+      LagrangePolynomials(AutoDiff<1>(xi(1), 0), IR, poleta);
+      auto assign_shape =  [&](int nr, int ix, int iy, int dir)
+      {
+        switch (dir)
+        {
+          case 0:
+            {
+              curlshape.Row(nr) = trafo*Vec<1>(-polxi[ix].Value()*poleta[iy].DValue(0));
+              break;
+            }
+          case 1:
+            {
+              curlshape.Row(nr) = trafo*Vec<1>(polxi[ix].DValue(0)*poleta[iy].Value());
+              break;
+            }
+            break;
+        }
+      };
+
+      int ii = 0;
+      ii = (maxlam+2)%3 * ndof_edge;
+      for (int i = 0; i < poleta.Size(); i++)      
+        assign_shape(ii++, i, 0,0);
+      
+      ii = (maxlam+1)%3 * ndof_edge;
+      for (int i = 0; i < polxi.Size(); i++)
+        assign_shape(ii++, 0, i,1);
+      
+      ii = 3*ndof_edge + maxlam*ndof_quad;
+      for (int i = 0; i < polxi.Size(); i++)
+        for (int j = 1; j < poleta.Size(); j++)
+          assign_shape(ii++, i, j,0);
+      for (int j = 0; j < poleta.Size(); j++)
+        for (int i = 1; i < polxi.Size(); i++)
+          assign_shape(ii++, i, j,1);
+    }
+
+    virtual void CalcPiolaShape (const IntegrationPoint & ip, 
+        BareSliceMatrix<> shape) const override
+    {
+      ;
+    }
+
+
+    virtual void CalcPiolaAltShape (const IntegrationPoint & ip, 
+        BareSliceMatrix<> shape) const override
+    {
+      ;
+    }
+
+    virtual void CalcAltShape (const IntegrationPoint & ip, 
+        BareSliceMatrix<> shape) const override
+    {
+      ;
+    }
+
+    virtual void CalcGradShape (const IntegrationPoint & ip, 
+                                BareSliceMatrix<> shape) const override
+    {
+      ;
+    }
+
+    
+
+    virtual void Interpolate (const ElementTransformation & trafo, 
+        const class CoefficientFunction & func, SliceMatrix<> coefs,
+        LocalHeap & lh) const override
+    {
+      Matrix mat(ndof, ndof);
+      Vector rhs(ndof);
+
+      mat = 0.0;
+      rhs = 0.0;
+      IntegrationRule ir(ET_SEGM, order+1);
+
+      auto [pnts, inds, nump] = GetMicroCellPoints<ET_TRIG> (order+1, true);
+      auto [edges, nume] = GetMicroCellEdges<ET_TRIG> (order+1, true);
+
+      Vec<2> fi;
+      Matrix shape(ndof, 2);
+
+      for (int i = 0; i < nume; i++) // sum over real edges, only 
+      {
+        Vec<2> p0 = pnts[edges[i][0]];
+        Vec<2> p1 = pnts[edges[i][1]];
+
+        for (auto ip : ir)
+        {
+          double t = ip(0);
+          Vec<2> tauref = p1-p0;
+          Vec<2> x = p0+t*(p1-p0);
+
+          IntegrationPoint ip2d(x(0), x(1), 0, 0);
+          MappedIntegrationPoint<2,2> mip(ip2d, trafo);
+          Vec<2> tau = mip.GetJacobian() * tauref;
+
+          func.Evaluate (mip, fi);
+
+          CalcShape (ip2d, shape);
+
+          mat.Row(i) += ip.Weight() * shape*tauref;
+          rhs(i) += ip.Weight() * InnerProduct(fi,tau);
+        }
+      }
+
+      CalcInverse (mat);
+      coefs.Col(0) = mat * rhs;
+    }
+  };
   class HCurlPrimalCellTet : public HCurlCellFiniteElement<3>, public VertexOrientedFE<ET_TET>
   {
     const IntegrationRule & GaussRadauIR;

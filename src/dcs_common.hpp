@@ -8,7 +8,7 @@ namespace ngcomp {
 
 
 
-  enum MAPPINGTYPE { POLYNOMIAL, COVARIANT, PIOLA, PIOLAPOLYNOMIAL };
+  enum MAPPINGTYPE { POLYNOMIAL, COVARIANT, PIOLA, PIOLAPOLYNOMIAL, L2 };
 
   template <typename T>
   size_t PosMax (const T & ar)

@@ -11,13 +11,13 @@ include(ngsolve_addon.cmake)
 add_ngsolve_addon(${addon_name} 
    src/dualcellspaces.cpp
    src/h1dualcells.cpp 
-   src/h1dualcells3d.cpp 
+   #   src/h1dualcells3d.cpp 
    src/h1primalcells.cpp 
    src/hcurldualcells.cpp    
    src/hcurlprimalcells.cpp    
    src/hdivprimalcells.cpp
-   src/l2cells.cpp    
    src/hdivdualcells.cpp
+   src/l2cells.cpp    
    src/intrules.cpp
    src/supersparse.cpp
   )
