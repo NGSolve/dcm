@@ -372,7 +372,7 @@ namespace ngcomp
     const IntegrationRule & IR;
   public:
     HDivDualCellTet (const IntegrationRule & _IR)
-      : HDivCellFiniteElement<3> (4*3*_IR.Size()*_IR.Size()*_IR.Size(), _IR.Size()-1),
+      : HDivCellFiniteElement<3> (4*3*_IR.Size()*_IR.Size()*_IR.Size()-6*_IR.Size()*_IR.Size(), _IR.Size()-1),
       IR(_IR)
     { ; }
     using VertexOrientedFE<ET_TET>::SetVertexNumbers;
