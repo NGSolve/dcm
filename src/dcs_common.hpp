@@ -249,6 +249,65 @@ namespace ngcomp {
     */
   }
 
+  template <int DIM>
+  class MicroJacobi : public CoefficientFunctionNoDerivative
+  {
+  public:
+    MicroJacobi () : CoefficientFunctionNoDerivative(DIM*DIM,false)
+    { 
+      SetDimensions(Array<int>({DIM,DIM}));
+    }
+
+    using CoefficientFunctionNoDerivative::Evaluate;
+    virtual double Evaluate (const BaseMappedIntegrationPoint & mip) const override 
+    {
+      return 0;
+    }
+    virtual void Evaluate (const BaseMappedIntegrationPoint & mip, FlatVector<> res) const override 
+    {
+      if (mip.DimSpace() != DIM)
+        throw Exception("illegal dim!");
+
+      IntegrationPoint ip = mip.IP();
+      auto & trafo = mip.GetTransformation();
+      Array<int> vnums = { 1, 2, 3 };
+      trafo.GetSort(vnums);
+      
+
+      
+      double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
+      int maxlam = PosMax(lam);
+
+      int minvi = (maxlam+1)%3;
+      int maxvi = minvi;
+      for (int i = 0; i < 3; i++)
+        if (i != maxlam)
+          {
+            if (vnums[i] < vnums[minvi]) minvi = i;
+            if (vnums[i] > vnums[maxvi]) maxvi = i;
+          }
+      
+      Vec<2> x(lam[minvi], lam[maxvi]);
+      Vec<2> xi = MapTrig2Quad (x);
+      Mat<2,2> F = DMapQuad2Trig(xi);
+      res = F.AsVector();
+    }
+    /*
+
+    virtual void Evaluate (const BaseMappedIntegrationRule & ir, BareSliceMatrix<Complex> res) const override 
+    {
+      if (ir[0].DimSpace() != DIMR)
+      	throw Exception("illegal dim!");
+      for (int i = 0; i < ir.Size(); i++)
+      	res.Row(i).AddSize(DIMS*DIMR) = static_cast<const MappedIntegrationPoint<DIMS,DIMR>&>(ir[i]).GetJacobian().AsVector();
+    }
+    */
+    
+    /*virtual void Evaluate (const SIMD_BaseMappedIntegrationRule & ir, BareSliceMatrix<SIMD<double>> values) const override 
+    {
+      values.AddSize(D*D, ir.Size()) = Trans(ir.GetJacobian());
+      }*/
+  };
 
 
   template <int DIM>

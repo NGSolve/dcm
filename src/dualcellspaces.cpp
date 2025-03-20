@@ -110,6 +110,17 @@ auto h1dualpy =
           return nullptr;
         });
 
+  m.def("MicroJacobi", [](int dim) -> shared_ptr<CoefficientFunction>
+        {
+          switch (dim)
+            {
+            case 2:
+              return make_shared<MicroJacobi<2>> ();
+            case 3:
+              return make_shared<MicroJacobi<3>> ();              
+            }
+          return nullptr;
+        });
 
   
 

@@ -34,7 +34,6 @@ namespace ngcomp
 
 
 
-
   template <int D>
   class DiffOpL2ShapeH1 : public DiffOp<DiffOpL2ShapeH1<D>>
   {
