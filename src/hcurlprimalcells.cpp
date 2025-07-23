@@ -1219,6 +1219,14 @@ namespace ngcomp
                 MappedIntegrationRule<3,3> mir(ir, trafo, mylh);
                 GetDofNrs(ElementId(VOL,nr), dofs);
                 
+                if (rho)
+                {
+                  if (rho->Dimension() == 1)
+                    rho->Evaluate(mir, rhoscal);
+                  else
+                    rho->Evaluate(mir, rhomat);
+                }
+
                 for (size_t i = 0; i < mir.Size(); i++)
                   {
                     Mat<3,3> rhoi = Id<3>();
