@@ -1207,6 +1207,8 @@ namespace ngcomp
             Array<DofId> dofs(felref.GetNDof());
             Matrix rhoi_shapes_trans(3*ir.Size(), felref.GetNDof());
             Matrix<> elmat(felref.GetNDof());
+            Matrix rhomat(ir.Size(), 9);
+            Matrix rhoscal(ir.Size(), 1);
             
             for (auto i : myrange)
               {
@@ -1220,6 +1222,13 @@ namespace ngcomp
                 for (size_t i = 0; i < mir.Size(); i++)
                   {
                     Mat<3,3> rhoi = Id<3>();
+                    if (rho)
+                    {
+                      if (rho->Dimension() == 1)
+                        rhoi *= rhoscal(i, 0);
+                      else
+                        rhoi = rhomat.Row(i).AsMatrix(3,3);
+                    }
                     Mat<3,3> Finv = mir[i].GetJacobianInverse();
                     rhoi = Finv * rhoi * Trans(Finv);
                     rhoi *= ir[i].Weight() * mir[i].GetJacobiDet();
