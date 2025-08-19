@@ -195,6 +195,7 @@
 <li class="toctree-l2"><a class="reference internal" href="qualitative_dispersion.html">3.4. A plane wave on a square</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ring_resonator.html">3.5. Ring resonator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="waveguide_3d.html">3.6. Electromagnetic 3d waveguide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="waveguide_bend.html">3.7. Bent electromagnetic 3d waveguide with PML</a></li>
 </ul>
 </li>
 </ul>
@@ -449,7 +450,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&lt;ET.SEGM: 1&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x778e7007a3b0&gt;, &lt;ET.TRIG: 10&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x778e7007a430&gt;, &lt;ET.TET: 20&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x778e7007a4b0&gt;}
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&lt;ET.SEGM: 1&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x710ad970a9f0&gt;, &lt;ET.TRIG: 10&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x710ad970ab30&gt;, &lt;ET.TET: 20&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x710ad970abf0&gt;}
 ET.SEGM
  locnr = -1: (0.105662, 0, 0), weight = 0.25
  locnr = -1: (0.394338, 0, 0), weight = 0.25
@@ -633,22 +634,22 @@ ET.TET
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ndof =  122352
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ndof =  126200
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### assembling ####
-exact: 1.8648200035095215s
-supersparse: 0.16936349868774414s
+exact: 5.009653568267822s
+supersparse: 0.4871046543121338s
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### factorization ####
-exact: 21.143723249435425s
-supersparse: 0.008497953414916992s
+exact: 47.60324192047119s
+supersparse: 0.2717559337615967s
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### application ####
-exact: 0.37490344047546387s
-supersparse: 0.002124786376953125s
+exact: 1.0434050559997559s
+supersparse: 0.00342559814453125s
 </pre></div>
 </div>
 </div>

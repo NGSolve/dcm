@@ -1,0 +1,822 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>4. Dualcellspaces reference &#8212; The Dual Cell Method in NGSolve</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/proof.css?v=ca93fcec" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="3.2. Ring resonator" href="examples/ring_resonator.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="The Dual Cell Method in NGSolve - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="The Dual Cell Method in NGSolve - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    The Dual Cell Method in NGSolve
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">1. Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="maxwell.html">2. The dual cell method for the time-domain Maxwell system</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="maxwell/introduction.html">2.2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maxwell/hcurl.html">2.3. Discrete spaces on dual cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maxwell/mass_lumping.html">2.4. Mass lumping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maxwell/time_stepping.html">2.5. Time stepping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="maxwell/bibliography.html">2.6. Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="examples.html">3. Examples</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/qualitative_dispersion.html">3.1. A plane wave on a square</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/ring_resonator.html">3.2. Ring resonator</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">4. Dualcellspaces reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/ngsolve/dcm" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/ngsolve/dcm/issues/new?title=Issue%20on%20page%20%2Freference.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/reference.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Dualcellspaces reference</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#finite-element-spaces">4.1. Finite element spaces</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.H1PrimalCells"><code class="docutils literal notranslate"><span class="pre">H1PrimalCells</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.H1PrimalCells.GetIntegrationRules"><code class="docutils literal notranslate"><span class="pre">H1PrimalCells.GetIntegrationRules()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.H1PrimalCells.__init__"><code class="docutils literal notranslate"><span class="pre">H1PrimalCells.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.H1DualCells"><code class="docutils literal notranslate"><span class="pre">H1DualCells</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.HCurlPrimalCells"><code class="docutils literal notranslate"><span class="pre">HCurlPrimalCells</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.HCurlDualCells"><code class="docutils literal notranslate"><span class="pre">HCurlDualCells</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.HDivPrimalCells"><code class="docutils literal notranslate"><span class="pre">HDivPrimalCells</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#helper-functions">4.2. Helper functions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.GetIntegrationRules"><code class="docutils literal notranslate"><span class="pre">GetIntegrationRules()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.GetWebGuiPoints"><code class="docutils literal notranslate"><span class="pre">GetWebGuiPoints()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="dualcellspaces-reference">
+<h1><span class="section-number">4. </span>Dualcellspaces reference<a class="headerlink" href="#dualcellspaces-reference" title="Link to this heading">#</a></h1>
+<section id="finite-element-spaces">
+<h2><span class="section-number">4.1. </span>Finite element spaces<a class="headerlink" href="#finite-element-spaces" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dualcellspaces.H1PrimalCells">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dualcellspaces.</span></span><span class="sig-name descname"><span class="pre">H1PrimalCells</span></span><a class="headerlink" href="#dualcellspaces.H1PrimalCells" title="Link to this definition">#</a></dt>
+<dd><p>H1PrimalCells.</p>
+<p>Continuous on primal cells.</p>
+<p>Keyword arguments can be:</p>
+<dl class="simple">
+<dt>order: int = 1</dt><dd><p>order of finite element space</p>
+</dd>
+<dt>complex: bool = False</dt><dd><p>Set if FESpace should be complex</p>
+</dd>
+<dt>dirichlet: regexpr</dt><dd><p>Regular expression string defining the dirichlet boundary.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet = ‘top|right’</p>
+</dd>
+<dt>dirichlet_bbnd: regexpr</dt><dd><p>Regular expression string defining the dirichlet bboundary,
+i.e. points in 2D and edges in 3D.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet_bbnd = ‘top|right’</p>
+</dd>
+<dt>dirichlet_bbbnd: regexpr</dt><dd><p>Regular expression string defining the dirichlet bbboundary,
+i.e. points in 3D.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet_bbbnd = ‘top|right’</p>
+</dd>
+<dt>definedon: Region or regexpr</dt><dd><p>FESpace is only defined on specific Region, created with mesh.Materials(‘regexpr’)
+or mesh.Boundaries(‘regexpr’). If given a regexpr, the region is assumed to be
+mesh.Materials(‘regexpr’).</p>
+</dd>
+<dt>dim: int = 1</dt><dd><p>Create multi dimensional FESpace (i.e. [H1]^3)</p>
+</dd>
+<dt>dgjumps: bool = False</dt><dd><p>Enable discontinuous space for DG methods, this flag is needed for DG methods,
+since the dofs have a different coupling then and this changes the sparsity
+pattern of matrices.</p>
+</dd>
+<dt>autoupdate: bool = False</dt><dd><p>Automatically update on a change to the mesh.</p>
+</dd>
+<dt>low_order_space: bool = True</dt><dd><p>Generate a lowest order space together with the high-order space,
+needed for some preconditioners.</p>
+</dd>
+<dt>order_policy: ORDER_POLICY = ORDER_POLICY.OLDSTYLE</dt><dd><p>CONSTANT .. use the same fixed order for all elements,
+NODAL ….. use the same order for nodes of same shape,
+VARIABLE … use an individual order for each edge, face and cell,
+OLDSTYLE .. as it used to be for the last decade</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dualcellspaces.H1PrimalCells.GetIntegrationRules">
+<span class="sig-name descname"><span class="pre">GetIntegrationRules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dualcellspaces.H1PrimalCells" title="dualcellspaces.dualcellspaces.H1PrimalCells"><span class="pre">dualcellspaces.dualcellspaces.H1PrimalCells</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">ngsolve.fem.ET</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ngsolve.fem.IntegrationRule</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dualcellspaces.H1PrimalCells.GetIntegrationRules" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dualcellspaces.H1PrimalCells.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dualcellspaces.H1PrimalCells" title="dualcellspaces.dualcellspaces.H1PrimalCells"><span class="pre">dualcellspaces.dualcellspaces.H1PrimalCells</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ngsolve.comp.Mesh</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dualcellspaces.H1PrimalCells.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dualcellspaces.H1DualCells">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dualcellspaces.</span></span><span class="sig-name descname"><span class="pre">H1DualCells</span></span><a class="headerlink" href="#dualcellspaces.H1DualCells" title="Link to this definition">#</a></dt>
+<dd><p>H1 on Dual Cells</p>
+<p>Continuous on dual cells</p>
+<p>Keyword arguments can be:</p>
+<dl class="simple">
+<dt>order: int = 1</dt><dd><p>order of finite element space</p>
+</dd>
+<dt>complex: bool = False</dt><dd><p>Set if FESpace should be complex</p>
+</dd>
+<dt>dirichlet: regexpr</dt><dd><p>Regular expression string defining the dirichlet boundary.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet = ‘top|right’</p>
+</dd>
+<dt>dirichlet_bbnd: regexpr</dt><dd><p>Regular expression string defining the dirichlet bboundary,
+i.e. points in 2D and edges in 3D.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet_bbnd = ‘top|right’</p>
+</dd>
+<dt>dirichlet_bbbnd: regexpr</dt><dd><p>Regular expression string defining the dirichlet bbboundary,
+i.e. points in 3D.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet_bbbnd = ‘top|right’</p>
+</dd>
+<dt>definedon: Region or regexpr</dt><dd><p>FESpace is only defined on specific Region, created with mesh.Materials(‘regexpr’)
+or mesh.Boundaries(‘regexpr’). If given a regexpr, the region is assumed to be
+mesh.Materials(‘regexpr’).</p>
+</dd>
+<dt>dim: int = 1</dt><dd><p>Create multi dimensional FESpace (i.e. [H1]^3)</p>
+</dd>
+<dt>dgjumps: bool = False</dt><dd><p>Enable discontinuous space for DG methods, this flag is needed for DG methods,
+since the dofs have a different coupling then and this changes the sparsity
+pattern of matrices.</p>
+</dd>
+<dt>autoupdate: bool = False</dt><dd><p>Automatically update on a change to the mesh.</p>
+</dd>
+<dt>low_order_space: bool = True</dt><dd><p>Generate a lowest order space together with the high-order space,
+needed for some preconditioners.</p>
+</dd>
+<dt>order_policy: ORDER_POLICY = ORDER_POLICY.OLDSTYLE</dt><dd><p>CONSTANT .. use the same fixed order for all elements,
+NODAL ….. use the same order for nodes of same shape,
+VARIABLE … use an individual order for each edge, face and cell,
+OLDSTYLE .. as it used to be for the last decade</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dualcellspaces.HCurlPrimalCells">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dualcellspaces.</span></span><span class="sig-name descname"><span class="pre">HCurlPrimalCells</span></span><a class="headerlink" href="#dualcellspaces.HCurlPrimalCells" title="Link to this definition">#</a></dt>
+<dd><p>HCurlPrimalCells3D.</p>
+<p>tangentially continuous on primal cells.
+for collocated: polynomial order is order 
+for staggered: polynomial order is between order and order+1</p>
+<p>Keyword arguments can be:</p>
+<dl class="simple">
+<dt>order: int = 1</dt><dd><p>order of finite element space</p>
+</dd>
+<dt>complex: bool = False</dt><dd><p>Set if FESpace should be complex</p>
+</dd>
+<dt>dirichlet: regexpr</dt><dd><p>Regular expression string defining the dirichlet boundary.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet = ‘top|right’</p>
+</dd>
+<dt>dirichlet_bbnd: regexpr</dt><dd><p>Regular expression string defining the dirichlet bboundary,
+i.e. points in 2D and edges in 3D.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet_bbnd = ‘top|right’</p>
+</dd>
+<dt>dirichlet_bbbnd: regexpr</dt><dd><p>Regular expression string defining the dirichlet bbboundary,
+i.e. points in 3D.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet_bbbnd = ‘top|right’</p>
+</dd>
+<dt>definedon: Region or regexpr</dt><dd><p>FESpace is only defined on specific Region, created with mesh.Materials(‘regexpr’)
+or mesh.Boundaries(‘regexpr’). If given a regexpr, the region is assumed to be
+mesh.Materials(‘regexpr’).</p>
+</dd>
+<dt>dim: int = 1</dt><dd><p>Create multi dimensional FESpace (i.e. [H1]^3)</p>
+</dd>
+<dt>dgjumps: bool = False</dt><dd><p>Enable discontinuous space for DG methods, this flag is needed for DG methods,
+since the dofs have a different coupling then and this changes the sparsity
+pattern of matrices.</p>
+</dd>
+<dt>autoupdate: bool = False</dt><dd><p>Automatically update on a change to the mesh.</p>
+</dd>
+<dt>low_order_space: bool = True</dt><dd><p>Generate a lowest order space together with the high-order space,
+needed for some preconditioners.</p>
+</dd>
+<dt>order_policy: ORDER_POLICY = ORDER_POLICY.OLDSTYLE</dt><dd><p>CONSTANT .. use the same fixed order for all elements,
+NODAL ….. use the same order for nodes of same shape,
+VARIABLE … use an individual order for each edge, face and cell,
+OLDSTYLE .. as it used to be for the last decade</p>
+</dd>
+<dt>collocated: bool = True</dt><dd><p>Use same orders in all directios</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dualcellspaces.HCurlDualCells">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dualcellspaces.</span></span><span class="sig-name descname"><span class="pre">HCurlDualCells</span></span><a class="headerlink" href="#dualcellspaces.HCurlDualCells" title="Link to this definition">#</a></dt>
+<dd><p>HCurlDualCells3D.</p>
+<p>tangentially continuous on dual cells.
+for collocated: polynomial order is order 
+for staggered: polynomial order is between order and order+1</p>
+<p>Keyword arguments can be:</p>
+<dl class="simple">
+<dt>order: int = 1</dt><dd><p>order of finite element space</p>
+</dd>
+<dt>complex: bool = False</dt><dd><p>Set if FESpace should be complex</p>
+</dd>
+<dt>dirichlet: regexpr</dt><dd><p>Regular expression string defining the dirichlet boundary.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet = ‘top|right’</p>
+</dd>
+<dt>dirichlet_bbnd: regexpr</dt><dd><p>Regular expression string defining the dirichlet bboundary,
+i.e. points in 2D and edges in 3D.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet_bbnd = ‘top|right’</p>
+</dd>
+<dt>dirichlet_bbbnd: regexpr</dt><dd><p>Regular expression string defining the dirichlet bbboundary,
+i.e. points in 3D.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet_bbbnd = ‘top|right’</p>
+</dd>
+<dt>definedon: Region or regexpr</dt><dd><p>FESpace is only defined on specific Region, created with mesh.Materials(‘regexpr’)
+or mesh.Boundaries(‘regexpr’). If given a regexpr, the region is assumed to be
+mesh.Materials(‘regexpr’).</p>
+</dd>
+<dt>dim: int = 1</dt><dd><p>Create multi dimensional FESpace (i.e. [H1]^3)</p>
+</dd>
+<dt>dgjumps: bool = False</dt><dd><p>Enable discontinuous space for DG methods, this flag is needed for DG methods,
+since the dofs have a different coupling then and this changes the sparsity
+pattern of matrices.</p>
+</dd>
+<dt>autoupdate: bool = False</dt><dd><p>Automatically update on a change to the mesh.</p>
+</dd>
+<dt>low_order_space: bool = True</dt><dd><p>Generate a lowest order space together with the high-order space,
+needed for some preconditioners.</p>
+</dd>
+<dt>order_policy: ORDER_POLICY = ORDER_POLICY.OLDSTYLE</dt><dd><p>CONSTANT .. use the same fixed order for all elements,
+NODAL ….. use the same order for nodes of same shape,
+VARIABLE … use an individual order for each edge, face and cell,
+OLDSTYLE .. as it used to be for the last decade</p>
+</dd>
+<dt>collocated: bool = True</dt><dd><p>Use same orders in all directios</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dualcellspaces.HDivPrimalCells">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dualcellspaces.</span></span><span class="sig-name descname"><span class="pre">HDivPrimalCells</span></span><a class="headerlink" href="#dualcellspaces.HDivPrimalCells" title="Link to this definition">#</a></dt>
+<dd><p>HDiv conforming space on primal cells which is non-smooth but normal continuous on dual edges.</p>
+<p>HDiv conforming space on primal cells which is non-smooth but normal continuous on dual edges.</p>
+<p>Keyword arguments can be:</p>
+<dl class="simple">
+<dt>order: int = 1</dt><dd><p>order of finite element space</p>
+</dd>
+<dt>complex: bool = False</dt><dd><p>Set if FESpace should be complex</p>
+</dd>
+<dt>dirichlet: regexpr</dt><dd><p>Regular expression string defining the dirichlet boundary.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet = ‘top|right’</p>
+</dd>
+<dt>dirichlet_bbnd: regexpr</dt><dd><p>Regular expression string defining the dirichlet bboundary,
+i.e. points in 2D and edges in 3D.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet_bbnd = ‘top|right’</p>
+</dd>
+<dt>dirichlet_bbbnd: regexpr</dt><dd><p>Regular expression string defining the dirichlet bbboundary,
+i.e. points in 3D.
+More than one boundary can be combined by the | operator,
+i.e.: dirichlet_bbbnd = ‘top|right’</p>
+</dd>
+<dt>definedon: Region or regexpr</dt><dd><p>FESpace is only defined on specific Region, created with mesh.Materials(‘regexpr’)
+or mesh.Boundaries(‘regexpr’). If given a regexpr, the region is assumed to be
+mesh.Materials(‘regexpr’).</p>
+</dd>
+<dt>dim: int = 1</dt><dd><p>Create multi dimensional FESpace (i.e. [H1]^3)</p>
+</dd>
+<dt>dgjumps: bool = False</dt><dd><p>Enable discontinuous space for DG methods, this flag is needed for DG methods,
+since the dofs have a different coupling then and this changes the sparsity
+pattern of matrices.</p>
+</dd>
+<dt>autoupdate: bool = False</dt><dd><p>Automatically update on a change to the mesh.</p>
+</dd>
+<dt>low_order_space: bool = True</dt><dd><p>Generate a lowest order space together with the high-order space,
+needed for some preconditioners.</p>
+</dd>
+<dt>order_policy: ORDER_POLICY = ORDER_POLICY.OLDSTYLE</dt><dd><p>CONSTANT .. use the same fixed order for all elements,
+NODAL ….. use the same order for nodes of same shape,
+VARIABLE … use an individual order for each edge, face and cell,
+OLDSTYLE .. as it used to be for the last decade</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="helper-functions">
+<h2><span class="section-number">4.2. </span>Helper functions<a class="headerlink" href="#helper-functions" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dualcellspaces.GetIntegrationRules">
+<span class="sig-prename descclassname"><span class="pre">dualcellspaces.</span></span><span class="sig-name descname"><span class="pre">GetIntegrationRules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">ngsolve.fem.ET</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ngsolve.fem.IntegrationRule</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dualcellspaces.GetIntegrationRules" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dualcellspaces.GetWebGuiPoints">
+<span class="sig-prename descclassname"><span class="pre">dualcellspaces.</span></span><span class="sig-name descname"><span class="pre">GetWebGuiPoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">ngsolve.fem.ET</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ngsolve.fem.IntegrationRule</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#dualcellspaces.GetWebGuiPoints" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="examples/ring_resonator.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">3.2. </span>Ring resonator</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#finite-element-spaces">4.1. Finite element spaces</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.H1PrimalCells"><code class="docutils literal notranslate"><span class="pre">H1PrimalCells</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.H1PrimalCells.GetIntegrationRules"><code class="docutils literal notranslate"><span class="pre">H1PrimalCells.GetIntegrationRules()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.H1PrimalCells.__init__"><code class="docutils literal notranslate"><span class="pre">H1PrimalCells.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.H1DualCells"><code class="docutils literal notranslate"><span class="pre">H1DualCells</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.HCurlPrimalCells"><code class="docutils literal notranslate"><span class="pre">HCurlPrimalCells</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.HCurlDualCells"><code class="docutils literal notranslate"><span class="pre">HCurlDualCells</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.HDivPrimalCells"><code class="docutils literal notranslate"><span class="pre">HDivPrimalCells</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#helper-functions">4.2. Helper functions</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.GetIntegrationRules"><code class="docutils literal notranslate"><span class="pre">GetIntegrationRules()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dualcellspaces.GetWebGuiPoints"><code class="docutils literal notranslate"><span class="pre">GetWebGuiPoints()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By M. Wess
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

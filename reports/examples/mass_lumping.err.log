@@ -1,0 +1,40 @@
+Traceback (most recent call last):
+  File "/home/mwess/.local/lib/python3.10/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/client.py", line 1263, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/util.py", line 85, in wrapped
+    return just_run(coro(*args, **kwargs))
+  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/util.py", line 60, in just_run
+    return loop.run_until_complete(coro)
+  File "/usr/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/client.py", line 701, in async_execute
+    await self.async_execute_cell(
+  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/client.py", line 1019, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/client.py", line 913, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+from ngsolve import *
+import dualcellspaces as dcs
+import matplotlib.pyplot as pl
+import numpy as np
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mImportError[0m                               Traceback (most recent call last)
+Input [0;32mIn [1][0m, in [0;36m<cell line: 2>[0;34m()[0m
+[1;32m      1[0m [38;5;28;01mfrom[39;00m [38;5;21;01mngsolve[39;00m [38;5;28;01mimport[39;00m [38;5;241m*[39m
+[0;32m----> 2[0m [38;5;28;01mimport[39;00m [38;5;21;01mdualcellspaces[39;00m [38;5;28;01mas[39;00m [38;5;21;01mdcs[39;00m
+[1;32m      3[0m [38;5;28;01mimport[39;00m [38;5;21;01mmatplotlib[39;00m[38;5;21;01m.[39;00m[38;5;21;01mpyplot[39;00m [38;5;28;01mas[39;00m [38;5;21;01mpl[39;00m
+[1;32m      4[0m [38;5;28;01mimport[39;00m [38;5;21;01mnumpy[39;00m [38;5;28;01mas[39;00m [38;5;21;01mnp[39;00m
+
+File [0;32m~/bin/ngsolve/lib/python3.10/dist-packages/dualcellspaces/__init__.py:2[0m, in [0;36m<module>[0;34m[0m
+[1;32m      1[0m [38;5;28;01mimport[39;00m [38;5;21;01mngsolve[39;00m
+[0;32m----> 2[0m [38;5;28;01mfrom[39;00m [38;5;21;01m.[39;00m[38;5;21;01mdualcellspaces[39;00m [38;5;28;01mimport[39;00m [38;5;241m*[39m
+
+[0;31mImportError[0m: /home/mwess/bin/ngsolve/lib/python3.10/dist-packages/dualcellspaces/dualcellspaces.so: undefined symbol: _ZNK6ngcore5Flags14GetDefineFlagXERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+ImportError: /home/mwess/bin/ngsolve/lib/python3.10/dist-packages/dualcellspaces/dualcellspaces.so: undefined symbol: _ZNK6ngcore5Flags14GetDefineFlagXERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+
