@@ -25,3 +25,4 @@ chapters:
       - file: examples/qualitative_dispersion
       - file: examples/ring_resonator
       - file: examples/waveguide_3d
+      - file: examples/waveguide_bend
