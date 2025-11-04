@@ -33,7 +33,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = PosMax(lam);
 
-      shape = 0;
+      shape.AddSize(ndof, 2) = 0;
+      //shape = 0;
       int minv = (maxlam+1)%3;
       int maxv = (maxlam+2)%3;
 
@@ -142,7 +143,7 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1)};
       int maxlam = PosMax(lam);
 
-      divshape = 0;
+      //divshape = 0;
 
       divshape.AddSize(ndof, 1) = 0;
 
@@ -253,7 +254,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = PosMax(lam);
 
-      shape = 0;
+      shape.AddSize(ndof, 2) = 0;
+      //shape = 0;
       int minv = (maxlam+1)%3;
       int maxv = (maxlam+2)%3;
 
@@ -385,8 +387,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      //shape.AddSize(ndof, 3) = 0;
-      shape = 0;
+      shape.AddSize(ndof, 3) = 0;
+      //shape = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;
@@ -499,8 +501,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      divshape = 0;
-      //divshape.AddSize(ndof, 3) = 0;
+      //divshape = 0;
+      divshape.AddSize(ndof, 3) = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;
@@ -612,8 +614,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      //shape.AddSize(ndof, 3) = 0;
-      shape = 0;
+      shape.AddSize(ndof, 3) = 0;
+      //shape = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;

@@ -225,287 +225,287 @@ namespace ngcomp
       LagrangePolynomials(adxi, GaussRadauIR, polx);
       LagrangePolynomials(adeta, GaussRadauIR, poly);
 
-      auto assign_dshape = [trafo, dshape, &polx, &poly](int nr, int ix, int iy)
-      {
-        dshape.Row(nr) = trafo*Vec<2>(polx[ix].DValue(0)*poly[iy].Value(),
-            polx[ix].Value()*poly[iy].DValue(0));
-      };
+	      auto assign_dshape = [trafo, dshape, &polx, &poly](int nr, int ix, int iy)
+	      {
+		dshape.Row(nr) = trafo*Vec<2>(polx[ix].DValue(0)*poly[iy].Value(),
+		    polx[ix].Value()*poly[iy].DValue(0));
+	      };
 
-      assign_dshape(maxlam, 0, 0);
+	      assign_dshape(maxlam, 0, 0);
 
-      int ii = 3;
-      for (int i = 0; i < 3; i++)
-      {
-        IVec<2> e = GetVertexOrientedEdge(i);
-        for (int j = 0; j < 2; j++)
-        {
-          if (e[j] == maxlam)
-          {
-            if (e[1-j] == (maxlam+1)%3)
-              for (int k = 0; k < order; k++)
-                assign_dshape(ii+k, k+1, 0);
-            else
-              for (int k = 0; k < order; k++)
-                assign_dshape(ii+k, 0, k+1);
-          }
-          ii+=order;
-        }
-      }
+	      int ii = 3;
+	      for (int i = 0; i < 3; i++)
+	      {
+		IVec<2> e = GetVertexOrientedEdge(i);
+		for (int j = 0; j < 2; j++)
+		{
+		  if (e[j] == maxlam)
+		  {
+		    if (e[1-j] == (maxlam+1)%3)
+		      for (int k = 0; k < order; k++)
+			assign_dshape(ii+k, k+1, 0);
+		    else
+		      for (int k = 0; k < order; k++)
+			assign_dshape(ii+k, 0, k+1);
+		  }
+		  ii+=order;
+		}
+	      }
 
-      ii += maxlam*sqr(order);
-      for (int i = 0; i < order; i++)
-        for (int j = 0; j < order; j++)
-          assign_dshape(ii++, i+1, j+1);
-    } 
-  };
+	      ii += maxlam*sqr(order);
+	      for (int i = 0; i < order; i++)
+		for (int j = 0; j < order; j++)
+		  assign_dshape(ii++, i+1, j+1);
+	    } 
+	  };
 
-  class H1DualCellTet : public H1CellFiniteElement<3>, public VertexOrientedFE<ET_TET>
-  {
-    const IntegrationRule & GaussRadauIR;
-    public:
-    H1DualCellTet (int order, const IntegrationRule & _GaussRadauIR)
-      : H1CellFiniteElement<3> (4*(order+1)*(order+1)*(order+1), order),
-      GaussRadauIR(_GaussRadauIR)
-    { ; }
-    using VertexOrientedFE<ET_TET>::SetVertexNumbers;
-    virtual ELEMENT_TYPE ElementType() const { return ET_TET; }
-
-
-    virtual void CalcShape (const IntegrationPoint & ip, 
-        BareSliceVector<> shape) const
-    {
-      double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
-      int maxlam = PosMax(lam);
-
-      shape.Range(GetNDof()) = 0;
-
-      int minvi = (maxlam+1)%4;
-      int maxvi = minvi;
-      for (int i = 0; i < 4; i++)
-        if (i != maxlam)
-        {
-          if (vnums[i] < vnums[minvi]) minvi = i;
-          if (vnums[i] > vnums[maxvi]) maxvi = i;
-        }
-      int midvi = 6-maxlam-minvi-maxvi;
-
-      int vdir[4];
-      vdir[maxlam] = -1;
-      vdir[minvi] = 0;
-      vdir[midvi] = 1;
-      vdir[maxvi] = 2;
-
-      Vec<3> x(lam[minvi], lam[midvi], lam[maxvi]);
-      Vec<3> xi = MapTet2Hex (x);
-
-      ArrayMem<double, 20> polxi(order+1), poleta(order+1), polzeta(order+1);   
-      LagrangePolynomials(xi(0), GaussRadauIR, polxi);
-      LagrangePolynomials(xi(1), GaussRadauIR, poleta);
-      LagrangePolynomials(xi(2), GaussRadauIR, polzeta);
-
-      auto assign =  [&](int nr, IVec<3> ind)
-      {
-        shape(nr) = polxi[ind[0]]*poleta[ind[1]]*polzeta[ind[2]];
-      };
+	  class H1DualCellTet : public H1CellFiniteElement<3>, public VertexOrientedFE<ET_TET>
+	  {
+	    const IntegrationRule & GaussRadauIR;
+	    public:
+	    H1DualCellTet (int order, const IntegrationRule & _GaussRadauIR)
+	      : H1CellFiniteElement<3> (4*(order+1)*(order+1)*(order+1), order),
+	      GaussRadauIR(_GaussRadauIR)
+	    { ; }
+	    using VertexOrientedFE<ET_TET>::SetVertexNumbers;
+	    virtual ELEMENT_TYPE ElementType() const { return ET_TET; }
 
 
-      assign(maxlam, { 0, 0, 0 });
+	    virtual void CalcShape (const IntegrationPoint & ip, 
+		BareSliceVector<> shape) const
+	    {
+	      double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
+	      int maxlam = PosMax(lam);
 
-      int ii = 4;
-      for (int i = 0; i < 6; i++)
-      {
-        IVec<2> e = GetVertexOrientedEdge(i);
-        for (int j = 0; j < 2; j++)
-        {
-          if (e[j] == maxlam)
-          {
-            IVec<3> ind = { 0, 0, 0 };
-            int dirv2 = vdir[e[1-j]];
-            for (int k = 0; k < order; k++)
-            {
-              ind[dirv2] = k+1;
-              assign(ii+k, ind);
-            }
-          }
-          ii += order;
-        }
-      }
+	      shape.Range(GetNDof()) = 0;
 
-      for (int i = 0; i < 4; i++)
-      {
-        IVec<4> f = GetVertexOrientedFace(i);
-        for (int j = 0; j < 3; j++)
-        {
-          if (f[j] == maxlam)
-          {
-            int v1 = f[(j+1)%3];
-            int v2 = f[(j+2)%3];
-            // if (vnums[v1] > vnums[v2]) Swap (v1,v2); // optional ? 
+	      int minvi = (maxlam+1)%4;
+	      int maxvi = minvi;
+	      for (int i = 0; i < 4; i++)
+		if (i != maxlam)
+		{
+		  if (vnums[i] < vnums[minvi]) minvi = i;
+		  if (vnums[i] > vnums[maxvi]) maxvi = i;
+		}
+	      int midvi = 6-maxlam-minvi-maxvi;
 
-            IVec<3> ind = { 0, 0, 0 };
-            int dirv1 = vdir[v1];
-            int dirv2 = vdir[v2];
-            for (int k = 0, kk=ii; k < order; k++)
-              for (int l = 0; l < order; l++, kk++)
-              {
-                ind[dirv1] = k+1;
-                ind[dirv2] = l+1;
-                assign(kk, ind);
-              }
-          }
-          ii += sqr(order);
-        }
-      }
+	      int vdir[4];
+	      vdir[maxlam] = -1;
+	      vdir[minvi] = 0;
+	      vdir[midvi] = 1;
+	      vdir[maxvi] = 2;
 
-      ii += maxlam*order*order*order;
-      for (int i = 0; i < order; i++)
-        for (int j = 0; j < order; j++)
-          for (int k = 0; k < order; k++)
-            assign(ii++, { i+1, j+1, k+1 });
-    }
+	      Vec<3> x(lam[minvi], lam[midvi], lam[maxvi]);
+	      Vec<3> xi = MapTet2Hex (x);
+
+	      ArrayMem<double, 20> polxi(order+1), poleta(order+1), polzeta(order+1);   
+	      LagrangePolynomials(xi(0), GaussRadauIR, polxi);
+	      LagrangePolynomials(xi(1), GaussRadauIR, poleta);
+	      LagrangePolynomials(xi(2), GaussRadauIR, polzeta);
+
+	      auto assign =  [&](int nr, IVec<3> ind)
+	      {
+		shape(nr) = polxi[ind[0]]*poleta[ind[1]]*polzeta[ind[2]];
+	      };
 
 
-    virtual void CalcDShape (const IntegrationPoint & ip, 
-        BareSliceMatrix<> baredshape) const
-    {
-      double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
-      int maxlam = PosMax(lam);
+	      assign(maxlam, { 0, 0, 0 });
 
-      auto dshape = baredshape.AddSize(GetNDof(), 3);
-      dshape = 0;
+	      int ii = 4;
+	      for (int i = 0; i < 6; i++)
+	      {
+		IVec<2> e = GetVertexOrientedEdge(i);
+		for (int j = 0; j < 2; j++)
+		{
+		  if (e[j] == maxlam)
+		  {
+		    IVec<3> ind = { 0, 0, 0 };
+		    int dirv2 = vdir[e[1-j]];
+		    for (int k = 0; k < order; k++)
+		    {
+		      ind[dirv2] = k+1;
+		      assign(ii+k, ind);
+		    }
+		  }
+		  ii += order;
+		}
+	      }
 
-      int minvi = (maxlam+1)%4;
-      int maxvi = minvi;
-      for (int i = 0; i < 4; i++)
-        if (i != maxlam)
-        {
-          if (vnums[i] < vnums[minvi]) minvi = i;
-          if (vnums[i] > vnums[maxvi]) maxvi = i;
-        }
-      int midvi = 6-maxlam-minvi-maxvi;
+	      for (int i = 0; i < 4; i++)
+	      {
+		IVec<4> f = GetVertexOrientedFace(i);
+		for (int j = 0; j < 3; j++)
+		{
+		  if (f[j] == maxlam)
+		  {
+		    int v1 = f[(j+1)%3];
+		    int v2 = f[(j+2)%3];
+		    // if (vnums[v1] > vnums[v2]) Swap (v1,v2); // optional ? 
 
-      int vdir[4];
-      vdir[maxlam] = -1;
-      vdir[minvi] = 0;
-      vdir[midvi] = 1;
-      vdir[maxvi] = 2;
+		    IVec<3> ind = { 0, 0, 0 };
+		    int dirv1 = vdir[v1];
+		    int dirv2 = vdir[v2];
+		    for (int k = 0, kk=ii; k < order; k++)
+		      for (int l = 0; l < order; l++, kk++)
+		      {
+			ind[dirv1] = k+1;
+			ind[dirv2] = l+1;
+			assign(kk, ind);
+		      }
+		  }
+		  ii += sqr(order);
+		}
+	      }
 
-      Vec<3> x(lam[minvi], lam[midvi], lam[maxvi]);
-      Vec<3> xi = MapTet2Hex (x);
-
-      Mat<3,3> F = DMapHex2Tet(xi);
-      Mat<3,3> F2;    // trafo from vertex permutation
-      Vec<3> verts[] = { Vec<3>(1,0,0), Vec<3>(0,1,0), Vec<3> (0,0,1), Vec<3> (0,0,0) };
-      F2.Col(0) = verts[minvi]-verts[maxlam];
-      F2.Col(1) = verts[midvi]-verts[maxlam];
-      F2.Col(2) = verts[maxvi]-verts[maxlam];
-
-      Mat<3> trafo = Trans(Inv(F2*F));
-
-
-      ArrayMem<AutoDiff<1>, 20> polxi(order+1), poleta(order+1), polzeta(order+1);   
-      LagrangePolynomials(AutoDiff<1>(xi(0),0), GaussRadauIR, polxi);
-      LagrangePolynomials(AutoDiff<1>(xi(1),0), GaussRadauIR, poleta);
-      LagrangePolynomials(AutoDiff<1>(xi(2),0), GaussRadauIR, polzeta);
-
-      auto assign =  [&](int nr, IVec<3> i)
-      {
-        dshape.Row(nr) =
-          trafo*Vec<3>(polxi[i[0]].DValue(0)*poleta[i[1]].Value()*polzeta[i[2]].Value(),
-              polxi[i[0]].Value()*poleta[i[1]].DValue(0)*polzeta[i[2]].Value(),
-              polxi[i[0]].Value()*poleta[i[1]].Value()*polzeta[i[2]].DValue(0));
-      };
-
-
-      assign(maxlam, { 0, 0, 0 });
-
-      int ii = 4;
-      for (int i = 0; i < 6; i++)
-      {
-        IVec<2> e = GetVertexOrientedEdge(i);
-        for (int j = 0; j < 2; j++)
-        {
-          if (e[j] == maxlam)
-          {
-            IVec<3> ind = { 0, 0, 0 };
-            int dirv2 = vdir[e[1-j]];
-            for (int k = 0; k < order; k++)
-            {
-              ind[dirv2] = k+1;
-              assign(ii+k, ind);
-            }
-          }
-          ii += order;
-        }
-      }
-
-      for (int i = 0; i < 4; i++)
-      {
-        IVec<4> f = GetVertexOrientedFace(i);
-        for (int j = 0; j < 3; j++)
-        {
-          if (f[j] == maxlam)
-          {
-            int v1 = f[(j+1)%3];
-            int v2 = f[(j+2)%3];
-            // if (vnums[v1] > vnums[v2]) Swap (v1,v2); // optional ? 
-
-            IVec<3> ind = { 0, 0, 0 };
-            int dirv1 = vdir[v1];
-            int dirv2 = vdir[v2];
-            for (int k = 0, kk=ii; k < order; k++)
-              for (int l = 0; l < order; l++, kk++)
-              {
-                ind[dirv1] = k+1;
-                ind[dirv2] = l+1;
-                assign(kk, ind);
-              }
-          }
-          ii += sqr(order);
-        }
-      }
-
-      ii += maxlam*order*order*order;
-      for (int i = 0; i < order; i++)
-        for (int j = 0; j < order; j++)
-          for (int k = 0; k < order; k++)
-            assign(ii++, { i+1, j+1, k+1 });
-    } 
-  };
+	      ii += maxlam*order*order*order;
+	      for (int i = 0; i < order; i++)
+		for (int j = 0; j < order; j++)
+		  for (int k = 0; k < order; k++)
+		    assign(ii++, { i+1, j+1, k+1 });
+	    }
 
 
-  H1DualCells::
-    H1DualCells (shared_ptr<MeshAccess> ama, const Flags & flags)
-    : FESpace (ama, flags)      
-    {
-      switch (ma->GetDimension())
-      {
-        case 1:
-          {
-            evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpId<1>>>();
-            flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpGradient<1>>>();
+	    virtual void CalcDShape (const IntegrationPoint & ip, 
+		BareSliceMatrix<> baredshape) const
+	    {
+	      double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
+	      int maxlam = PosMax(lam);
 
-            break;
-          }
-        case 2:
-          {
-            evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpId<2>>>();
-            flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpGradient<2>>>();
-            break;
-          }
-        case 3:
-          {
-            evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpId<3>>>();
-            flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpGradient<3>>>();
-            break;
-          }
-      }
+	      auto dshape = baredshape.AddSize(GetNDof(), 3);
+	      dshape = 0;
+
+	      int minvi = (maxlam+1)%4;
+	      int maxvi = minvi;
+	      for (int i = 0; i < 4; i++)
+		if (i != maxlam)
+		{
+		  if (vnums[i] < vnums[minvi]) minvi = i;
+		  if (vnums[i] > vnums[maxvi]) maxvi = i;
+		}
+	      int midvi = 6-maxlam-minvi-maxvi;
+
+	      int vdir[4];
+	      vdir[maxlam] = -1;
+	      vdir[minvi] = 0;
+	      vdir[midvi] = 1;
+	      vdir[maxvi] = 2;
+
+	      Vec<3> x(lam[minvi], lam[midvi], lam[maxvi]);
+	      Vec<3> xi = MapTet2Hex (x);
+
+	      Mat<3,3> F = DMapHex2Tet(xi);
+	      Mat<3,3> F2;    // trafo from vertex permutation
+	      Vec<3> verts[] = { Vec<3>(1,0,0), Vec<3>(0,1,0), Vec<3> (0,0,1), Vec<3> (0,0,0) };
+	      F2.Col(0) = verts[minvi]-verts[maxlam];
+	      F2.Col(1) = verts[midvi]-verts[maxlam];
+	      F2.Col(2) = verts[maxvi]-verts[maxlam];
+
+	      Mat<3> trafo = Trans(Inv(F2*F));
 
 
-      GaussRadauIR = IntegrationRule();
-      Array<double> xi, wi;
-      ComputeGaussRadauRule (order+1, xi, wi);
-      xi[0] += 1e-12;
+	      ArrayMem<AutoDiff<1>, 20> polxi(order+1), poleta(order+1), polzeta(order+1);   
+	      LagrangePolynomials(AutoDiff<1>(xi(0),0), GaussRadauIR, polxi);
+	      LagrangePolynomials(AutoDiff<1>(xi(1),0), GaussRadauIR, poleta);
+	      LagrangePolynomials(AutoDiff<1>(xi(2),0), GaussRadauIR, polzeta);
+
+	      auto assign =  [&](int nr, IVec<3> i)
+	      {
+		dshape.Row(nr) =
+		  trafo*Vec<3>(polxi[i[0]].DValue(0)*poleta[i[1]].Value()*polzeta[i[2]].Value(),
+		      polxi[i[0]].Value()*poleta[i[1]].DValue(0)*polzeta[i[2]].Value(),
+		      polxi[i[0]].Value()*poleta[i[1]].Value()*polzeta[i[2]].DValue(0));
+	      };
+
+
+	      assign(maxlam, { 0, 0, 0 });
+
+	      int ii = 4;
+	      for (int i = 0; i < 6; i++)
+	      {
+		IVec<2> e = GetVertexOrientedEdge(i);
+		for (int j = 0; j < 2; j++)
+		{
+		  if (e[j] == maxlam)
+		  {
+		    IVec<3> ind = { 0, 0, 0 };
+		    int dirv2 = vdir[e[1-j]];
+		    for (int k = 0; k < order; k++)
+		    {
+		      ind[dirv2] = k+1;
+		      assign(ii+k, ind);
+		    }
+		  }
+		  ii += order;
+		}
+	      }
+
+	      for (int i = 0; i < 4; i++)
+	      {
+		IVec<4> f = GetVertexOrientedFace(i);
+		for (int j = 0; j < 3; j++)
+		{
+		  if (f[j] == maxlam)
+		  {
+		    int v1 = f[(j+1)%3];
+		    int v2 = f[(j+2)%3];
+		    // if (vnums[v1] > vnums[v2]) Swap (v1,v2); // optional ? 
+
+		    IVec<3> ind = { 0, 0, 0 };
+		    int dirv1 = vdir[v1];
+		    int dirv2 = vdir[v2];
+		    for (int k = 0, kk=ii; k < order; k++)
+		      for (int l = 0; l < order; l++, kk++)
+		      {
+			ind[dirv1] = k+1;
+			ind[dirv2] = l+1;
+			assign(kk, ind);
+		      }
+		  }
+		  ii += sqr(order);
+		}
+	      }
+
+	      ii += maxlam*order*order*order;
+	      for (int i = 0; i < order; i++)
+		for (int j = 0; j < order; j++)
+		  for (int k = 0; k < order; k++)
+		    assign(ii++, { i+1, j+1, k+1 });
+	    } 
+	  };
+
+
+	  H1DualCells::
+	    H1DualCells (shared_ptr<MeshAccess> ama, const Flags & flags)
+	    : FESpace (ama, flags)      
+	    {
+	      switch (ma->GetDimension())
+	      {
+		case 1:
+		  {
+		    evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpId<1>>>();
+		    flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpGradient<1>>>();
+
+		    break;
+		  }
+		case 2:
+		  {
+		    evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpId<2>>>();
+		    flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpGradient<2>>>();
+		    break;
+		  }
+		case 3:
+		  {
+		    evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpId<3>>>();
+		    flux_evaluator[VOL] = make_shared<T_DifferentialOperator<DiffOpGradient<3>>>();
+		    break;
+		  }
+	      }
+
+
+	      GaussRadauIR = IntegrationRule();
+	      Array<double> xi, wi;
+	      ComputeGaussRadauRule (order+1, xi, wi);
+	      xi[0] += 1e-15;
       for (auto i : Range(xi))
         GaussRadauIR.Append (IntegrationPoint (xi[i], 0, 0, wi[i]));
 

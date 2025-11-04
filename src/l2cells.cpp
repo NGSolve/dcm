@@ -134,7 +134,7 @@ namespace ngcomp
     Array<double> xi, wi;
     ComputeGaussRule (order+1, xi, wi);
     for (auto i : Range(xi))
-      GaussIR.Append (IntegrationPoint (1-xi[i]-1e-14, 0, 0, wi[i]));
+      GaussIR.Append (IntegrationPoint (1-xi[i]-1e-15, 0, 0, wi[i]));
   }
 
   void L2Cells :: Update()

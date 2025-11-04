@@ -35,8 +35,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = PosMax(lam);
 
-      //shape.AddSize(ndof, 2) = 0;
-      shape = 0;
+      shape.AddSize(ndof, 2) = 0;
+      //shape = 0;
       int minv = (maxlam+1)%3;
       int maxv = (maxlam+2)%3;
 
@@ -159,7 +159,7 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1)};
       int maxlam = PosMax(lam);
 
-      curlshape = 0;
+      //curlshape = 0;
 
       curlshape.AddSize(ndof, 1) = 0;
 
@@ -279,9 +279,9 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = PosMax(lam);
 
-      shape = 0;
+      //shape = 0;
       //
-      //shape.AddSize(ndof, 2) = 0;
+      shape.AddSize(ndof, 2) = 0;
       int minv = (maxlam+1)%3;
       int maxv = (maxlam+2)%3;
 
@@ -411,9 +411,9 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = PosMax(lam);
 
-      shape = 0;
+      //shape = 0;
       //
-      //shape.AddSize(ndof, 2) = 0;
+      shape.AddSize(ndof, 2) = 0;
       int minv = (maxlam+1)%3;
       int maxv = (maxlam+2)%3;
 
@@ -541,8 +541,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = PosMax(lam);
 
-      shape = 0;
-      //shape.AddSize(ndof, 2) = 0;
+      //shape = 0;
+      shape.AddSize(ndof, 2) = 0;
       int minv = (maxlam+1)%3;
       int maxv = (maxlam+2)%3;
 
@@ -859,8 +859,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      //shape.AddSize(ndof, 3) = 0;
-      shape = 0;
+      shape.AddSize(ndof, 3) = 0;
+      //shape = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;
@@ -997,7 +997,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      curlshape = 0;
+      //curlshape = 0;
+      curlshape.AddSize(ndof, 3) = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;
@@ -1143,8 +1144,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      shape = 0;
-      //shape.AddSize(ndof, 3) = 0;
+      //shape = 0;
+      shape.AddSize(ndof, 3) = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;
@@ -1285,8 +1286,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      shape = 0;
-      //shape.AddSize(ndof, 3) = 0;
+      //shape = 0;
+      shape.AddSize(ndof, 3) = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;
@@ -1428,8 +1429,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      shape = 0;
-      //shape.AddSize(ndof, 3) = 0;
+      //shape = 0;
+      shape.AddSize(ndof, 3) = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;
@@ -2717,9 +2718,9 @@ namespace ngcomp
                 felref.CalcShape (ir[i], shapes.Cols(2*i, 2*i+2));
               for (int i = 0; i < shapes.Height(); i++)
                 for (int j = 0; j < shapes.Width(); j++)
-                  if (fabs(shapes(i,j)) < 1e-8)
+                  if (fabs(shapes(i,j)) < 1e-12)
                     shapes(i,j) = 0;
-              SmallSparseMatrix spshapes(shapes, 1e-8);
+              SmallSparseMatrix spshapes(shapes, 1e-12);
               shapes_trans = Trans(shapes);
 
               tint.Start();
@@ -2775,7 +2776,7 @@ namespace ngcomp
 
                   for (int i = 0; i < dofs.Size(); i++)
                     for (int j = 0; j < dofs.Size(); j++)
-                      if (fabs(elmat(i,j)) > 1e-10)
+                      if (fabs(elmat(i,j)) > 1e-12)
                       {
                         myrowind.Append(dofs[i]);
                         mycolind.Append(dofs[j]);
@@ -2841,9 +2842,9 @@ namespace ngcomp
                 felref.CalcShape (ir[i], shapes.Cols(3*i, 3*i+3));
               for (int i = 0; i < shapes.Height(); i++)
                 for (int j = 0; j < shapes.Width(); j++)
-                  if (fabs(shapes(i,j)) < 1e-8)
+                  if (fabs(shapes(i,j)) < 1e-12)
                     shapes(i,j) = 0;
-              SmallSparseMatrix spshapes(shapes, 1e-8);
+              SmallSparseMatrix spshapes(shapes, 1e-12);
               shapes_trans = Trans(shapes);
 
               tint.Start();
@@ -2899,7 +2900,7 @@ namespace ngcomp
 
                   for (int i = 0; i < dofs.Size(); i++)
                     for (int j = 0; j < dofs.Size(); j++)
-                      if (fabs(elmat(i,j)) > 1e-10)
+                      if (fabs(elmat(i,j)) > 1e-12)
                       {
                         myrowind.Append(dofs[i]);
                         mycolind.Append(dofs[j]);
@@ -3012,7 +3013,7 @@ namespace ngcomp
       IntegrationRule GaussRadauIRplus;
       for (auto i : Range(xi))
         GaussRadauIRplus.Append (IntegrationPoint (xi[i], 0, 0, wi[i]));
-      GaussRadauIRplus.Append (IntegrationPoint (1-1e-10, 0, 0, 0));
+      GaussRadauIRplus.Append (IntegrationPoint (1-1e-15, 0, 0, 0));
 
       HCurlDualCellPotentialTet tetpot(GaussRadauIRplus);
       tetpot.SetVertexNumbers (Array<int> { 1, 2, 3, 4 } );

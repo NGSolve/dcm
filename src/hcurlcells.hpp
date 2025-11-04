@@ -356,7 +356,7 @@ namespace ngcomp
       Mat<D,D> F = mip.GetJacobian();
       Mat<D,D> trafo = Trans(Inv(F));
 
-      double eps=1e-10;
+      double eps=1e-15;
       IntegrationPoint ipm(ip(0)-eps*nref(0), ip(1)-eps*nref(1), 0, 0);
       IntegrationPoint ipp(ip(0)+eps*nref(0), ip(1)+eps*nref(1), 0, 0);
 

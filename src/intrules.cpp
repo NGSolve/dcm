@@ -72,7 +72,7 @@ namespace ngcomp
           for (auto ipy : IR)
           {
             if (mirroredIR)
-              irquad += IntegrationPoint(1-ipx(0)-1e-12, 1-ipy(0)-1e-12, 0, ipx.Weight()*ipy.Weight());
+              irquad += IntegrationPoint(1-ipx(0)-1e-15, 1-ipy(0)-1e-15, 0, ipx.Weight()*ipy.Weight());
             else 
             irquad += IntegrationPoint(ipx(0), ipy(0), 0, ipx.Weight()*ipy.Weight());
           }
@@ -635,8 +635,8 @@ namespace ngcomp
     {
       ComputeSortedGaussRadauPoints (order, xi,true);
       for (auto i : Range(xi))
-        GaussRadauIRplus.Append (IntegrationPoint (xi[i]+1e-12, 0, 0, 0));
-      GaussRadauIRplus.Append (IntegrationPoint (1-1e-12, 0, 0, 0));
+        GaussRadauIRplus.Append (IntegrationPoint (xi[i]+1e-15, 0, 0, 0));
+      GaussRadauIRplus.Append (IntegrationPoint (1-1e-15, 0, 0, 0));
       auto addpoint = [&] (int corner, IVec<2> i)
       {
         pnts.Append ( MapQuad2Trig ( Vec<2> (GaussRadauIRplus[i[0]](0),
@@ -659,9 +659,9 @@ namespace ngcomp
     else
     {
       ComputeSortedGaussRadauPoints (order, xi,false);
-      GaussRadauIRplus.Append (IntegrationPoint (1e-12, 0, 0, 0));
+      GaussRadauIRplus.Append (IntegrationPoint (1e-15, 0, 0, 0));
       for (auto i : Range(xi))
-        GaussRadauIRplus.Append (IntegrationPoint (1-xi[i]-1e-12, 0, 0, 0));
+        GaussRadauIRplus.Append (IntegrationPoint (1-xi[i]-1e-15, 0, 0, 0));
 
       auto addpoint = [&] (int corner, IVec<2> i)
       {
@@ -1184,7 +1184,7 @@ namespace ngcomp
     std::map<ELEMENT_TYPE, IntegrationRule> rules;
 
     IntegrationRule irtrig;
-    double eps = 1e-10;
+    double eps = 1e-15;
     switch (order)
       {
       case 1:
@@ -1271,7 +1271,7 @@ namespace ngcomp
             
             for (auto xi : pnts)
               {
-                xi *= 1-1e-10;
+                xi *= 1-1e-15;
                 Vec<3> x = MapHex2Tet (xi, v);
                 irtet += IntegrationPoint(x(0), x(1), x(2), 0 );
               }
@@ -1297,14 +1297,14 @@ namespace ngcomp
                 for (int i = 0; i < 4; i++)
                   {
                     Vec<3> xi = pnts1[4*k+i];
-                    xi *= 1-1e-10;
+                    xi *= 1-1e-15;
                     Vec<3> x = MapHex2Tet (xi, v);
                     irtet += IntegrationPoint(x(0), x(1), x(2), 0 );
                   }
                 for (int i = 0; i < 6; i++)
                   {
                     Vec<3> xi = 0.5 * (pnts1[4*k+between[i][0]] + pnts1[4*k+between[i][1]]);
-                    xi *= 1-1e-10;
+                    xi *= 1-1e-15;
                     Vec<3> x = MapHex2Tet (xi, v);
                     irtet += IntegrationPoint(x(0), x(1), x(2), 0 );
                   }

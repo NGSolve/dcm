@@ -28,8 +28,8 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1) };
       int maxlam = PosMax(lam);
 
-      //shape.AddSize(ndof, 2) = 0;
-      shape = 0;
+      shape.AddSize(ndof, 2) = 0;
+      //shape = 0;
       int minv = (maxlam+1)%3;
       int maxv = (maxlam+2)%3;
 
@@ -106,7 +106,7 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), 1-ip(0)-ip(1)};
       int maxlam = PosMax(lam);
 
-      curlshape = 0;
+      //curlshape = 0;
 
       curlshape.AddSize(ndof, 1) = 0;
 
@@ -397,7 +397,9 @@ namespace ngcomp
       double lam[] = { ip(0), ip(1), ip(2), 1-ip(0)-ip(1)-ip(2) };
       int maxlam = PosMax(lam);
 
-      curlshape = 0;
+      //curlshape = 0;
+
+      curlshape.AddSize(ndof, 3) = 0;
 
       int minvi = (maxlam+1)%4;
       int maxvi = minvi;
@@ -1087,9 +1089,9 @@ namespace ngcomp
     ComputeGaussRadauRule (order+1, xi, wi);
     for (auto i : Range(xi))
       {
-        GaussRadauIR.Append (IntegrationPoint (1-xi[i]-1e-10, 0, 0, wi[i]));
+        GaussRadauIR.Append (IntegrationPoint (1-xi[i]-1e-15, 0, 0, wi[i]));
         GaussRadauIRinv.Append (IntegrationPoint (xi[i], 0, 0, wi[i]));        
-        tangentialIR.Append (IntegrationPoint (1-xi[i]-1e-10, 0, 0, wi[i]));
+        tangentialIR.Append (IntegrationPoint (1-xi[i]-1e-15, 0, 0, wi[i]));
       }
   }
 
@@ -1247,7 +1249,7 @@ namespace ngcomp
                 
                 for (int i = 0; i < dofs.Size(); i++)
                   for (int j = 0; j < dofs.Size(); j++)
-                    if (fabs(elmat(i,j)) > 1e-10)
+                    if (fabs(elmat(i,j)) > 1e-12)
                       {
                         myrowind.Append(dofs[i]);
                         mycolind.Append(dofs[j]);
