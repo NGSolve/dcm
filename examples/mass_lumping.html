@@ -32,9 +32,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=8c6b312c" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -199,6 +199,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ring_resonator.html">3.5. Ring resonator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="waveguide_3d.html">3.6. Electromagnetic 3d waveguide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="waveguide_bend.html">3.7. Bent electromagnetic 3d waveguide with PML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="td_maxwell_evp.html">3.8. Solving the curlcurl eigenvalue problem using explicit methods</a></li>
 </ul>
 </details></li>
 </ul>
@@ -453,7 +454,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&lt;ET.SEGM: 1&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x7a8c6d9c8870&gt;, &lt;ET.TRIG: 10&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x7a8c6d9c88f0&gt;, &lt;ET.TET: 20&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x7a8c6d9c8970&gt;}
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&lt;ET.SEGM: 1&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x726e566c7f30&gt;, &lt;ET.TRIG: 10&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x726e566c7fb0&gt;, &lt;ET.TET: 20&gt;: &lt;ngsolve.fem.IntegrationRule object at 0x726e566c0070&gt;}
 ET.SEGM
  locnr = -1: (0.105662, 0, 0), weight = 0.25
  locnr = -1: (0.394338, 0, 0), weight = 0.25
@@ -641,18 +642,18 @@ ET.TET
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### assembling ####
-exact: 8.858814239501953s
-supersparse: 0.609389066696167s
+exact: 8.249957084655762s
+supersparse: 0.5910699367523193s
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### factorization ####
-exact: 34.289971590042114s
-supersparse: 0.038022518157958984s
+exact: 30.446457624435425s
+supersparse: 0.0343320369720459s
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#### application ####
-exact: 1.3854889869689941s
-supersparse: 0.014634370803833008s
+exact: 0.9989330768585205s
+supersparse: 0.0072171688079833984s
 </pre></div>
 </div>
 </div>

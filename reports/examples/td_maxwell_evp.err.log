@@ -1,40 +1,64 @@
 Traceback (most recent call last):
-  File "/home/mwess/.local/lib/python3.10/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+  File "/home/mwess/tmp/pdesoft26/lib/python3.10/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
     executenb(
-  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 1269, in execute
+  File "/home/mwess/tmp/pdesoft26/lib/python3.10/site-packages/nbclient/client.py", line 1323, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-  File "/usr/local/lib/python3.10/dist-packages/nbclient/util.py", line 85, in wrapped
-    return just_run(coro(*args, **kwargs))
-  File "/usr/local/lib/python3.10/dist-packages/nbclient/util.py", line 60, in just_run
-    return loop.run_until_complete(coro)
+  File "/home/mwess/tmp/pdesoft26/lib/python3.10/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
   File "/usr/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
     return future.result()
-  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 707, in async_execute
+  File "/home/mwess/tmp/pdesoft26/lib/python3.10/site-packages/nbclient/client.py", line 709, in async_execute
     await self.async_execute_cell(
-  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 1025, in async_execute_cell
+  File "/home/mwess/tmp/pdesoft26/lib/python3.10/site-packages/nbclient/client.py", line 1062, in async_execute_cell
     await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 919, in _check_raise_for_error
+  File "/home/mwess/tmp/pdesoft26/lib/python3.10/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-from ngsolve import *
-import dualcellspaces as dcs
-from ngsolve.webgui import Draw
-import numpy as np
-from netgen.occ import *
-import matplotlib.pyplot as pl
-import scipy.linalg as spl
-from ngsolve.solvers import LOBPCG
+# parameters for the filter function
+lam_min = 1
+lam_max = 3
+endT = 3
+L = int(endT/tau)
+
+
+w_min = np.sqrt(lam_min)
+w_max = np.sqrt(lam_max)
+
+weightf = lambda t: 4/np.pi*np.cos((w_max+w_min)/2*t)*(w_max-w_min)/2*np.sinc((w_max-w_min)/2*t/np.pi)
+
+weights = weightf(tau*np.arange(L))
+
+
+def beta(lam):
+    if np.isscalar(lam):
+        q = 1
+    else:
+        q = np.ones(lam.shape)
+
+    q_old = q
+    out = tau*weights[0]*q
+    for alpha in weights[1:]:
+        q_new = 2*q-tau**2*lam*q-q_old
+        q_old = q
+        q = q_new
+        out += tau*alpha*q
+    return out
+
+betas = beta(np.arange(0,20,0.01))
+pl.figure()
+pl.plot(omegas,betas);
+pl.xlim((0,10))
 ------------------
 
-[0;31m---------------------------------------------------------------------------[0m
-[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-Input [0;32mIn [1][0m, in [0;36m<cell line: 2>[0;34m()[0m
-[1;32m      1[0m [38;5;28;01mfrom[39;00m [38;5;21;01mngsolve[39;00m [38;5;28;01mimport[39;00m [38;5;241m*[39m
-[0;32m----> 2[0m [38;5;28;01mimport[39;00m [38;5;21;01mdualcellspaces[39;00m [38;5;28;01mas[39;00m [38;5;21;01mdcs[39;00m
-[1;32m      3[0m [38;5;28;01mfrom[39;00m [38;5;21;01mngsolve[39;00m[38;5;21;01m.[39;00m[38;5;21;01mwebgui[39;00m [38;5;28;01mimport[39;00m Draw
-[1;32m      4[0m [38;5;28;01mimport[39;00m [38;5;21;01mnumpy[39;00m [38;5;28;01mas[39;00m [38;5;21;01mnp[39;00m
 
-[0;31mModuleNotFoundError[0m: No module named 'dualcellspaces'
-ModuleNotFoundError: No module named 'dualcellspaces'
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mNameError[0m                                 Traceback (most recent call last)
+Cell [0;32mIn[9], line 33[0m
+[1;32m     31[0m betas [38;5;241m=[39m beta(np[38;5;241m.[39marange([38;5;241m0[39m,[38;5;241m20[39m,[38;5;241m0.01[39m))
+[1;32m     32[0m pl[38;5;241m.[39mfigure()
+[0;32m---> 33[0m pl[38;5;241m.[39mplot([43momegas[49m,betas);
+[1;32m     34[0m pl[38;5;241m.[39mxlim(([38;5;241m0[39m,[38;5;241m10[39m))
+
+[0;31mNameError[0m: name 'omegas' is not defined
 
