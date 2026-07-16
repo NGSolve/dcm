@@ -1,39 +1,98 @@
 Traceback (most recent call last):
-  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/client.py", line 774, in _async_poll_for_reply
-    msg = await ensure_async(self.kc.shell_channel.get_msg(timeout=new_timeout))
-  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/util.py", line 97, in ensure_async
-    result = await obj
-  File "/home/mwess/.local/lib/python3.10/site-packages/jupyter_client/channels.py", line 230, in get_msg
-    raise Empty
-_queue.Empty
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
   File "/home/mwess/.local/lib/python3.10/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
     executenb(
-  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/client.py", line 1263, in execute
+  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 1269, in execute
     return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/util.py", line 85, in wrapped
+  File "/usr/local/lib/python3.10/dist-packages/nbclient/util.py", line 85, in wrapped
     return just_run(coro(*args, **kwargs))
-  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/util.py", line 60, in just_run
+  File "/usr/local/lib/python3.10/dist-packages/nbclient/util.py", line 60, in just_run
     return loop.run_until_complete(coro)
   File "/usr/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
     return future.result()
-  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/client.py", line 701, in async_execute
+  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 707, in async_execute
     await self.async_execute_cell(
-  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/client.py", line 1000, in async_execute_cell
-    exec_reply = await self.task_poll_for_reply
-  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/client.py", line 798, in _async_poll_for_reply
-    error_on_timeout_execute_reply = await self._async_handle_timeout(timeout, cell)
-  File "/home/mwess/.local/lib/python3.10/site-packages/nbclient/client.py", line 850, in _async_handle_timeout
-    raise CellTimeoutError.error_from_timeout_and_cell(
-nbclient.exceptions.CellTimeoutError: A cell timed out while it was being executed, after 100 seconds.
-The message was: Cell execution timed out.
-Here is a preview of the cell contents:
--------------------
-['from time import time', '', 'startnow = time()', 'now = time()', '']
-...
-['            gfp_history.AddMultiDimComponent(gfu.components[0].vec)', '            #drawtime += time()-drawnow', '', 'computetime = time()-startnow-drawtime', 'dofss = fes.ndof*i/computetime']
--------------------
+  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 1025, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/usr/local/lib/python3.10/dist-packages/nbclient/client.py", line 919, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+from ngsolve import *
+import netgen.geom2d as gm
+from ngsolve.webgui import Draw
+import matplotlib.pyplot as pl
+import numpy as np
+import dualcellspaces as dcs
+
+
+geo = gm.SplineGeometry()
+
+
+# geometry parameters
+xneg  =-0.43
+xpos  = 0.43
+yneg  =-0.48
+ypos  = 0.48
+
+wslab = 0.04
+cringx = 0.0
+cringy = 0.0
+rring = 0.4
+gap   = 0.005
+
+
+pntx = [xneg,xpos]
+pnty = [yneg,-rring-gap-wslab,-rring-gap,rring+gap,rring+gap+wslab,ypos]
+
+
+pts = []
+for yi in pnty:
+    for xi in pntx:
+        pts.append (geo.AddPoint(xi,yi))
+
+
+### geometry #######################################################
+#inner rects
+geo.Append (["line", pts[0], pts[1]], leftdomain=1, rightdomain=0)
+geo.Append (["line", pts[1], pts[3]], leftdomain=1, rightdomain=0)
+geo.Append (["line", pts[3], pts[2]], leftdomain=1, rightdomain=2)
+geo.Append (["line", pts[2], pts[0]], leftdomain=1, rightdomain=0)
+
+geo.Append (["line", pts[3], pts[5]], leftdomain=2, rightdomain=0,bc="normal_wg_rightbottom")
+geo.Append (["line", pts[5], pts[4]], leftdomain=2, rightdomain=3)
+geo.Append (["line", pts[4], pts[2]], leftdomain=2, rightdomain=0,bc="normal_wg_leftbottom")
+
+geo.Append (["line", pts[5], pts[7]], leftdomain=3, rightdomain=0)
+geo.Append (["line", pts[7], pts[6]], leftdomain=3, rightdomain=4)
+geo.Append (["line", pts[6], pts[4]], leftdomain=3, rightdomain=0)
+
+geo.Append (["line", pts[7], pts[9]], leftdomain=4, rightdomain=0,bc="normal_wg_righttop")
+geo.Append (["line", pts[9], pts[8]], leftdomain=4, rightdomain=5)
+geo.Append (["line", pts[8], pts[6]], leftdomain=4, rightdomain=0,bc="normal_wg_lefttop")
+
+geo.Append (["line", pts[9], pts[11]], leftdomain=5, rightdomain=0)
+geo.Append (["line", pts[11], pts[10]], leftdomain=5, rightdomain=0)
+geo.Append (["line", pts[10], pts[8]], leftdomain=5, rightdomain=0)
+
+geo.AddCircle(c=(cringx,cringy), r=rring, leftdomain=6, rightdomain=3)
+geo.AddCircle(c=(cringx,cringy), r=rring-wslab, leftdomain=7, rightdomain=6)
+
+for i in (1,3,5,7):
+    geo.SetMaterial(i, "air")
+for i in (2,4,6):
+    geo.SetMaterial(i, "eps_nine")
+
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+Input [0;32mIn [1][0m, in [0;36m<cell line: 6>[0;34m()[0m
+[1;32m      4[0m [38;5;28;01mimport[39;00m [38;5;21;01mmatplotlib[39;00m[38;5;21;01m.[39;00m[38;5;21;01mpyplot[39;00m [38;5;28;01mas[39;00m [38;5;21;01mpl[39;00m
+[1;32m      5[0m [38;5;28;01mimport[39;00m [38;5;21;01mnumpy[39;00m [38;5;28;01mas[39;00m [38;5;21;01mnp[39;00m
+[0;32m----> 6[0m [38;5;28;01mimport[39;00m [38;5;21;01mdualcellspaces[39;00m [38;5;28;01mas[39;00m [38;5;21;01mdcs[39;00m
+[1;32m      9[0m geo [38;5;241m=[39m gm[38;5;241m.[39mSplineGeometry()
+[1;32m     12[0m [38;5;66;03m# geometry parameters[39;00m
+
+[0;31mModuleNotFoundError[0m: No module named 'dualcellspaces'
+ModuleNotFoundError: No module named 'dualcellspaces'
 

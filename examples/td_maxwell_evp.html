@@ -1,0 +1,1093 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>3.8. Solving the curlcurl eigenvalue problem using explicit methods &#8212; The Dual Cell Method in NGSolve</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=384b581d" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/proof.css?v=ca93fcec" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/td_maxwell_evp';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="3.7. Bent electromagnetic 3d waveguide with PML" href="waveguide_bend.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="The Dual Cell Method in NGSolve - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="The Dual Cell Method in NGSolve - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    The Dual Cell Method in NGSolve
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">1. Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../maxwell.html">2. The dual cell method for the time-domain Maxwell system</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../maxwell/introduction.html">2.2. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maxwell/hcurl.html">2.3. Discrete spaces on dual cells</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maxwell/mass_lumping.html">2.4. Mass lumping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maxwell/diffops.html">2.5. The discrete differential operators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maxwell/time_stepping.html">2.6. Time stepping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../maxwell/bibliography.html">2.7. Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../examples.html">3. Examples</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3.1. Basics on dual cell spaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mass_lumping.html">3.2. Mass Lumping for dual cell spaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="grad.html">3.3. Computing the gradient of a Gaussian peak in dual cell spaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qualitative_dispersion.html">3.4. A plane wave on a square</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ring_resonator.html">3.5. Ring resonator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="waveguide_3d.html">3.6. Electromagnetic 3d waveguide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="waveguide_bend.html">3.7. Bent electromagnetic 3d waveguide with PML</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">3.8. Solving the curlcurl eigenvalue problem using explicit methods</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/ngsolve/dcm" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/ngsolve/dcm/issues/new?title=Issue%20on%20page%20%2Fexamples/td_maxwell_evp.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/examples/td_maxwell_evp.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Solving the curlcurl eigenvalue problem using explicit methods</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#by-m-wess-2025">by M. Wess, 2025</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-setting">Problem setting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-discrete-problem">Setting up the discrete Problem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-the-problem-with-lobpcg">Solving the problem with LOBPCG</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-filtered-problem">The filtered problem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discretizations">Discretizations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-the-filter-and-solving-the-problem">Choosing the filter and solving the problem</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="solving-the-curlcurl-eigenvalue-problem-using-explicit-methods">
+<h1><span class="section-number">3.8. </span>Solving the curlcurl eigenvalue problem using explicit methods<a class="headerlink" href="#solving-the-curlcurl-eigenvalue-problem-using-explicit-methods" title="Link to this heading">#</a></h1>
+<section id="by-m-wess-2025">
+<h2>by M. Wess, 2025<a class="headerlink" href="#by-m-wess-2025" title="Link to this heading">#</a></h2>
+<p><em>This Notebook is part of the <code class="docutils literal notranslate"><span class="pre">dualcellspaces</span></code> <a class="reference external" href="https://ngsolve.github.io/dcm">documentation</a> for the addon package implementing the Dual Cell method in <a class="reference external" href="https://ngsolve.org">NGSolve</a>, as well as part of the <code class="docutils literal notranslate"><span class="pre">td_evp</span></code> <a class="reference external" href="https://markuswess.github.io/td_evp/">documentation</a> on the implementation of time-domain methods for resonance problems.</em></p>
+<p>We show how to numerically solve the Maxwell eigenvalue problem combining <code class="docutils literal notranslate"><span class="pre">dualcellspaces</span></code> package with the ideas from</p>
+<p>[1] L. Nannen and M. Wess, <em>A Krylov Eigenvalue Solver Based on Filtered Time Domain Solutions</em>, arXiv prepreint, 2024, <a class="reference external" href="https://doi.org/10.48550/arXiv.2402.08515">https://doi.org/10.48550/arXiv.2402.08515</a>.</p>
+<p>Moreover we compare the time domain method to LOBPCG.</p>
+</section>
+<section id="problem-setting">
+<h2>Problem setting<a class="headerlink" href="#problem-setting" title="Link to this heading">#</a></h2>
+<p>We want to approximate the eigenvectors and eigenfunctions of the problem to find <span class="math notranslate nohighlight">\(\tilde\omega\in\mathbb R, E\in H(\mathrm{curl})(\Omega)\)</span> for some domain <span class="math notranslate nohighlight">\(\Omega\subset\mathbb R^3\)</span> such that</p>
+<div class="math notranslate nohighlight">
+\[
+\mathrm{curl}\mathrm{curl}E(x) = \tilde\omega^2 E(x)
+\]</div>
+<p>with natural boundary conditions.</p>
+</section>
+<section id="setting-up-the-discrete-problem">
+<h2>Setting up the discrete Problem<a class="headerlink" href="#setting-up-the-discrete-problem" title="Link to this heading">#</a></h2>
+<p>We start by doing the necessary imports</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ngsolve</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">dualcellspaces</span> <span class="k">as</span> <span class="nn">dcs</span>
+<span class="kn">from</span> <span class="nn">ngsolve.webgui</span> <span class="kn">import</span> <span class="n">Draw</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">netgen.occ</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">pl</span>
+<span class="kn">import</span> <span class="nn">scipy.linalg</span> <span class="k">as</span> <span class="nn">spl</span>
+<span class="kn">from</span> <span class="nn">ngsolve.solvers</span> <span class="kn">import</span> <span class="n">LOBPCG</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="nn">Input In [1],</span> in <span class="ni">&lt;cell line: 2&gt;</span><span class="nt">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">ngsolve</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="kn">import</span> <span class="nn">dualcellspaces</span> <span class="k">as</span> <span class="nn">dcs</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">from</span> <span class="nn">ngsolve.webgui</span> <span class="kn">import</span> <span class="n">Draw</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;dualcellspaces&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">maxh</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">order</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">lx</span> <span class="o">=</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">lz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geo</span> <span class="o">=</span> <span class="n">OCCGeometry</span><span class="p">(</span><span class="n">Box</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="n">lx</span><span class="p">,</span><span class="n">ly</span><span class="p">,</span><span class="n">lz</span><span class="p">)))</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">Mesh</span><span class="p">(</span><span class="n">geo</span><span class="o">.</span><span class="n">GenerateMesh</span><span class="p">(</span><span class="n">maxh</span><span class="o">=</span><span class="n">maxh</span><span class="p">))</span>
+<span class="n">Draw</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "8009281259c34f748cf010a49d35faf7", "version_major": 2, "version_minor": 1}</script><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WebGLScene
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fes_E</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">HCurlDualCells3D</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+<span class="n">fes_H</span> <span class="o">=</span> <span class="n">dcs</span><span class="o">.</span><span class="n">HCurlPrimalCells3D</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+<span class="n">fes</span> <span class="o">=</span> <span class="n">fes_E</span><span class="o">*</span><span class="n">fes_H</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;total DoFs:&quot;</span><span class="p">,</span><span class="n">fes</span><span class="o">.</span><span class="n">ndof</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DoFs E:&quot;</span><span class="p">,</span><span class="n">fes_E</span><span class="o">.</span><span class="n">ndof</span><span class="p">)</span>
+<span class="n">gf</span> <span class="o">=</span> <span class="n">GridFunction</span><span class="p">(</span><span class="n">fes</span><span class="p">)</span>
+<span class="n">gfE</span><span class="p">,</span> <span class="n">gfH</span> <span class="o">=</span> <span class="n">gf</span><span class="o">.</span><span class="n">components</span>
+
+
+<span class="c1">#integral symbols with special integration rules</span>
+<span class="n">dxE</span> <span class="o">=</span> <span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">fes_E</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">())</span>
+<span class="n">dxH</span> <span class="o">=</span> <span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">fes_H</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">())</span>
+
+<span class="n">dxw</span> <span class="o">=</span> <span class="n">dx</span><span class="p">(</span><span class="n">intrules</span><span class="o">=</span><span class="n">dcs</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">order</span><span class="o">+</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">dSw</span> <span class="o">=</span> <span class="n">dx</span><span class="p">(</span><span class="n">element_boundary</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">intrules</span><span class="o">=</span><span class="n">dcs</span><span class="o">.</span><span class="n">GetIntegrationRules</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">order</span><span class="o">+</span><span class="mi">4</span><span class="p">))</span>
+
+
+<span class="c1">#mixed bilinear form</span>
+<span class="n">E</span><span class="p">,</span><span class="n">dE</span> <span class="o">=</span> <span class="n">fes_E</span><span class="o">.</span><span class="n">TnT</span><span class="p">()</span>
+<span class="n">H</span><span class="p">,</span><span class="n">dH</span> <span class="o">=</span> <span class="n">fes_H</span><span class="o">.</span><span class="n">TnT</span><span class="p">()</span>
+
+<span class="n">normal</span> <span class="o">=</span> <span class="n">specialcf</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">Curl</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">E</span><span class="o">*</span><span class="n">curl</span><span class="p">(</span><span class="n">dH</span><span class="p">)</span><span class="o">*</span><span class="n">dxw</span><span class="o">+</span><span class="n">E</span><span class="o">*</span><span class="n">Cross</span><span class="p">(</span><span class="n">dH</span><span class="p">,</span><span class="n">normal</span><span class="p">)</span><span class="o">*</span><span class="n">dSw</span><span class="p">,</span> <span class="n">geom_free</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">mat</span>
+
+<span class="n">SetHeapSize</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">2e9</span><span class="p">))</span>
+<span class="c1">#prepare mass operators</span>
+
+<span class="k">with</span> <span class="n">TaskManager</span><span class="p">():</span>
+    <span class="n">massH_inv</span> <span class="o">=</span> <span class="n">fes_H</span><span class="o">.</span><span class="n">Mass</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">Inverse</span><span class="p">()</span>
+    <span class="n">massE</span> <span class="o">=</span> <span class="n">fes_E</span><span class="o">.</span><span class="n">Mass</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">massE_inv</span> <span class="o">=</span> <span class="n">fes_E</span><span class="o">.</span><span class="n">Mass</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">Inverse</span><span class="p">(</span><span class="n">freedofs</span><span class="o">=</span><span class="n">fes_E</span><span class="o">.</span><span class="n">FreeDofs</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>total DoFs: 101256
+DoFs E: 51552
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="solving-the-problem-with-lobpcg">
+<h2>Solving the problem with LOBPCG<a class="headerlink" href="#solving-the-problem-with-lobpcg" title="Link to this heading">#</a></h2>
+<p>To use LOBPCG we need to deal with the kernel of the <span class="math notranslate nohighlight">\(\mathrm{curl}\)</span>-operator. The <code class="docutils literal notranslate"><span class="pre">dualcellspaces</span></code> package provides the fitting <span class="math notranslate nohighlight">\(H^1\)</span>-space and <span class="math notranslate nohighlight">\(\nabla\)</span>-operator respecting the discrete exact sequence properties.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fespot</span> <span class="o">=</span> <span class="n">fes_E</span><span class="o">.</span><span class="n">GetPotentialSpace</span><span class="p">()</span>
+<span class="n">phi</span><span class="p">,</span> <span class="n">dphi</span> <span class="o">=</span> <span class="n">fespot</span><span class="o">.</span><span class="n">TnT</span><span class="p">()</span>
+<span class="n">Grad</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">grad</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span><span class="o">*</span><span class="n">dE</span><span class="o">*</span><span class="n">dxE</span><span class="p">)</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span>
+<span class="n">gmat</span> <span class="o">=</span> <span class="n">Grad</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">DeleteZeroElements</span><span class="p">(</span><span class="mf">1e-12</span><span class="p">)</span>
+
+<span class="n">massPot</span> <span class="o">=</span> <span class="n">BilinearForm</span><span class="p">(</span><span class="n">phi</span><span class="o">*</span><span class="n">dphi</span><span class="o">*</span><span class="n">dxw</span><span class="p">,</span> <span class="n">diagonal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">TaskManager</span><span class="p">():</span>
+    <span class="n">massPot_inv</span> <span class="o">=</span> <span class="n">massPot</span><span class="o">.</span><span class="n">mat</span><span class="o">.</span><span class="n">Inverse</span><span class="p">()</span>
+
+<span class="n">ccdd</span> <span class="o">=</span> <span class="n">Curl</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">massH_inv</span> <span class="o">@</span> <span class="n">Curl</span> <span class="o">+</span> <span class="mi">5000</span><span class="o">*</span><span class="n">gmat</span><span class="nd">@massPot_inv@gmat</span><span class="o">.</span><span class="n">CreateTranspose</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we solve the stabilized problem using LOBPCG. As a preconditioner we just use the inverse of the <span class="math notranslate nohighlight">\(E\)</span>-mass matrix, which leads to very slow convergence. Thus we cheat a little by setting the initial vectors to projections of analytical eigenfunctions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nevs</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">initvecs</span> <span class="o">=</span> <span class="n">GridFunction</span><span class="p">(</span><span class="n">fes_E</span><span class="p">,</span><span class="n">multidim</span><span class="o">=</span><span class="n">nevs</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nevs</span><span class="p">):</span>
+    <span class="n">initvecs</span><span class="o">.</span><span class="n">vecs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">SetRandom</span><span class="p">()</span>
+
+
+<span class="n">initvecs</span><span class="o">.</span><span class="n">vecs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">massE_inv</span><span class="o">*</span><span class="n">LinearForm</span><span class="p">(</span><span class="n">dE</span><span class="o">*</span><span class="n">CF</span><span class="p">((</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">y</span><span class="p">),</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">),</span><span class="mi">0</span><span class="p">))</span><span class="o">*</span><span class="n">dxE</span><span class="p">)</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">vec</span>
+<span class="n">initvecs</span><span class="o">.</span><span class="n">vecs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">massE_inv</span><span class="o">*</span><span class="n">LinearForm</span><span class="p">(</span><span class="n">dE</span><span class="o">*</span><span class="n">CF</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">z</span><span class="p">),</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">z</span><span class="p">)))</span><span class="o">*</span><span class="n">dxE</span><span class="p">)</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">vec</span>
+<span class="n">initvecs</span><span class="o">.</span><span class="n">vecs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">massE_inv</span><span class="o">*</span><span class="n">LinearForm</span><span class="p">(</span><span class="n">dE</span><span class="o">*</span><span class="n">CF</span><span class="p">((</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">z</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">z</span><span class="p">)))</span><span class="o">*</span><span class="n">dxE</span><span class="p">)</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">vec</span>
+<span class="n">initvecs</span><span class="o">.</span><span class="n">vecs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">massE_inv</span><span class="o">*</span><span class="n">LinearForm</span><span class="p">(</span><span class="n">dE</span><span class="o">*</span><span class="n">CF</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">z</span><span class="p">),</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">z</span><span class="p">),</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">z</span><span class="p">)))</span><span class="o">*</span><span class="n">dxE</span><span class="p">)</span><span class="o">.</span><span class="n">Assemble</span><span class="p">()</span><span class="o">.</span><span class="n">vec</span>
+
+<span class="n">ccdd</span> <span class="o">=</span> <span class="n">Curl</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">massH_inv</span> <span class="o">@</span> <span class="n">Curl</span> <span class="o">+</span> <span class="mi">5000</span><span class="o">*</span><span class="n">gmat</span><span class="nd">@massPot_inv@gmat</span><span class="o">.</span><span class="n">CreateTranspose</span><span class="p">()</span>   
+
+<span class="k">with</span> <span class="n">TaskManager</span><span class="p">():</span>
+    <span class="n">lams</span><span class="p">,</span><span class="n">vecs</span> <span class="o">=</span> <span class="n">LOBPCG</span><span class="p">(</span><span class="n">ccdd</span><span class="p">,</span> <span class="n">massE</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="n">massE_inv</span><span class="p">,</span> <span class="n">maxit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">initial</span> <span class="o">=</span> <span class="n">initvecs</span><span class="o">.</span><span class="n">vecs</span><span class="p">,</span>
+                       <span class="n">printrates</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;approximated evs: &quot;</span><span class="p">,</span><span class="n">lams</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0 : [33.4046934272116, 36.016233488457196, 38.934276532741016, 66.62630888011739, 1120107.5100885816]
+1 : [15.129668363772145, 15.91062363889624, 17.773121821658947, 29.141884505280924, 714288.618884463]
+2 : [8.318941291968114, 8.889993152757068, 10.28936609942856, 15.898130640533306, 554305.1737834862]
+3 : [5.375921047123504, 5.604648829583592, 6.425176869746773, 9.970062049516736, 460884.1107982093]
+4 : [3.8519466102527344, 4.027587570510584, 4.461493387167848, 6.935792184815598, 395344.2231369249]
+5 : [3.056800820153552, 3.2266388728540236, 3.438113717094799, 5.269733923989201, 345038.5953065827]
+6 : [2.641177127595946, 2.762298271633232, 2.8645422066960378, 4.404423101909524, 301633.1707222996]
+7 : [2.3989129224111814, 2.4875835072079937, 2.5448688525065117, 3.8861253064302916, 261203.47106939484]
+8 : [2.2598162102439, 2.325987520962622, 2.3598986182173753, 3.5920854456131037, 222239.1205222841]
+9 : [2.1766983391253927, 2.219592734737207, 2.2452715956686258, 3.402899773163022, 186222.36859163982]
+10 : [2.1225810571587735, 2.150342059700878, 2.16971552008854, 3.271318161644471, 155178.55656127442]
+11 : [2.0862284382188325, 2.1051739143503383, 2.1197680825413827, 3.1863964929149673, 128744.35646649494]
+12 : [2.062556022665444, 2.0748350202339383, 2.087853058479919, 3.1335872698391536, 105678.12802543404]
+13 : [2.045266858413697, 2.054267498076364, 2.065313855781533, 3.0959529878807417, 85259.9125969833]
+14 : [2.0329383202221702, 2.0400158283732974, 2.0490816025490477, 3.0696494836599237, 68376.53221914973]
+15 : [2.024219948149963, 2.029685293139157, 2.037105857340414, 3.052001612617796, 54896.967868709246]
+16 : [2.0180637979999867, 2.0223922808891155, 2.0281969382494, 3.0398139278342304, 43855.33864454605]
+17 : [2.0137760479786655, 2.01723528735614, 2.0216851824896698, 3.031028763367404, 35284.08233968771]
+18 : [2.0105241678043346, 2.0135231673400593, 2.0169072672708945, 3.0240150382809987, 28530.838620236857]
+19 : [2.008181613094173, 2.010790429847021, 2.0134069296564037, 3.019045439822392, 23185.04290807495]
+20 : [2.006484809622441, 2.0085903350372716, 2.0107475357684366, 3.015323902919438, 18851.2153420419]
+21 : [2.0051403210888648, 2.0068915652519936, 2.008630369101492, 3.012376850784282, 15290.918197082423]
+22 : [2.0041028464685464, 2.005547526130091, 2.0069373204185346, 3.010010132843305, 12480.021895849903]
+23 : [2.00330293430977, 2.004490410987834, 2.005655906231633, 3.008087955104796, 10248.907339403271]
+24 : [2.0026927987013616, 2.0036871300617123, 2.0046425371846843, 3.0066274004612104, 8441.009833830822]
+25 : [2.0022332147015196, 2.0030560692250745, 2.0038215195567455, 3.0055147730650487, 6978.020587227072]
+26 : [2.0018666576110133, 2.0025409818414777, 2.003187031002934, 3.0046085786740155, 5823.4820098627615]
+27 : [2.001574330559419, 2.002124562924381, 2.0026909326104465, 3.0038742792233024, 4878.897004254168]
+28 : [2.001337022127864, 2.001787934879262, 2.00229233445937, 3.0032856935509247, 4145.681973461229]
+29 : [2.001143557820933, 2.0015240363129245, 2.0019682972235806, 3.0028372135016026, 3553.612265233911]
+30 : [2.0009877014466446, 2.001311709566733, 2.0016998894960576, 3.0024709565081373, 3041.0122658201853]
+31 : [2.0008588015891866, 2.0011501198536004, 2.0014793676807825, 3.0021841871820736, 2635.2548691127445]
+32 : [2.000753125890598, 2.0010200228182042, 2.001298483943412, 3.001945374839615, 2318.098816885043]
+33 : [2.0006650578741842, 2.0009169531851727, 2.00115882063818, 3.0017521578968074, 2049.2894243432147]
+34 : [2.000593112192904, 2.0008298375119415, 2.001038734500219, 3.0015929540084785, 1827.914540789716]
+35 : [2.0005350290281423, 2.0007591029500107, 2.0009373610960175, 3.001457297722976, 1645.3024614854846]
+36 : [2.000487220283549, 2.0006986971356513, 2.000853747184057, 3.001345082169523, 1497.4897384548017]
+37 : [2.0004490207315233, 2.0006504658898088, 2.000784742413596, 3.0012554041310633, 1372.4946109458276]
+38 : [2.000416843900822, 2.000609085286606, 2.0007254894708515, 3.001174433811686, 1271.6992774775554]
+39 : [2.0003902817885573, 2.0005757762448875, 2.000676244914107, 3.00110176879061, 1190.8795647201732]
+40 : [2.0003678640935108, 2.0005469638815905, 2.000633475536693, 3.0010378247920566, 1123.0767930789557]
+41 : [2.000349363197556, 2.0005220624156865, 2.000597234546209, 3.0009837965717274, 1066.6377517748874]
+42 : [2.0003340159463883, 2.0005009695860463, 2.000565891321176, 3.0009381176799157, 1019.7744886790277]
+43 : [2.0003199358555577, 2.0004828321113073, 2.0005395183685337, 3.000897937972813, 980.8138366623615]
+44 : [2.000307878042494, 2.000467591537245, 2.0005190306747074, 3.0008626775805896, 949.6215771492773]
+45 : [2.000297010872398, 2.0004535544306625, 2.0005011749339676, 3.0008306210986193, 923.8529518910318]
+46 : [2.000287662961243, 2.0004411964556046, 2.000485707318107, 3.00080246645773, 902.4381330625268]
+47 : [2.0002798277673217, 2.0004308009354674, 2.0004726224628295, 3.000778264710036, 882.706821487928]
+48 : [2.0002726948917746, 2.0004214997854497, 2.0004613115070713, 3.000756548528884, 866.0559314236676]
+49 : [2.0002662937412, 2.000413442822161, 2.0004513208192405, 3.0007378808217116, 851.7782415228623]
+50 : [2.0002605935045765, 2.000406190931854, 2.000442206960346, 3.000721055410739, 839.7763070665403]
+51 : [2.0002556018423414, 2.0003997433734226, 2.000434370931056, 3.000706838808165, 829.4598813687776]
+52 : [2.0002513112069398, 2.0003943226864918, 2.000427801341864, 3.0006946690274203, 820.4402124387497]
+53 : [2.000247524032957, 2.0003894059036367, 2.0004218373532674, 3.000684204326541, 812.5111491925585]
+54 : [2.0002442632546034, 2.000384981130813, 2.0004167499634917, 3.000674936048189, 805.862241894297]
+55 : [2.0002414852052928, 2.000381216018863, 2.0004122318491167, 3.0006665963128234, 800.115626130387]
+56 : [2.0002390177998746, 2.0003778898380395, 2.000408090865052, 3.0006592166595327, 794.8978554481874]
+57 : [2.000236879637675, 2.0003748824775074, 2.0004043883718996, 3.0006528582782455, 790.4610854804871]
+58 : [2.000235031841959, 2.000372166340931, 2.0004010615781898, 3.00064717344069, 786.5410813100094]
+59 : [2.0002334705161124, 2.000369698483525, 2.00039829997145, 3.000641871634183, 782.9124368686278]
+60 : [2.0002321702709045, 2.00036747878382, 2.0003960069431024, 3.0006374775405025, 779.5434722961143]
+61 : [2.000231020838397, 2.00036551783431, 2.000393904792533, 3.000633623799545, 776.4105378969924]
+62 : [2.0002299692645686, 2.0003637733058537, 2.000392047309108, 3.000630301209353, 773.5162299604948]
+63 : [2.000229064502144, 2.0003622058432935, 2.000390388698692, 3.0006274527447196, 770.8797201242919]
+64 : [2.0002282787338217, 2.0003607477386547, 2.0003889285954957, 3.0006248604190637, 768.3426977647376]
+65 : [2.0002276277509417, 2.000359413110489, 2.0003875782761424, 3.000622456952281, 765.9692741583118]
+66 : [2.000227075620331, 2.000358144109588, 2.000386301956103, 3.0006201886765163, 763.752080929924]
+67 : [2.0002265616016013, 2.00035697835312, 2.0003851156294505, 3.0006182383127045, 761.5742363650645]
+68 : [2.0002261182716694, 2.000355889378277, 2.0003840570392213, 3.0006164942495452, 759.4559214668042]
+69 : [2.000225727787882, 2.0003548686846795, 2.0003831031891837, 3.000614947367414, 757.5492202542755]
+70 : [2.000225362837617, 2.000353959790407, 2.000382243377845, 3.0006135855654774, 755.7581800445915]
+71 : [2.000225024074378, 2.000353089712959, 2.0003814324552547, 3.000612271443248, 753.9003162759888]
+72 : [2.000224716348025, 2.000352309311608, 2.0003806969257525, 3.0006110185860626, 752.1246146147895]
+73 : [2.0002244334282135, 2.0003515688362055, 2.0003800174646953, 3.0006099417282974, 750.3643178029474]
+74 : [2.0002241601467334, 2.000350892932999, 2.000379387176216, 3.000608934308108, 748.6303159475392]
+75 : [2.000223905948033, 2.0003502424053443, 2.0003787823308494, 3.000607955577748, 746.9116464662121]
+76 : [2.0002236632903694, 2.000349609762937, 2.0003782076775742, 3.0006070255093484, 745.1644518316281]
+77 : [2.0002234178216476, 2.0003490044867935, 2.0003776545120284, 3.0006061543128317, 743.419666734744]
+78 : [2.0002231836039543, 2.000348427203462, 2.0003771759544073, 3.0006053542784956, 741.6988902673996]
+79 : [2.0002229544225973, 2.00034787382109, 2.0003767226511227, 3.000604610178415, 739.9446671680066]
+80 : [2.0002227218636666, 2.0003473600039006, 2.000376270230027, 3.0006038424554267, 738.160169619959]
+81 : [2.0002224933922377, 2.0003468724239513, 2.000375833000672, 3.0006030986619985, 736.4309675049188]
+82 : [2.0002222504593674, 2.000346364613891, 2.000375352738382, 3.000602327819733, 734.6083386821027]
+83 : [2.000222003005119, 2.000345916090265, 2.0003749349439643, 3.0006016408460034, 732.8138423713949]
+84 : [2.000221762064265, 2.000345428751397, 2.0003744820278944, 3.0006009926836357, 730.99830615221]
+85 : [2.000221510079862, 2.0003449681405288, 2.0003740546374984, 3.00060032615484, 729.1622019867872]
+86 : [2.000221244862281, 2.0003445181138053, 2.000373617250416, 3.000599642370176, 727.2797674208207]
+87 : [2.0002209839119405, 2.0003440696728942, 2.000373200342435, 3.0005989504298305, 725.334038934107]
+88 : [2.0002207235306066, 2.000343602605211, 2.000372793418275, 3.000598228564904, 723.3144519107042]
+89 : [2.0002204620612916, 2.0003431450731934, 2.0003723517404706, 3.000597507378188, 721.2846431008613]
+90 : [2.000220178411047, 2.0003426607699666, 2.000371890161228, 3.0005967809489853, 719.2144062867942]
+91 : [2.0002198690533004, 2.0003422145686884, 2.000371445993996, 3.0005959980163293, 717.0398640974927]
+92 : [2.0002195529947477, 2.000341748503211, 2.0003709674132426, 3.0005951682446197, 714.7184054979869]
+93 : [2.0002192262272644, 2.00034127854328, 2.0003704932248607, 3.000594317806239, 712.2246454796382]
+94 : [2.000218897128247, 2.0003408166099983, 2.0003700005958054, 3.0005935062903455, 709.8511940394262]
+95 : [2.0002185231261906, 2.0003403577317274, 2.000369502690209, 3.0005926110029146, 707.3998740787197]
+96 : [2.0002181439105806, 2.0003398188207946, 2.0003690039401403, 3.0005916840744757, 704.7069009223255]
+97 : [2.000217768664801, 2.0003392890899727, 2.0003684527253114, 3.000590735108298, 701.8524248702878]
+98 : [2.000217373346022, 2.0003387685564626, 2.0003678698418113, 3.0005897145653875, 698.8828693017289]
+99 : [2.00021694994676, 2.0003382369725022, 2.000367271446994, 3.000588621296573, 695.862594190043]
+approximated evs:   2.00022
+ 2.00034
+ 2.00037
+ 3.00059
+ 695.863
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="the-filtered-problem">
+<h2>The filtered problem<a class="headerlink" href="#the-filtered-problem" title="Link to this heading">#</a></h2>
+<p>The idea from <a class="reference external" href="https://doi.org/10.48550/arXiv.2402.08515">[1]</a> in short is to use the solution of the time-domain Maxwell problem</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{aligned}
+\partial_t^2 e(t,x) + \mathrm{curl}\mathrm{curl}e(t,x)&amp;=0\\
+e(0,x)&amp;=E_0(x)
+\end{aligned}
+\end{split}\]</div>
+<p>To define the filtered operator <span class="math notranslate nohighlight">\(\tilde \Pi_\alpha\)</span> by
+$<span class="math notranslate nohighlight">\(
+(\tilde \Pi_{\alpha} E^0)(x) = \int_0^\infty e(t,x)\alpha(t)dt
+\)</span><span class="math notranslate nohighlight">\(
+for some weight function \)</span>\alpha<span class="math notranslate nohighlight">\( with final support in \)</span>\mathbb R$.</p>
+<p>It can be shown that for an eigenpair <span class="math notranslate nohighlight">\((\tilde\omega, E)\)</span> of the Maxwell eigenvalue problem <span class="math notranslate nohighlight">\((\beta(\tilde\omega),E)\)</span> is an eigenpair of <span class="math notranslate nohighlight">\(\Pi_\alpha\)</span> for</p>
+<div class="math notranslate nohighlight">
+\[
+\tilde \beta(s):=\int_0^\infty \cos(ts)\alpha(t)dt.
+\]</div>
+</section>
+<section id="discretizations">
+<h2>Discretizations<a class="headerlink" href="#discretizations" title="Link to this heading">#</a></h2>
+<p>The same arguments hold true if we replace the continuous problem by the discrete eigenvalue problem</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbf S \mathbf E = \omega^2\mathbf M \mathbf E
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf S,\mathbf M\)</span> are the discretization of the <span class="math notranslate nohighlight">\(\mathrm {curl}\mathrm {curl}\)</span> and the mass matrix and <span class="math notranslate nohighlight">\(\mathbf E\)</span> is the coefficient vector of the discrete eigenfunctions.</p>
+<p>Discretizing the semi-discrete time domain problem by a time-stepping and the integral by a trapezoidal rule leads to the discrete filter</p>
+<div class="math notranslate nohighlight">
+\[
+(\Pi_\alpha)(\mathbf{e^0})=\tau \sum_{j=0}^M \alpha(\tau j) \mathbf e^j
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf e^j\)</span> is the time-domain solution at time step number <span class="math notranslate nohighlight">\(j\)</span>.</p>
+<p>Then if <span class="math notranslate nohighlight">\(\omega,\mathbf E\)</span>  is an eigenpair of the discrete problem <span class="math notranslate nohighlight">\((\beta(\omega),\mathbf E)\)</span> is an eigenpair of the operator <span class="math notranslate nohighlight">\(\Pi_\alpha\)</span> with
+$<span class="math notranslate nohighlight">\(
+\beta(s):= \tau \sum_{j=0}^M \lambda_j(s)\alpha(\tau j)
+\)</span><span class="math notranslate nohighlight">\(
+and \)</span>\lambda_j<span class="math notranslate nohighlight">\( is the approximation of the scalar problem
+\)</span><span class="math notranslate nohighlight">\(
+\partial_t^2 l(t)+s^2 l(t)=0,\quad l(0) = 1
+\)</span>$
+by the chosen time-stepping.</p>
+<section id="choosing-the-filter-and-solving-the-problem">
+<h3>Choosing the filter and solving the problem<a class="headerlink" href="#choosing-the-filter-and-solving-the-problem" title="Link to this heading">#</a></h3>
+<p>The idea is now to choose the weight function <span class="math notranslate nohighlight">\(\alpha\)</span> such that the resulting filter <span class="math notranslate nohighlight">\(\beta\)</span> is maximal in a region where the sought after eigenvalues are and close to zero otherwise. Then applying e.g., an Arnoldi algorithm to the filtered operator <span class="math notranslate nohighlight">\(\Pi_\alpha\)</span> will yield approximations to the eigenfunctions where <span class="math notranslate nohighlight">\(\beta\)</span> is maximal, which we know to be eigenvectors of the original problems corresponding to eigenvalues in the interesting region. Lastly we solve the original problem projected onto the space spanned by the Krylov space of <span class="math notranslate nohighlight">\(\Pi_\alpha\)</span>.</p>
+<p>We define the filtered operator as a class. Since we use a mixed method for the spacial discretization we need to supply the (inverse) mass matrices for the two fieds, as well as the discrete curl operator and the parameters for the time-discretization and filtering.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FilteredC</span><span class="p">(</span><span class="n">BaseMatrix</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mata</span><span class="p">,</span> <span class="n">matm_inv</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">freedofs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">tau</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nsteps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mata</span> <span class="o">=</span> <span class="n">mata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matm_inv</span> <span class="o">=</span> <span class="n">matm_inv</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">freedofs</span><span class="o">=</span><span class="n">freedofs</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vecu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mata</span><span class="o">.</span><span class="n">CreateColVector</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tmpvec1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mata</span><span class="o">.</span><span class="n">CreateColVector</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tmpvec2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mata</span><span class="o">.</span><span class="n">CreateColVector</span><span class="p">()</span>
+
+
+    <span class="k">def</span> <span class="nf">CreateColVector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mata</span><span class="o">.</span><span class="n">CreateColVector</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">Shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mata</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">def</span> <span class="nf">CreateVector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">col</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mata</span><span class="o">.</span><span class="n">CreateVector</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">Mult</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rhs</span><span class="p">,</span><span class="n">out</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">TaskManager</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vecu</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">rhs</span>
+            <span class="n">tau</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">tau</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">vecu</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">unew</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmpvec1</span>
+            <span class="n">uold</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tmpvec2</span>
+            <span class="n">uold</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vecu</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nsteps</span><span class="p">):</span>
+                <span class="n">t</span> <span class="o">+=</span> <span class="n">tau</span>
+                <span class="c1">#print(&quot;\r time = {}, step = {}&quot;.format(t,i),end=&quot;&quot;)</span>
+
+                <span class="n">unew</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">vecu</span> <span class="o">-</span> <span class="n">uold</span>
+                <span class="n">unew</span><span class="o">.</span><span class="n">data</span> <span class="o">-=</span> <span class="n">tau</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">matm_inv</span><span class="nd">@self</span><span class="o">.</span><span class="n">mata</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">vecu</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">freedofs</span><span class="p">:</span>
+                    <span class="n">unew</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">freedofs</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+                <span class="n">uold</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vecu</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vecu</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">unew</span><span class="o">.</span><span class="n">data</span>
+
+                <span class="n">out</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span> <span class="n">tau</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">vecu</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>To obtain a stable method we need to respect the CFL condition of the time-domain problem. Thus we apply a simple power iteration to determine the largest magnitude eigenvalue of the discrete problem:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">massinv</span> <span class="o">=</span> <span class="n">massE_inv</span>
+<span class="n">mass</span> <span class="o">=</span> <span class="n">massE</span>
+<span class="n">stiffness</span> <span class="o">=</span> <span class="n">Curl</span><span class="o">.</span><span class="n">T</span><span class="nd">@massH_inv@Curl</span>
+<span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-4</span>
+<span class="n">tmpv</span> <span class="o">=</span> <span class="n">stiffness</span><span class="o">.</span><span class="n">CreateVector</span><span class="p">()</span>
+<span class="n">tmpv2</span> <span class="o">=</span> <span class="n">stiffness</span><span class="o">.</span><span class="n">CreateVector</span><span class="p">()</span>
+<span class="n">tmpv</span><span class="o">.</span><span class="n">SetRandom</span><span class="p">()</span>
+<span class="n">tmpv</span> <span class="o">/=</span> <span class="n">tmpv</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+<span class="n">mus</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">500</span><span class="p">):</span>
+    <span class="c1">#print(&quot;i = {}&quot;.format(i))</span>
+    <span class="n">tmpv2</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">tmpv</span>
+    <span class="n">tmpv</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">massinv</span><span class="nd">@stiffness</span><span class="o">*</span><span class="n">tmpv2</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">InnerProduct</span><span class="p">(</span><span class="n">tmpv2</span><span class="p">,</span><span class="n">tmpv</span><span class="p">)</span><span class="o">/</span><span class="n">InnerProduct</span><span class="p">(</span><span class="n">tmpv2</span><span class="p">,</span><span class="n">tmpv2</span><span class="p">)</span>
+    <span class="n">tmpv</span> <span class="o">/=</span> <span class="n">tmpv</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span>
+    <span class="n">mus</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mus</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">mus</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">+</span><span class="n">tol</span><span class="p">:</span>
+        <span class="k">break</span>
+
+<span class="n">lammax</span> <span class="o">=</span> <span class="n">mus</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">tol</span><span class="o">*</span><span class="mi">200</span><span class="p">)</span> <span class="c1">#some safety factors</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;estimated largest eigenvalue: &quot;</span><span class="p">,</span><span class="n">lammax</span><span class="p">)</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">4</span><span class="o">/</span><span class="n">lammax</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;by power iteration stable for tau = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tau</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>estimated largest eigenvalue:  8332.166952253809
+by power iteration stable for tau = 0.02191043570892399
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next we need to pick suitable parameters for the time-domain filtering. We look for eigenvalues <span class="math notranslate nohighlight">\(\lambda\in[1,3]\)</span> and plot the resulting discrete filter.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># parameters for the filter function</span>
+<span class="n">lam_min</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lam_max</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">endT</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">L</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">endT</span><span class="o">/</span><span class="n">tau</span><span class="p">)</span>
+
+
+<span class="n">w_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lam_min</span><span class="p">)</span>
+<span class="n">w_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">lam_max</span><span class="p">)</span>
+
+<span class="n">weightf</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="mi">4</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">((</span><span class="n">w_max</span><span class="o">+</span><span class="n">w_min</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">w_max</span><span class="o">-</span><span class="n">w_min</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sinc</span><span class="p">((</span><span class="n">w_max</span><span class="o">-</span><span class="n">w_min</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">t</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+<span class="n">weights</span> <span class="o">=</span> <span class="n">weightf</span><span class="p">(</span><span class="n">tau</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">beta</span><span class="p">(</span><span class="n">lam</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">lam</span><span class="p">):</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">lam</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="n">q_old</span> <span class="o">=</span> <span class="n">q</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">tau</span><span class="o">*</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">q</span>
+    <span class="k">for</span> <span class="n">alpha</span> <span class="ow">in</span> <span class="n">weights</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">q_new</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">q</span><span class="o">-</span><span class="n">tau</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">lam</span><span class="o">*</span><span class="n">q</span><span class="o">-</span><span class="n">q_old</span>
+        <span class="n">q_old</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">q_new</span>
+        <span class="n">out</span> <span class="o">+=</span> <span class="n">tau</span><span class="o">*</span><span class="n">alpha</span><span class="o">*</span><span class="n">q</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+<span class="n">betas</span> <span class="o">=</span> <span class="n">beta</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mf">0.01</span><span class="p">))</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">omegas</span><span class="p">,</span><span class="n">betas</span><span class="p">);</span>
+<span class="n">pl</span><span class="o">.</span><span class="n">xlim</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.0, 10.0)
+</pre></div>
+</div>
+<img alt="../_images/8ccbe0ffd7fca57626b271c34eef1e20a7d46a4d8ad62c042bfbf58c963f4410.png" src="../_images/8ccbe0ffd7fca57626b271c34eef1e20a7d46a4d8ad62c042bfbf58c963f4410.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">maxsteps</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="n">C</span> <span class="o">=</span> <span class="n">FilteredC</span><span class="p">(</span><span class="n">stiffness</span><span class="p">,</span><span class="n">massinv</span><span class="p">,</span><span class="n">tau</span><span class="p">,</span><span class="n">weights</span><span class="p">)</span>
+
+<span class="n">solveevery</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">tmpvec</span> <span class="o">=</span> <span class="n">massinv</span><span class="o">.</span><span class="n">CreateVector</span><span class="p">()</span>
+<span class="n">tmpvec</span><span class="o">.</span><span class="n">SetRandom</span><span class="p">()</span>
+<span class="n">tmpvec</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">tmpvec</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span><span class="o">*</span><span class="n">tmpvec</span>
+<span class="n">tmpvec2</span> <span class="o">=</span> <span class="n">massinv</span><span class="o">.</span><span class="n">CreateVector</span><span class="p">()</span>
+
+<span class="n">vecs</span> <span class="o">=</span> <span class="n">MultiVector</span><span class="p">(</span><span class="n">tmpvec</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">vecs</span><span class="o">.</span><span class="n">Append</span><span class="p">(</span><span class="n">tmpvec</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">maxsteps</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Krylowstep = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+    <span class="n">tmpvec</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">C</span><span class="o">*</span><span class="n">vecs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">vecs</span><span class="o">.</span><span class="n">AppendOrthogonalize</span><span class="p">(</span><span class="n">tmpvec</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">i</span><span class="o">%</span><span class="k">solveevery</span> == 0:
+        <span class="n">tvecs</span> <span class="o">=</span> <span class="n">MultiVector</span><span class="p">(</span><span class="n">tmpvec</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">vecs</span><span class="p">))</span>
+        <span class="n">tvecs</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">stiffness</span><span class="o">*</span><span class="n">vecs</span>
+        <span class="n">tvecs2</span> <span class="o">=</span> <span class="n">MultiVector</span><span class="p">(</span><span class="n">tmpvec</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">vecs</span><span class="p">))</span>
+        <span class="n">tvecs2</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">mass</span><span class="o">*</span><span class="n">vecs</span>
+
+        <span class="n">matm_proj</span> <span class="o">=</span> <span class="n">InnerProduct</span><span class="p">(</span><span class="n">tvecs2</span><span class="p">,</span><span class="n">vecs</span><span class="p">)</span>
+        <span class="n">mats_proj</span> <span class="o">=</span> <span class="n">InnerProduct</span><span class="p">(</span><span class="n">tvecs</span><span class="p">,</span><span class="n">vecs</span><span class="p">)</span>
+        <span class="n">lam</span><span class="p">,</span><span class="n">v</span> <span class="o">=</span> <span class="n">spl</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">mats_proj</span><span class="o">.</span><span class="n">NumPy</span><span class="p">(),</span><span class="n">matm_proj</span><span class="o">.</span><span class="n">NumPy</span><span class="p">())</span>
+
+        <span class="c1">#compute residuals</span>
+        <span class="n">eigf</span> <span class="o">=</span><span class="p">(</span><span class="n">vecs</span><span class="o">*</span><span class="n">Matrix</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">real</span><span class="p">))</span><span class="o">.</span><span class="n">Evaluate</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">tmpvec2</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lam</span><span class="p">)):</span>
+            <span class="n">tmpvec2</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">massinv</span><span class="nd">@stiffness</span><span class="o">*</span><span class="n">eigf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">tmpvec2</span><span class="o">.</span><span class="n">data</span> <span class="o">-=</span> <span class="n">lam</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">eigf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmpvec2</span><span class="o">.</span><span class="n">Norm</span><span class="p">()</span><span class="o">/</span><span class="n">eigf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">Norm</span><span class="p">())</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;approximated eigenvalues: &quot;</span><span class="p">,</span> <span class="n">lam</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;residuals: &quot;</span><span class="p">,</span><span class="n">res</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> Krylowstep = 0
+
+ Krylowstep = 1
+
+ Krylowstep = 2
+
+ Krylowstep = 3
+
+ Krylowstep = 4
+
+ Krylowstep = 5
+
+ Krylowstep = 6
+
+ Krylowstep = 7
+
+ Krylowstep = 8
+
+ Krylowstep = 9
+
+ Krylowstep = 10
+
+ Krylowstep = 11
+
+ Krylowstep = 12
+
+ Krylowstep = 13
+
+ Krylowstep = 14
+
+ Krylowstep = 15
+
+ Krylowstep = 16
+
+ Krylowstep = 17
+
+ Krylowstep = 18
+
+ Krylowstep = 19
+approximated eigenvalues:  [-2.31937008e-14  2.00012552e+00  2.00018279e+00  2.00020235e+00
+  3.00032534e+00  3.00039426e+00  5.00149581e+00  6.09205541e+00
+  8.00403142e+00  9.00678423e+00  1.06354292e+01  1.39605119e+01
+  1.42052547e+01  1.96488328e+01  2.55175163e+01  3.69844306e+01
+  7.02764349e+01  1.28545191e+02  3.13037437e+02  6.76016298e+02
+  9.80999056e+02]
+residuals:  [2.1989909295670403e-09, 0.00019775980295800953, 0.0013192117691427378, 0.0005301841411562754, 3.5258010954220083e-08, 3.6911969388271684e-08, 0.007333758719569671, 15.43501053185778, 0.001703512655918669, 0.01461423689933618, 13.416289340398531, 9.509263003677018, 21.45026708395035, 22.769888149236436, 41.87503783028204, 54.632969339110524, 99.51215975055842, 173.6201359122568, 363.30281797204856, 622.4249669263492, 922.4808415865533]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./examples"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="waveguide_bend.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">3.7. </span>Bent electromagnetic 3d waveguide with PML</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#by-m-wess-2025">by M. Wess, 2025</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-setting">Problem setting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-discrete-problem">Setting up the discrete Problem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-the-problem-with-lobpcg">Solving the problem with LOBPCG</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-filtered-problem">The filtered problem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discretizations">Discretizations</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-the-filter-and-solving-the-problem">Choosing the filter and solving the problem</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By M. Wess
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
