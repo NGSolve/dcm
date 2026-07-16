@@ -432,10 +432,10 @@ document.write(`
 </section>
 <section id="problem-setting">
 <h2>Problem setting<a class="headerlink" href="#problem-setting" title="Link to this heading">#</a></h2>
-<p>We want to approximate the eigenvectors and eigenfunctions of the problem to find <span class="math notranslate nohighlight">\(\tilde\omega\in\mathbb R, E\in H(\mathrm{curl})(\Omega)\)</span> for some domain <span class="math notranslate nohighlight">\(\Omega\subset\mathbb R^3\)</span> such that</p>
+<p>We want to approximate the eigenvectors and eigenfunctions of the problem to find <span class="math notranslate nohighlight">\(\lambda\in\mathbb R, E\in H(\mathrm{curl})(\Omega)\)</span> for some domain <span class="math notranslate nohighlight">\(\Omega\subset\mathbb R^3\)</span> such that</p>
 <div class="math notranslate nohighlight">
 \[
-\mathrm{curl}\mathrm{curl}E(x) = \tilde\omega^2 E(x)
+\mathrm{curl}\mathrm{curl}E(x) = \tilde\lambda E(x)
 \]</div>
 <p>with natural boundary conditions.</p>
 </section>
@@ -456,6 +456,7 @@ document.write(`
 </div>
 </div>
 </div>
+<p>Choosing <span class="math notranslate nohighlight">\(\Omega:=[0,\pi]^3\)</span> we generate our geometry and mesh:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">maxh</span> <span class="o">=</span> <span class="mf">0.8</span>
@@ -604,7 +605,7 @@ for some weight function \)</span>\alpha<span class="math notranslate nohighligh
 <p>The same arguments hold true if we replace the continuous problem by the discrete eigenvalue problem</p>
 <div class="math notranslate nohighlight">
 \[
-\mathbf S \mathbf E = \omega^2\mathbf M \mathbf E
+\mathbf S \mathbf E = \lambda\mathbf M \mathbf E
 \]</div>
 <p>where <span class="math notranslate nohighlight">\(\mathbf S,\mathbf M\)</span> are the discretization of the <span class="math notranslate nohighlight">\(\mathrm {curl}\mathrm {curl}\)</span> and the mass matrix and <span class="math notranslate nohighlight">\(\mathbf E\)</span> is the coefficient vector of the discrete eigenfunctions.</p>
 <p>Discretizing the semi-discrete time domain problem by a time-stepping and the integral by a trapezoidal rule leads to the discrete filter</p>
@@ -613,15 +614,17 @@ for some weight function \)</span>\alpha<span class="math notranslate nohighligh
 (\Pi_\alpha)(\mathbf{e^0})=\tau \sum_{j=0}^M \alpha(\tau j) \mathbf e^j
 \]</div>
 <p>where <span class="math notranslate nohighlight">\(\mathbf e^j\)</span> is the time-domain solution at time step number <span class="math notranslate nohighlight">\(j\)</span>.</p>
-<p>Then if <span class="math notranslate nohighlight">\(\omega,\mathbf E\)</span>  is an eigenpair of the discrete problem <span class="math notranslate nohighlight">\((\beta(\omega),\mathbf E)\)</span> is an eigenpair of the operator <span class="math notranslate nohighlight">\(\Pi_\alpha\)</span> with
-$<span class="math notranslate nohighlight">\(
-\beta(s):= \tau \sum_{j=0}^M \lambda_j(s)\alpha(\tau j)
-\)</span><span class="math notranslate nohighlight">\(
-and \)</span>\lambda_j<span class="math notranslate nohighlight">\( is the approximation of the scalar problem
-\)</span><span class="math notranslate nohighlight">\(
-\partial_t^2 l(t)+s^2 l(t)=0,\quad l(0) = 1
-\)</span>$
-by the chosen time-stepping.</p>
+<p>Then if <span class="math notranslate nohighlight">\(\lambda,\mathbf E\)</span>  is an eigenpair of the discrete problem <span class="math notranslate nohighlight">\((\beta(\lambda),\mathbf E)\)</span> is an eigenpair of the operator <span class="math notranslate nohighlight">\(\Pi_\alpha\)</span> with</p>
+<div class="math notranslate nohighlight">
+\[
+\beta(s):= \tau \sum_{j=0}^M q_j(s)\alpha(\tau j)
+\]</div>
+<p>and <span class="math notranslate nohighlight">\(q_j\)</span> is the approximation of the scalar problem</p>
+<div class="math notranslate nohighlight">
+\[
+\partial_t^2 l(t)+s l(t)=0,\quad l(0) = 1
+\]</div>
+<p>by the chosen time-stepping.</p>
 <section id="choosing-the-filter-and-solving-the-problem">
 <h3>Choosing the filter and solving the problem<a class="headerlink" href="#choosing-the-filter-and-solving-the-problem" title="Link to this heading">#</a></h3>
 <p>The idea is now to choose the weight function <span class="math notranslate nohighlight">\(\alpha\)</span> such that the resulting filter <span class="math notranslate nohighlight">\(\beta\)</span> is maximal in a region where the sought after eigenvalues are and close to zero otherwise. Then applying e.g., an Arnoldi algorithm to the filtered operator <span class="math notranslate nohighlight">\(\Pi_\alpha\)</span> will yield approximations to the eigenfunctions where <span class="math notranslate nohighlight">\(\beta\)</span> is maximal, which we know to be eigenvectors of the original problems corresponding to eigenvalues in the interesting region. Lastly we solve the original problem projected onto the space spanned by the Krylov space of <span class="math notranslate nohighlight">\(\Pi_\alpha\)</span>.</p>
