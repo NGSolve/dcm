@@ -26,3 +26,4 @@ chapters:
       - file: examples/ring_resonator
       - file: examples/waveguide_3d
       - file: examples/waveguide_bend
+      - file: examples/td_maxwell_evp
