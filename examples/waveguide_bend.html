@@ -491,7 +491,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 1, "model_id": "4d6676e82ab845449e25645d1dea4ccc"}</script><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WebGLScene
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 1, "model_id": "4656b1a5192d4a7b9eba0a3aae9f9590"}</script><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WebGLScene
 </pre></div>
 </div>
 </div>
@@ -508,7 +508,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 1, "model_id": "8d846c8b6df04f3a8966e18623bbf693"}</script><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WebGLScene
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 1, "model_id": "8696142ff87246319693cca52367683b"}</script><div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WebGLScene
 </pre></div>
 </div>
 </div>
@@ -631,7 +631,7 @@ primary DoFs: 333030 ,  323304
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 1, "model_id": "11b7d8c8add24064a0f62a9ad49a3518"}</script><img alt="../_images/54f0f50827d07ab8025f6548acbe096e7407e1031dd6226ff100688dab27129f.png" src="../_images/54f0f50827d07ab8025f6548acbe096e7407e1031dd6226ff100688dab27129f.png" />
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 1, "model_id": "f77cc6f5107341b6988ca8e0d44019b9"}</script><img alt="../_images/54f0f50827d07ab8025f6548acbe096e7407e1031dd6226ff100688dab27129f.png" src="../_images/54f0f50827d07ab8025f6548acbe096e7407e1031dd6226ff100688dab27129f.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -668,7 +668,7 @@ primary DoFs: 333030 ,  323304
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>estimated tau =  0.0010338055272401726
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>estimated tau =  0.0010338055272401721
 </pre></div>
 </div>
 </div>
@@ -749,24 +749,12 @@ primary DoFs: 333030 ,  323304
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span> <span class="n">line</span> <span class="mi">39</span>
-<span class="g g-Whitespace">     </span><span class="mi">36</span> <span class="n">tmpE_</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">massE_x</span><span class="o">*</span><span class="n">gfE</span><span class="o">.</span><span class="n">vec</span><span class="o">-</span><span class="n">massE_x</span><span class="o">*</span><span class="n">gfE_</span><span class="o">.</span><span class="n">vec</span>
-<span class="g g-Whitespace">     </span><span class="mi">37</span> <span class="n">gfE_</span><span class="o">.</span><span class="n">vec</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span> <span class="n">tau</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">massE_inv_pml</span><span class="o">*</span><span class="n">tmpE_</span>
-<span class="ne">---&gt; </span><span class="mi">39</span> <span class="n">gfE</span><span class="o">.</span><span class="n">vec</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">rhsEfunc</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">40</span> <span class="n">gfE</span><span class="o">.</span><span class="n">vec</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span> <span class="n">massE_inv</span><span class="o">*</span><span class="n">tmpE</span>
-<span class="g g-Whitespace">     </span><span class="mi">42</span> <span class="n">tmpH</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="o">-</span><span class="n">bf_mixed</span><span class="o">*</span><span class="n">gfE</span><span class="o">.</span><span class="n">vec</span><span class="o">+</span><span class="n">sigma</span><span class="o">*</span><span class="p">(</span><span class="n">massH_damp</span><span class="o">*</span><span class="n">gfH</span><span class="o">.</span><span class="n">vec</span><span class="o">-</span><span class="n">massH_x</span><span class="o">*</span><span class="n">gfH_</span><span class="o">.</span><span class="n">vec</span><span class="p">)</span>
-
-<span class="nn">Cell In[8], line 13,</span> in <span class="ni">&lt;lambda&gt;</span><span class="nt">(t)</span>
-<span class="g g-Whitespace">     </span><span class="mi">11</span> <span class="n">Draw</span><span class="p">(</span><span class="n">gfe</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">12</span> <span class="c1">#rhsEfuncscal = lambda t: exp(-c*(t0-t)**2)*sin(omega*t)</span>
-<span class="ne">---&gt; </span><span class="mi">13</span> <span class="n">rhsEfunc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">c</span><span class="o">*</span><span class="p">(</span><span class="n">t0</span><span class="o">-</span><span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">omega</span><span class="o">*</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="n">gfe</span><span class="o">.</span><span class="n">vec</span>
-<span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="c1">#rhsEfunc = lambda t: exp(-c*(t&lt;t0)*(t0-t)**2)*sin(n*omega*t)*gfe.vec</span>
-<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="c1">#rhsEfuncscal = lambda t: exp(-c*IfPos(t0-t,1,0)*(t0-t)**2)*sin(n*omega*t)</span>
-<span class="g g-Whitespace">     </span><span class="mi">17</span> <span class="c1">#rhsEfunc = lambda t: 0*gfe.vec</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">23</span> 
-<span class="g g-Whitespace">     </span><span class="mi">24</span> <span class="c1">#visualize dirichlet data over time</span>
-<span class="g g-Whitespace">     </span><span class="mi">25</span> <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span> <span class="n">line</span> <span class="mi">48</span>
+<span class="g g-Whitespace">     </span><span class="mi">44</span> <span class="n">gfH_</span><span class="o">.</span><span class="n">vec</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span> <span class="n">tau</span><span class="o">*</span><span class="n">sigma</span><span class="o">*</span><span class="n">massH_inv_pml</span><span class="o">*</span><span class="n">tmpH_</span>
+<span class="g g-Whitespace">     </span><span class="mi">46</span> <span class="n">gfH</span><span class="o">.</span><span class="n">vec</span><span class="o">.</span><span class="n">data</span> <span class="o">+=</span> <span class="n">tau</span><span class="o">*</span><span class="n">massH_inv</span><span class="o">*</span><span class="n">tmpH</span>
+<span class="ne">---&gt; </span><span class="mi">48</span> <span class="k">if</span> <span class="n">i</span><span class="o">%</span><span class="k">drawevery</span> == 0:
+<span class="g g-Whitespace">     </span><span class="mi">49</span>     <span class="n">timepassed</span> <span class="o">+=</span> <span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">now</span>
+<span class="g g-Whitespace">     </span><span class="mi">50</span>     <span class="c1">#scenee.Redraw() # for immediate drawing</span>
 
 <span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
